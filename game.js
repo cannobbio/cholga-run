@@ -588,18 +588,22 @@ function drawFogEffect() {
 
 function drawCanvasHUD() {
   ctx.save();
-  // Panel translúcido negro con borde
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2;
-  ctx.fillRect(15, 15, 195, 42);
-  ctx.strokeRect(15, 15, 195, 42);
   
-  ctx.fillStyle = '#ffffff';
+  // 1. Panel translúcido negro de fondo para la barra superior
+  ctx.fillStyle = 'rgba(10, 11, 20, 0.75)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+  ctx.lineWidth = 2;
+  
+  ctx.fillRect(15, 10, 770, 44);
+  ctx.strokeRect(15, 10, 770, 44);
+  
+  // 2. Lado izquierdo: ETAPA y clima stacked
   ctx.font = '8px "Press Start 2P"';
   ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
   
-  ctx.fillText(`ETAPA ${currentStage}`, 25, 30);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(`ETAPA ${currentStage}`, 30, 24);
   
   let weatherText = 'DESPEJADO';
   let weatherIcon = '☀️';
@@ -644,7 +648,83 @@ function drawCanvasHUD() {
   }
   
   ctx.fillStyle = (currentWeather === 'eruption' || currentStage % 3 === 0) ? '#ff3300' : (currentWeather === 'tornado' ? '#b5e2fa' : '#ffd166');
-  ctx.fillText(`${weatherIcon} ${weatherText}`, 25, 46);
+  ctx.fillText(`${weatherIcon} ${weatherText}`, 30, 40);
+  
+  // 3. Vidas (Corazones pixelados en x=210)
+  const heartXStart = 205;
+  const heartY = 32 - 6; // y=26 (corazón es de 6px de alto con size=2, queda perfectamente centrado)
+  
+  if (lives <= 4) {
+    for (let i = 0; i < lives; i++) {
+      drawPixelHeart(ctx, heartXStart + i * 18, heartY, 2);
+    }
+  } else {
+    drawPixelHeart(ctx, heartXStart, heartY, 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`x${lives}`, heartXStart + 18, 32);
+  }
+  
+  // 4. Salmones (x=330)
+  const salmonX = 305;
+  const itemY = 32 - 12; // y=20 (sprite es de 24px de alto)
+  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, salmonX, itemY, 24, 24);
+  ctx.fillStyle = '#ffd166'; // dorado salmón
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText(`x${salmonsCount}`, salmonX + 28, 32);
+  
+  // 5. Kuchens (x=415)
+  const kuchenX = 390;
+  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, kuchenX, itemY, 24, 24);
+  ctx.fillStyle = '#f472b6'; // rosa kuchen
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText(`x${kuchensCount}`, kuchenX + 28, 32);
+
+  // 6. Distancia (Metros recorridos en x=475)
+  const distX = 475;
+  ctx.fillStyle = '#cbd5e1'; // gris claro
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText(`DST:${Math.floor(distanceTraveled)}m`, distX, 32);
+  
+  // 7. Puntaje (PTS en x=575)
+  const scoreX = 575;
+  ctx.fillStyle = '#00f0ff'; // cian brillante
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText(`PTS:${String(score).padStart(6, '0')}`, scoreX, 32);
+  
+  // 8. Récord (MAX en x=675)
+  const maxScoreX = 675;
+  ctx.fillStyle = '#ffb700'; // dorado
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText(`MAX:${String(highScore).padStart(6, '0')}`, maxScoreX, 32);
+  
+  // 9. Multiplicador (Pulsante/Wobbling animado en x=760)
+  const multX = 760;
+  ctx.font = '8px "Press Start 2P"';
+  ctx.textAlign = 'center'; // Alíneación central para el wobble perfecto
+  
+  if (multiplier > 1.0) {
+    ctx.save();
+    const scale = 1.0 + Math.sin(Date.now() / 120) * 0.08;
+    const wobble = Math.cos(Date.now() / 180) * 2; // grados de rotación
+    
+    ctx.translate(multX, 32);
+    ctx.scale(scale, scale);
+    ctx.rotate(wobble * Math.PI / 180);
+    
+    ctx.fillStyle = '#ff007f'; // rosa brillante
+    ctx.fillText(`x${multiplier.toFixed(1)}`, 0, 0);
+    ctx.restore();
+  } else {
+    ctx.fillStyle = '#7c8b9e'; // gris neutro si es x1.0
+    ctx.fillText(`x1.0`, multX, 32);
+  }
   
   ctx.restore();
 }
