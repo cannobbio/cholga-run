@@ -654,58 +654,69 @@ function playBarkSound() {
   
   const now = audioCtx.currentTime;
   
-  // 1. Tono principal (cuerpo del ladrido) - Mezcla de triangle para cuerpo retro
+  // Filtro de paso bajo común para darle calidez y carácter 8-bit analógico
+  const lowpassFilter = audioCtx.createBiquadFilter();
+  lowpassFilter.type = 'lowpass';
+  lowpassFilter.frequency.setValueAtTime(2200, now);
+  lowpassFilter.frequency.exponentialRampToValueAtTime(700, now + 0.18);
+  lowpassFilter.Q.setValueAtTime(4.0, now); // pico resonante retro
+  lowpassFilter.connect(masterSFXGain);
+
+  // --- IMPULSO 1: El "GU" (Transitorio inicial rápido y agudo) ---
   const osc1 = audioCtx.createOscillator();
   const gain1 = audioCtx.createGain();
-  osc1.type = 'triangle';
-  osc1.frequency.setValueAtTime(450, now);
-  osc1.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+  osc1.type = 'sawtooth';
+  osc1.frequency.setValueAtTime(400, now);
+  osc1.frequency.linearRampToValueAtTime(650, now + 0.02);
+  osc1.frequency.exponentialRampToValueAtTime(320, now + 0.05);
   
-  gain1.gain.setValueAtTime(0.28, now);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+  gain1.gain.setValueAtTime(0.25, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
   
   osc1.connect(gain1);
-  gain1.connect(masterSFXGain);
-  
-  // 2. Tono secundario agudo (chasquido del transitorio inicial "yip")
-  const osc2 = audioCtx.createOscillator();
-  const gain2 = audioCtx.createGain();
-  osc2.type = 'square';
-  osc2.frequency.setValueAtTime(650, now);
-  osc2.frequency.exponentialRampToValueAtTime(300, now + 0.04);
-  
-  gain2.gain.setValueAtTime(0.08, now);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-  
-  osc2.connect(gain2);
-  gain2.connect(masterSFXGain);
+  gain1.connect(lowpassFilter);
   
   osc1.start(now);
-  osc1.stop(now + 0.1);
-  osc2.start(now);
-  osc2.stop(now + 0.05);
+  osc1.stop(now + 0.06);
 
-  // 3. Ruido sibilante pasabanda resonante (soplo de aire rasposo del "¡GUAU!")
+  // --- IMPULSO 2: El "AU" (Cuerpo principal resonante) ---
+  const delay2 = 0.048; // aprox 48ms después del primer impulso
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sawtooth';
+  osc2.frequency.setValueAtTime(520, now + delay2);
+  osc2.frequency.exponentialRampToValueAtTime(140, now + delay2 + 0.12);
+  
+  gain2.gain.setValueAtTime(0.3, now + delay2);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + delay2 + 0.13);
+  
+  osc2.connect(gain2);
+  gain2.connect(lowpassFilter);
+  
+  osc2.start(now + delay2);
+  osc2.stop(now + delay2 + 0.14);
+
+  // --- RUIDO SIBILANTE (Soplo de aire en la mandíbula al ladrar) ---
   if (noiseBuffer) {
     const noise = audioCtx.createBufferSource();
     noise.buffer = noiseBuffer;
     
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(1200, now);
-    filter.frequency.exponentialRampToValueAtTime(400, now + 0.09);
-    filter.Q.setValueAtTime(3.0, now); // Resonancia hueca retro
+    const noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.setValueAtTime(1400, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(500, now + 0.15);
+    noiseFilter.Q.setValueAtTime(2.0, now);
     
     const noiseGain = audioCtx.createGain();
-    noiseGain.gain.setValueAtTime(0.25, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    noiseGain.gain.setValueAtTime(0.18, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
     
-    noise.connect(filter);
-    filter.connect(noiseGain);
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
     noiseGain.connect(masterSFXGain);
     
     noise.start(now);
-    noise.stop(now + 0.1);
+    noise.stop(now + 0.16);
   }
 }
 
