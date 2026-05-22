@@ -1105,6 +1105,84 @@ function playGameOverSound() {
   });
 }
 
+/**
+ * Himno Nacional Chileno en 8-bits Procedural
+ * Sintetiza la melodía del himno usando un oscilador square brillante y un sub-oscilador triangle.
+ */
+function playChileanAnthem() {
+  if (!sfxEnabled) return;
+  initAudio();
+  
+  const now = audioCtx.currentTime;
+  stopMusic(); // Detener música normal
+  
+  const tempo = 120; // BPM
+  const beat = 60 / tempo; // 0.5 segundos por tiempo
+  
+  const melody = [
+    { note: 'C4', time: 0.0 * beat, dur: 0.5 * beat },
+    { note: 'E4', time: 0.5 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 1.0 * beat, dur: 0.5 * beat },
+    { note: 'E4', time: 1.5 * beat, dur: 0.5 * beat },
+    { note: 'C4', time: 2.0 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 2.5 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 3.0 * beat, dur: 1.0 * beat },
+    
+    { note: 'E4', time: 4.5 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 5.0 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 5.5 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 6.0 * beat, dur: 0.5 * beat },
+    { note: 'E4', time: 6.5 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 7.0 * beat, dur: 1.0 * beat },
+    
+    { note: 'E5', time: 8.5 * beat, dur: 0.5 * beat },
+    { note: 'E5', time: 9.0 * beat, dur: 0.5 * beat },
+    { note: 'D5', time: 9.5 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 10.0 * beat, dur: 0.5 * beat },
+    { note: 'B4', time: 10.5 * beat, dur: 0.5 * beat },
+    { note: 'A4', time: 11.0 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 11.5 * beat, dur: 1.0 * beat },
+    
+    { note: 'G4', time: 13.0 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 13.5 * beat, dur: 0.5 * beat },
+    { note: 'F4', time: 14.0 * beat, dur: 0.5 * beat },
+    { note: 'A4', time: 14.5 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 15.0 * beat, dur: 0.5 * beat },
+    { note: 'B4', time: 15.5 * beat, dur: 0.5 * beat },
+    { note: 'G4', time: 16.0 * beat, dur: 0.5 * beat },
+    { note: 'B4', time: 16.5 * beat, dur: 0.5 * beat },
+    { note: 'C5', time: 17.0 * beat, dur: 1.5 * beat }
+  ];
+  
+  melody.forEach((n) => {
+    const t = now + n.time;
+    const osc = audioCtx.createOscillator();
+    const subOsc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(NOTE_FREQS[n.note], t);
+    
+    subOsc.type = 'triangle';
+    const octave = parseInt(n.note.charAt(1));
+    const subNote = n.note.charAt(0) + (octave - 1);
+    subOsc.frequency.setValueAtTime(NOTE_FREQS[subNote] || (NOTE_FREQS[n.note] / 2), t);
+    
+    gainNode.gain.setValueAtTime(0.12, t);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, t + n.dur);
+    
+    osc.connect(gainNode);
+    subOsc.connect(gainNode);
+    gainNode.connect(masterSFXGain);
+    
+    osc.start(t);
+    subOsc.start(t);
+    
+    osc.stop(t + n.dur + 0.05);
+    subOsc.stop(t + n.dur + 0.05);
+  });
+}
+
 // Exportar funciones globalmente
 window.audioEngine = {
   initAudio,
@@ -1131,5 +1209,6 @@ window.audioEngine = {
   playMooSound,
   playQueltehueSound,
   playStageClearSound,
-  playPointsConversionSound
+  playPointsConversionSound,
+  playChileanAnthem
 };
