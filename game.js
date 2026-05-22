@@ -266,6 +266,10 @@ let rainParticles = [];
 let smokeParticles = []; // Humo del Volcán Osorno
 let lightningFlash = 0;  // Duración del destello de relámpago
 
+// Temporizadores para nuevos climas y eventos
+let volcanicRockTimer = 0;
+let volcanicRockInterval = 1000;
+
 // --- ENTRADA DE TECLADO ---
 const keys = {
   Space: false,
@@ -281,7 +285,7 @@ const keys = {
 
 class Obstacle {
   constructor(type) {
-    this.type = type; // 'cow', 'fence', 'stone', 'queltehue', 'hole'
+    this.type = type; // 'cow', 'fence', 'stone', 'queltehue', 'hole', 'volcanicRock'
     this.x = CANVAS_WIDTH + 50;
     this.passed = false;
     
@@ -318,11 +322,27 @@ class Obstacle {
       this.width = 64;  // 32x16 px escalado x2
       this.height = 32;
       this.y = GROUND_Y - 8; // Está en el suelo, ligeramente hundido
+    } else if (type === 'volcanicRock') {
+      this.width = 32; // 16x16 px escalado x2
+      this.height = 32;
+      // Inicia por encima de la pantalla, en una posición X aleatoria
+      this.x = TERRIER_X + 250 + Math.random() * (CANVAS_WIDTH - 200);
+      this.y = -40; // Inicia arriba de la pantalla
+      
+      // Velocidades de caída en diagonal
+      this.vy = 3.5 + Math.random() * 2.5; // Cae hacia abajo
+      this.vx = -(gameSpeed + 1 + Math.random() * 2); // Se mueve hacia la izquierda
     }
   }
 
   update() {
-    this.x -= gameSpeed;
+    if (this.type === 'volcanicRock') {
+      this.x += this.vx;
+      this.y += this.vy;
+    } else {
+      this.x -= gameSpeed;
+    }
+    
     if (this.type === 'queltehue') {
       this.frameTimer++;
       if (this.frameTimer >= this.frameInterval) {
@@ -337,6 +357,7 @@ class Obstacle {
     if (this.type === 'fence') matrix = OBSTACLE_SPRITES.fence;
     if (this.type === 'stone') matrix = OBSTACLE_SPRITES.stone;
     if (this.type === 'hole') matrix = OBSTACLE_SPRITES.hole;
+    if (this.type === 'volcanicRock') matrix = OBSTACLE_SPRITES.volcanicRock;
     if (this.type === 'queltehue') {
       matrix = this.frame === 0 ? OBSTACLE_SPRITES.queltehue1 : OBSTACLE_SPRITES.queltehue2;
     }
@@ -347,6 +368,9 @@ class Obstacle {
   }
 
   isOutOfBounds() {
+    if (this.type === 'volcanicRock') {
+      return this.y > CANVAS_HEIGHT + 20 || this.x < -this.width;
+    }
     return this.x < -this.width;
   }
 
@@ -359,6 +383,9 @@ class Obstacle {
     }
     if (this.type === 'hole') {
       return { x: this.x + 12, y: this.y + 4, width: this.width - 24, height: this.height - 4 };
+    }
+    if (this.type === 'volcanicRock') {
+      return { x: this.x + 6, y: this.y + 6, width: this.width - 12, height: this.height - 12 };
     }
     return { x: this.x + 4, y: this.y + 2, width: this.width - 8, height: this.height - 4 };
   }
@@ -1722,6 +1749,16 @@ function updateGame() {
   gameSpeed += 0.0007;
   if (window.audioEngine) {
     window.audioEngine.setMusicTempo(gameSpeed / 5.0);
+  }
+
+  // Spawn de rocas volcánicas si el clima es erupción
+  if (currentWeather === 'eruption') {
+    volcanicRockTimer += 16.67;
+    if (volcanicRockTimer >= volcanicRockInterval) {
+      volcanicRockTimer = 0;
+      volcanicRockInterval = 600 + Math.random() * 800;
+      obstacles.push(new Obstacle('volcanicRock'));
+    }
   }
 
   // Actualizar Terrier

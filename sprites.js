@@ -383,6 +383,26 @@ const OBSTACLE_SPRITES = {
     "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
     "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
     "................................"
+  ],
+
+  // Roca Volcánica Incandescente (16x16 px)
+  volcanicRock: [
+    "......KKKK......",
+    "....KKRRRRKK....",
+    "...KRRRYYYYRRK..",
+    "..KRRRYYYYYYRRK.",
+    ".KRRRYYYYYYYYRRK",
+    ".KRRRYYKKYYYYRRK",
+    "KRRRYYKKKKYYYRRK",
+    "KRRRYYYYYYYYYRRK",
+    "KRRRYYYYYYYYYRRK",
+    "KRRRYYYYYYYYYRRK",
+    ".KRRRYYYYYYRRK..",
+    ".KRRRRYYYYRRK...",
+    "..KRRRRRRRRK....",
+    "...KKRRRRKK.....",
+    ".....KKKK.......",
+    "................"
   ]
 };
 
