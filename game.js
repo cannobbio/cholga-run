@@ -143,6 +143,22 @@ const terrier = {
       if (this.x > maxX) this.x = maxX;
     }
 
+    // Si estamos en MODO DIOS, spawnear partículas saiyajin de fuego/aura ascendentes
+    if (isGodMode && gameState === STATES.PLAYING) {
+      for (let i = 0; i < 2; i++) {
+        saiyajinParticles.push({
+          x: this.x + Math.random() * this.width,
+          y: this.y + this.height - Math.random() * 8,
+          vx: (Math.random() * 2 - 1),
+          vy: -(1.5 + Math.random() * 2.5),
+          size: 4 + Math.random() * 6,
+          maxLife: 20 + Math.random() * 20,
+          life: 0,
+          color: Math.random() < 0.6 ? '#ffe066' : (Math.random() < 0.85 ? '#ff9900' : '#ff3300')
+        });
+      }
+    }
+
     // Aplicamos gravedad con multiplicador si el jugador presiona agacharse en el aire
     const activeGravity = (!this.isGrounded && keys.ArrowDown) ? GRAVITY * DUCK_GRAVITY_MULTIPLIER : GRAVITY;
     this.vy += activeGravity;
@@ -176,6 +192,35 @@ const terrier = {
       return; // Ocultar terrier ya que está fusionado en el sprite eloisa_hug
     }
 
+    // Si estamos en MODO DIOS, actualizamos y dibujamos las partículas del aura saiyajin de fondo
+    if (saiyajinParticles.length > 0) {
+      ctx.save();
+      for (let i = saiyajinParticles.length - 1; i >= 0; i--) {
+        const p = saiyajinParticles[i];
+        if (gameState === STATES.PLAYING) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life++;
+        }
+        
+        if (p.life >= p.maxLife) {
+          saiyajinParticles.splice(i, 1);
+          continue;
+        }
+        
+        const alpha = Math.max(0, 1 - (p.life / p.maxLife));
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha;
+        
+        // Agregar resplandor de sombra a las partículas
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        
+        ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
+      }
+      ctx.restore();
+    }
+
     let spriteMatrix = TERRIER_SPRITES.idle;
     if (this.state === 'run') {
       spriteMatrix = this.runFrame === 0 ? TERRIER_SPRITES.run1 : TERRIER_SPRITES.run2;
@@ -187,8 +232,18 @@ const terrier = {
       spriteMatrix = TERRIER_SPRITES.crash;
     }
     
+    if (isGodMode) {
+      ctx.save();
+      ctx.shadowColor = '#ffcc00';
+      ctx.shadowBlur = 15;
+    }
+
     // El terrier corre hacia la derecha, por lo que dibujamos el sprite volteado horizontalmente (flipX = true)
     drawPixelSprite(ctx, spriteMatrix, this.x, this.y, this.width, this.height, true);
+
+    if (isGodMode) {
+      ctx.restore();
+    }
     
     // Si tiene el poder de doble salto (Rosa Roja), dibujar burbuja protectora y cronómetro en su interior
     if (typeof hasDoubleJump !== 'undefined' && hasDoubleJump) {
@@ -278,6 +333,57 @@ let windParticles = [];
 let tornadoCowTimer = 0;
 let tornadoCowInterval = 800;
 let floatyTexts = [];
+
+// --- SISTEMA MODO DIOS (GOD MODE) ---
+let isGodMode = false;
+let wasGodModeActive = false;
+let saiyajinParticles = [];
+let typedKeys = '';
+
+function createGodModeBurst() {
+  for (let i = 0; i < 30; i++) {
+    sparkleParticles.push({
+      x: terrier.x + terrier.width / 2,
+      y: terrier.y + terrier.height / 2,
+      size: 4 + Math.random() * 8,
+      vx: (Math.random() * 12 - 6),
+      vy: (Math.random() * 12 - 6),
+      color: Math.random() < 0.6 ? '#ffe066' : (Math.random() < 0.8 ? '#ff9900' : '#ff3300'),
+      alpha: 1.0
+    });
+  }
+}
+
+function createFloatyText(text, x, y, color) {
+  floatyTexts.push({
+    text: text,
+    x: x,
+    y: y,
+    vy: -1.5,
+    alpha: 1.0,
+    color: color
+  });
+}
+
+function toggleGodMode() {
+  isGodMode = !isGodMode;
+  
+  if (window.audioEngine) {
+    if (isGodMode) {
+      if (typeof window.audioEngine.playOneUpSound === 'function') {
+        window.audioEngine.playOneUpSound();
+      }
+      createGodModeBurst();
+      createFloatyText("MODO DIOS: ACTIVADO", terrier.x, terrier.y - 20, '#ffe066');
+    } else {
+      if (typeof window.audioEngine.playPainYipSound === 'function') {
+        window.audioEngine.playPainYipSound();
+      }
+      createFloatyText("MODO DIOS: DESACTIVADO", terrier.x, terrier.y - 20, '#ff4444');
+      saiyajinParticles = [];
+    }
+  }
+}
 
 // --- ENTRADA DE TECLADO ---
 const keys = {
@@ -1040,6 +1146,14 @@ function resumeAfterCutscene() {
   
   if (window.audioEngine) {
     window.audioEngine.startMusic();
+  }
+  
+  // Reactivar el modo Dios si estaba activo antes de la cinemática
+  if (wasGodModeActive) {
+    isGodMode = true;
+    wasGodModeActive = false;
+    createGodModeBurst();
+    createFloatyText("MODO DIOS: REACTIVADO", terrier.x, terrier.y - 20, '#ffe066');
   }
   
   stageTransitionText = `ETAPA ${currentStage}`;
@@ -1941,6 +2055,33 @@ function checkCollisions() {
         tBox.y < oBox.y + oBox.height &&
         tBox.y + tBox.height > oBox.y) {
       
+      // Si estamos en MODO DIOS:
+      if (isGodMode) {
+        if (window.audioEngine && window.audioEngine.playCollectSound) {
+          window.audioEngine.playCollectSound();
+        }
+        
+        // Spawnear 15 partículas de fuego / saiyajin
+        for (let j = 0; j < 15; j++) {
+          sparkleParticles.push({
+            x: obs.x + obs.width / 2,
+            y: obs.y + obs.height / 2,
+            size: 4 + Math.random() * 6,
+            vx: (Math.random() * 10 - 5),
+            vy: (Math.random() * 8 - 6),
+            color: Math.random() < 0.6 ? '#ffe066' : (Math.random() < 0.8 ? '#ff9900' : '#ff3300'),
+            alpha: 1.0
+          });
+        }
+        
+        createFloatyText("¡DESTRUIDO!", obs.x, obs.y - 10, '#ffe066');
+        
+        // Eliminar el obstáculo chocado para poder pasar
+        obstacles.splice(i, 1);
+        i--;
+        continue;
+      }
+
       // Si tiene el escudo activo (hasDoubleJump)
       if (hasDoubleJump) {
         doubleJumpTimer -= 15000;
@@ -2170,6 +2311,13 @@ function updateGame() {
       terrier.vy = 0;
       terrier.isGrounded = true;
       terrier.state = 'idle';
+      
+      // Apagar modo Dios temporalmente para que la animación del abrazo funcione perfectamente
+      if (isGodMode) {
+        isGodMode = false;
+        wasGodModeActive = true;
+        saiyajinParticles = [];
+      }
       
       if (window.audioEngine && window.audioEngine.playChileanAnthem) {
         window.audioEngine.playChileanAnthem();
@@ -2640,6 +2788,10 @@ function resetGameVariables() {
   lavaParticles = [];
   sparkleParticles = [];
   floatyTexts = [];
+  isGodMode = false;
+  wasGodModeActive = false;
+  saiyajinParticles = [];
+  typedKeys = '';
   hasDoubleJump = false;
   doubleJumpTimer = 0;
   lightningFlash = 0;
@@ -2761,6 +2913,17 @@ function setupEventListeners() {
   
   // Teclas físicas
   window.addEventListener('keydown', (e) => {
+    // Capturar la secuencia "god" de teclado de manera oculta
+    if (e.key) {
+      typedKeys += e.key.toLowerCase();
+      if (typedKeys.endsWith('god')) {
+        toggleGodMode();
+        typedKeys = '';
+      } else if (typedKeys.length > 10) {
+        typedKeys = typedKeys.slice(-5);
+      }
+    }
+
     // Si el modal de ayuda está abierto, cerrar con Escape, P, o Espacio
     const isHelpOpen = !document.getElementById('help-modal').classList.contains('hidden');
     if (isHelpOpen) {
