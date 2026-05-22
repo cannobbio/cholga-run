@@ -82,6 +82,7 @@ cholga-run/
 | **FPS** | Throttle a 60 FPS via `requestAnimationFrame` + delta time (compatible con pantallas 120Hz+) |
 | **Touch** | Joystick analógico con clamping trigonométrico y tracking por `touch.identifier` |
 | **Build** | Vite 5 para bundling ESM, tree-shaking y minificación |
+| **Pantalla Completa** | Letterboxing y pillarboxing automáticos con `object-fit: contain` y relación de aspecto `2:1` forzada para impedir distorsión |
 
 ---
 
