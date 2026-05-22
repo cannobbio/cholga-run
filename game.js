@@ -6,7 +6,7 @@
 // --- CONFIGURACIÓN Y CONSTANTES ---
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 400;
-const GROUND_Y = 320;
+const GROUND_Y = 360;
 const TERRIER_X = 80;
 
 // Configuración de Físicas
@@ -1320,7 +1320,7 @@ function drawVolcanoCalbuco(x) {
 
 function drawLakeLlanquihue(x) {
   const lakeY = 210;
-  const lakeHeight = 110;
+  const lakeHeight = GROUND_Y - lakeY;
   
   let waterGrad = ctx.createLinearGradient(0, lakeY, 0, lakeY + lakeHeight);
   if (currentStage % 3 === 0) {
@@ -1361,13 +1361,13 @@ function drawLakeLlanquihue(x) {
 }
 
 function drawForestAndTown(x, blockId = 0) {
-  const forestY = 290;
+  const forestY = GROUND_Y - 30;
   
   // 1. Color de fondo del bosque (follaje lejano)
   ctx.fillStyle = (currentStage % 3 === 0) ? '#1f040a' : 
                   (currentWeather === 'sunset' ? '#3d1c3c' : 
                   ((currentWeather === 'night' || currentWeather === 'fog') ? '#081d0f' : '#1b5e20'));
-  ctx.fillRect(x, 285, CANVAS_WIDTH, GROUND_Y - 285);
+  ctx.fillRect(x, forestY - 5, CANVAS_WIDTH, GROUND_Y - (forestY - 5));
 
   // Lógica de transición a pradera verde limpia en etapa 10
   const isMeadow = isTransitioningToMeadow && (blockId >= meadowStartBlock);
@@ -1641,7 +1641,7 @@ function drawVolcanicGround(x) {
   ctx.fillStyle = '#121212';
   for (let i = 0; i < 8; i++) {
     const detailX = x + i * 110 + (i % 2 * 30);
-    const detailY = GROUND_Y + 20 + (i % 3 * 15);
+    const detailY = GROUND_Y + 12 + (i % 3 * 8);
     ctx.fillRect(detailX, detailY, 12, 4);
     ctx.fillRect(detailX + 4, detailY - 4, 4, 12);
   }
