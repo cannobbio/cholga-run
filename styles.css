@@ -679,10 +679,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: rgba(10, 15, 26, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .controls-bar-title {
@@ -728,9 +729,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-light);
   padding-top: 12px;
   margin-top: 4px;
+  transition: border-color 0.3s ease;
 }
 
 @media (min-width: 768px) {
@@ -1375,6 +1377,59 @@ body {
 
 :root.light-mode #help-modal .modal-content::-webkit-scrollbar-thumb {
   background: rgba(15, 23, 42, 0.15);
+}
+
+/* Sidebar & General Light Mode Contrast Fixes */
+:root.light-mode .sidebar-title {
+  color: var(--color-text);
+}
+
+:root.light-mode .stat-card {
+  background: rgba(15, 23, 42, 0.03);
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+:root.light-mode .stat-card:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+:root.light-mode .stat-value {
+  color: var(--color-text);
+}
+
+:root.light-mode .key {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.15);
+  border-bottom-color: rgba(15, 23, 42, 0.25);
+  color: var(--color-text);
+}
+
+:root.light-mode .audio-label {
+  color: var(--color-text);
+}
+
+:root.light-mode .control-item {
+  color: var(--color-text);
+}
+
+:root.light-mode #help-modal {
+  background: rgba(241, 245, 249, 0.7);
+}
+
+:root.light-mode .controls-bar-title {
+  text-shadow: none;
+}
+
+:root.light-mode .logo-title {
+  color: var(--color-text);
+  text-shadow: 0 0 10px rgba(15, 23, 42, 0.05), 3px 3px 0 var(--color-pink);
+}
+
+:root.light-mode .text-gold,
+:root.light-mode .text-cyan,
+:root.light-mode .text-pink,
+:root.light-mode .text-danger {
+  text-shadow: none;
 }
 
 
