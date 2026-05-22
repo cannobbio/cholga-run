@@ -2511,6 +2511,10 @@ function setupEventListeners() {
   document.getElementById('restart-btn').addEventListener('click', startGame);
   document.getElementById('resume-btn').addEventListener('click', togglePause);
   document.getElementById('help-btn').addEventListener('click', openHelpModal);
+  document.getElementById('theme-btn').addEventListener('click', () => {
+    const isLight = document.documentElement.classList.toggle('light-mode');
+    localStorage.setItem('terrier_theme', isLight ? 'light' : 'dark');
+  });
   document.getElementById('close-help-btn').addEventListener('click', closeHelpModal);
   document.getElementById('start-help-btn').addEventListener('click', closeHelpModal);
   document.getElementById('help-modal').addEventListener('click', (e) => {

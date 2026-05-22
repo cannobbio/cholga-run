@@ -28,6 +28,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Inicializar tema antes del renderizado para evitar destellos
+    if (localStorage.getItem('terrier_theme') === 'light') {
+      document.documentElement.classList.add('light-mode');
+    }
+  </script>
 </head>
 <body>
   <div class="app-container">
@@ -43,6 +49,7 @@
           <span class="logo-subtitle">Puerto Varas Edition</span>
         </div>
         <button class="btn-help pixel-text" id="help-btn" title="Ayuda y Controles">❓ Ayuda</button>
+        <button class="btn-help pixel-text btn-theme" id="theme-btn" title="Cambiar Tema">🌓 Tema</button>
       </div>
       
       <!-- Live Score Dashboard -->

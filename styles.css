@@ -1263,3 +1263,113 @@ body {
   background: var(--color-cyan);
 }
 
+/* --- PREMIUM LIGHT THEME OVERRIDES --- */
+:root.light-mode {
+  --bg-dark: #f1f5f9; /* Slate 100 */
+  --bg-card: rgba(255, 255, 255, 0.75); /* Soft white glass */
+  --border-light: rgba(15, 23, 42, 0.08); /* Soft slate border */
+  --border-hover: rgba(15, 23, 42, 0.18);
+  
+  --color-cyan: #0284c7; /* Sky blue/darker cyan for readability */
+  --color-pink: #db2777; /* Deep pink */
+  --color-gold: #b45309; /* Deep amber/gold */
+  --color-green: #15803d; /* Forest green */
+  --color-danger: #dc2626; /* Darker red */
+  --color-text: #0f172a; /* Slate 900 */
+  --color-text-dim: #475569; /* Slate 600 */
+  
+  /* Weather specific glow gradients tailored for light mode */
+  --glow-sunny: radial-gradient(circle, rgba(255, 183, 0, 0.22) 0%, rgba(241, 245, 249, 0) 70%);
+  --glow-rainy: radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, rgba(241, 245, 249, 0) 70%);
+  --glow-sunset: radial-gradient(circle, rgba(219, 39, 119, 0.2) 0%, rgba(217, 119, 6, 0.08) 50%, rgba(241, 245, 249, 0) 70%);
+  --glow-storm: radial-gradient(circle, rgba(109, 40, 217, 0.15) 0%, rgba(241, 245, 249, 0) 70%);
+}
+
+/* Specific elements styled for light mode contrast */
+:root.light-mode .btn-help {
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  color: var(--color-text);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+:root.light-mode .btn-help:hover {
+  background: rgba(15, 23, 42, 0.15);
+  border-color: var(--color-cyan);
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.25);
+}
+
+:root.light-mode .logo-subtitle {
+  color: var(--color-cyan);
+  text-shadow: 0 0 5px rgba(2, 132, 199, 0.25);
+}
+
+:root.light-mode .game-screen-wrapper {
+  background: #cbd5e1; /* Elegant light slate color for arcade monitor frame */
+  border-color: rgba(15, 23, 42, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+:root.light-mode .glass-panel {
+  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08);
+}
+
+/* Modals & Overlays in Light Mode */
+:root.light-mode .screen-overlay {
+  background: rgba(241, 245, 249, 0.85); /* Light blurred overlay */
+}
+
+:root.light-mode #help-modal .modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(15, 23, 42, 0.15);
+  color: var(--color-text);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root.light-mode .help-section {
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+:root.light-mode .help-section h3 {
+  color: var(--color-text);
+  text-shadow: none;
+}
+
+:root.light-mode .help-control-row {
+  border-bottom: 1px dashed rgba(15, 23, 42, 0.08);
+}
+
+:root.light-mode .help-key {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.2);
+  color: var(--color-text);
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.2);
+}
+
+:root.light-mode .help-item-info {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+:root.light-mode .modal-close-btn {
+  color: var(--color-text-dim);
+}
+
+:root.light-mode .modal-close-btn:hover {
+  color: var(--color-text);
+}
+
+:root.light-mode .modal-title {
+  color: var(--color-text);
+  text-shadow: 0 0 8px rgba(2, 132, 199, 0.2);
+}
+
+:root.light-mode #help-modal .modal-content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+:root.light-mode #help-modal .modal-content::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15);
+}
+
+
