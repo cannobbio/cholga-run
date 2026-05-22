@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1] - 2026-05-22
+### Fixed
+- **Bug 6 (Re-colisión Infinita de Bandera en Etapa 10)**: Se corrigió un bucle infinito en el cual, al reanudar la partida presionando cualquier tecla después de la cinemática de abrazo con Eloísa, el perro colisionaba inmediatamente de nuevo con el asta de la bandera porque esta seguía en pantalla a la izquierda del perro. Ahora, al continuar a la Etapa 11, se limpian y restablecen por completo el asta de la bandera y todas las variables físicas de la cinemática en `resumeAfterCutscene()`.
+- **Bug 7 (Notas Auténticas del Himno Nacional de Chile)**: Reemplazo de la melodía arpegiada provisional por los compases reales y reconocibles de la melodía de *"Puro, Chile, es tu cielo azulado"* sintetizada proceduralmente en 8 bits (onda cuadrada brillante con sub-armónicos en onda triangular). Adicionalmente, se ajustó el divisor del temporizador de `5.5` a `6.6` para sincronizar a la perfección el izamiento de la bandera con la duración extendida del himno.
+
 ## [1.11.0] - 2026-05-22
 ### Added
 - **Feature 12 (Marcador Unificado en Canvas)**: Rediseño completo del HUD para dibujarse directamente dentro del Canvas con estética premium de 8 bits, ocultando la barra superior HTML. Muestra corazones pixelados, contadores dinámicos de salmón/kuchen con sus sprites originales, puntaje con ceros a la izquierda y un multiplicador rosa brillante que oscila y pulsa con una micro-animación `Math.sin(Date.now() / 120)` cuando es superior a `x1.0`.
