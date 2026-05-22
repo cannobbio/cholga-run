@@ -340,6 +340,18 @@ let wasGodModeActive = false;
 let saiyajinParticles = [];
 let typedKeys = '';
 
+// --- SISTEMA ETAPA GATO Y DISPAROS DE CACA ---
+let isGatoStage = false;
+let isEruptionStage = false;
+let isTornadoStage = false;
+let activeCat = null;
+let poopAmmo = 0;
+let poopProjectiles = [];
+
+// --- CICLO CLIMÁTICO Y HORA ---
+let currentHour = 'dia';
+let currentAtmosphere = 'despejado';
+
 function createGodModeBurst() {
   for (let i = 0; i < 30; i++) {
     sparkleParticles.push({
@@ -607,6 +619,197 @@ class Collectible {
   }
 }
 
+class Cat {
+  constructor() {
+    this.width = 32; // 16x16 escalado x2
+    this.height = 32;
+    this.x = CANVAS_WIDTH - 150; // Inicia adelante de Cholga
+    this.y = GROUND_Y - this.height;
+    this.vy = 0;
+    this.isGrounded = true;
+    this.runFrame = 0;
+    this.frameTimer = 0;
+    this.frameInterval = 8;
+    this.jumpTimer = 0;
+    this.nextJumpTime = 120 + Math.random() * 180; // Tiempo para saltar (en frames)
+    this.meowTimer = 0;
+    this.nextMeowTime = 80 + Math.random() * 120;
+    
+    // Movimiento horizontal errático para intentar escapar
+    this.vx = 0;
+    this.changeDirTimer = 0;
+  }
+
+  update() {
+    // Aplicar gravedad
+    this.vy += GRAVITY;
+    this.y += this.vy;
+
+    const catGroundY = GROUND_Y - this.height;
+    if (this.y >= catGroundY) {
+      this.y = catGroundY;
+      this.vy = 0;
+      this.isGrounded = true;
+    }
+
+    // Saltar aleatoriamente si está en el suelo
+    this.jumpTimer++;
+    if (this.jumpTimer >= this.nextJumpTime) {
+      if (this.isGrounded) {
+        this.vy = JUMP_FORCE * (0.8 + Math.random() * 0.3); // Salto con fuerza variable
+        this.isGrounded = false;
+        this.jumpTimer = 0;
+        this.nextJumpTime = 150 + Math.random() * 200;
+      }
+    }
+
+    // Lógica de movimiento horizontal errático
+    this.changeDirTimer++;
+    if (this.changeDirTimer >= 60) {
+      // Intentar moverse a la izquierda o derecha de forma errática
+      this.vx = (Math.random() * 4 - 2); 
+      this.changeDirTimer = 0;
+    }
+
+    // El gato siempre intenta mantenerse alejado de Cholga pero no puede salir de la pantalla
+    // Cholga está en terrier.x. Si terrier está cerca, empujar al gato a la derecha.
+    const distToTerrier = this.x - terrier.x;
+    if (distToTerrier < 150) {
+      this.vx += 0.25; // Acelerar hacia la derecha
+    } else if (distToTerrier > 350) {
+      this.vx -= 0.25; // Acelerar hacia la izquierda
+    }
+    
+    // Aplicar velocidad horizontal e inercias
+    this.x += this.vx;
+    // Fricción horizontal
+    this.vx *= 0.95;
+
+    // Límites de pantalla estrictos para que no salga del viewport
+    const minCatX = 50;
+    const maxCatX = CANVAS_WIDTH - this.width - 20;
+    if (this.x < minCatX) {
+      this.x = minCatX;
+      this.vx = 1.0; // Rebote leve
+    }
+    if (this.x > maxCatX) {
+      this.x = maxCatX;
+      this.vx = -1.0;
+    }
+
+    // Sonar maullido aleatorio
+    this.meowTimer++;
+    if (this.meowTimer >= this.nextMeowTime) {
+      if (window.audioEngine && window.audioEngine.playCatMeowSound) {
+        window.audioEngine.playCatMeowSound();
+      }
+      this.meowTimer = 0;
+      this.nextMeowTime = 180 + Math.random() * 250;
+    }
+
+    // Animación de correr
+    if (this.isGrounded) {
+      this.frameTimer++;
+      if (this.frameTimer >= this.frameInterval) {
+        this.runFrame = 1 - this.runFrame;
+        this.frameTimer = 0;
+      }
+    }
+  }
+
+  draw() {
+    let spriteMatrix = COLLECTIBLE_SPRITES.cat_run1;
+    if (!this.isGrounded) {
+      spriteMatrix = COLLECTIBLE_SPRITES.cat_jump;
+    } else {
+      spriteMatrix = this.runFrame === 0 ? COLLECTIBLE_SPRITES.cat_run1 : COLLECTIBLE_SPRITES.cat_run2;
+    }
+    // El gato intenta escapar corriendo hacia la derecha, por lo que flipX = true (mira a la derecha)
+    drawPixelSprite(ctx, spriteMatrix, this.x, this.y, this.width, this.height, true);
+  }
+
+  getCollisionBox() {
+    return {
+      x: this.x + 4,
+      y: this.y + 4,
+      width: this.width - 8,
+      height: this.height - 8
+    };
+  }
+}
+
+class PoopProjectile {
+  constructor(x, y) {
+    this.width = 24; // 16x16 escalado x1.5 para tamaño balanceado
+    this.height = 24;
+    this.x = x;
+    this.y = y;
+    this.vx = 7.0; // Sale disparada hacia la derecha
+    this.vy = -6.5; // Impulso parabólico inicial hacia arriba
+    this.gravity = 0.32; // Gravedad del proyectil
+    this.angle = 0;
+    this.rotationSpeed = 0.12;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.vy += this.gravity;
+    this.y += this.vy;
+    this.angle += this.rotationSpeed;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+    ctx.rotate(this.angle);
+    drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, -this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.restore();
+  }
+
+  isOutOfBounds() {
+    return this.y > CANVAS_HEIGHT + 20 || this.x > CANVAS_WIDTH + 20 || this.x < -20;
+  }
+
+  getCollisionBox() {
+    return {
+      x: this.x + 3,
+      y: this.y + 3,
+      width: this.width - 6,
+      height: this.height - 6
+    };
+  }
+}
+
+function shootPoop() {
+  if (poopAmmo <= 0 || gameState !== STATES.PLAYING) return;
+  poopAmmo--;
+  
+  poopProjectiles.push(new PoopProjectile(terrier.x + terrier.width / 2, terrier.y + 8));
+  
+  if (window.audioEngine && window.audioEngine.playJumpSound) {
+    window.audioEngine.playJumpSound();
+  }
+
+  const touchShoot = document.getElementById('touch-shoot');
+  if (touchShoot && poopAmmo <= 0) {
+    touchShoot.classList.add('hidden');
+  }
+}
+
+function createPoopExplosion(x, y) {
+  for (let i = 0; i < 15; i++) {
+    sparkleParticles.push({
+      x: x,
+      y: y,
+      size: 3 + Math.random() * 5,
+      vx: (Math.random() * 6 - 3),
+      vy: (Math.random() * 4 - 6),
+      color: Math.random() < 0.5 ? '#7c5335' : (Math.random() < 0.85 ? '#5c3a21' : '#9b7152'),
+      alpha: 0.95
+    });
+  }
+}
+
 
 // ==========================================
 // --- PARALLAX BACKGROUND LAYERS ---
@@ -633,43 +836,111 @@ function applyStageEnvironment(stage) {
   rainParticles = [];
   lavaParticles = [];
   windParticles = [];
+  poopProjectiles = []; // También limpiar proyectiles activos de caca al cambiar de nivel
   
-  // Etapa de Tornado (múltiplos de 5 pero no de 10, ej: 5, 15, 25...)
+  // Apagar estados especiales
+  isGatoStage = false;
+  isEruptionStage = false;
+  isTornadoStage = false;
+  activeCat = null;
+
+  // Si llegamos a la cinemática de la bandera (múltiplos de 10) o fin del juego, forzar despejado y día
+  const isFlagScene = (stage % 10 === 0) || (gameState === STATES.CUTSCENE);
+  
+  if (isFlagScene) {
+    currentHour = 'dia';
+    currentAtmosphere = 'despejado';
+    currentWeather = 'sunny';
+    if (window.audioEngine) {
+      window.audioEngine.setMusicTheme('sunny');
+    }
+    return;
+  }
+
+  // 1. Etapa Especial GATO: múltiplos de 5 pero no de 10 (ej. 5, 15, 25...)
   if (stage % 5 === 0 && stage % 10 !== 0) {
-    currentWeather = 'tornado';
+    isGatoStage = true;
+    currentWeather = 'gato';
+    currentHour = 'dia'; // Forzamos día/despejado para la persecución del gato
+    currentAtmosphere = 'despejado';
+    activeCat = new Cat();
     if (window.audioEngine) {
-      window.audioEngine.setMusicTheme('danger');
+      window.audioEngine.setMusicTheme('chase');
     }
     return;
   }
-  
-  // Las etapas múltiplos de 3 son SIEMPRE de Erupción Volcánica
+
+  // 2. Las etapas múltiplos de 3 son SIEMPRE de Erupción Volcánica
   if (stage % 3 === 0) {
+    isEruptionStage = true;
     currentWeather = 'eruption';
+    currentHour = 'noche'; // La erupción se ve espectacular de noche
+    currentAtmosphere = 'despejado';
     if (window.audioEngine) {
       window.audioEngine.setMusicTheme('danger');
     }
     return;
   }
-  
-  // Lista cíclica de climas y música para otras etapas
-  const environments = [
-    { weather: 'sunrise', music: 'sunrise' },   // Mañana / Amanecer
-    { weather: 'sunny', music: 'sunny' },       // Día Soleado
-    { weather: 'rainy', music: 'sunny' },       // Lluvia
-    { weather: 'sunset', music: 'sunset' },     // Atardecer
-    { weather: 'night', music: 'night' },       // Noche Despejada
-    { weather: 'fog', music: 'night' },         // Noche Neblina
-    { weather: 'storm', music: 'sunset' }       // Tormenta
-  ];
-  
-  // Calcular índice cíclico excluyendo los de erupción
-  const nonVolcanoIndex = (Math.floor((stage - 1) - Math.floor((stage - 1) / 3))) % environments.length;
-  const env = environments[nonVolcanoIndex];
-  
-  currentWeather = env.weather;
+
+  // 3. Etapa de Tornado: múltiplos de 4 pero que no sean Gato, Erupción ni Bandera
+  if (stage % 4 === 0) {
+    isTornadoStage = true;
+    currentWeather = 'tornado';
+    currentHour = 'atardecer'; // El tornado se ve genial con cielo de atardecer
+    currentAtmosphere = 'tormenta'; // Mezclado con tormenta
+    if (window.audioEngine) {
+      window.audioEngine.setMusicTheme('danger');
+    }
+    return;
+  }
+
+  // 4. Ciclo estándar para otras etapas
+  // Horas del día (cicla cada etapa): amanecer, dia, atardecer, noche
+  const HOURS = ['amanecer', 'dia', 'atardecer', 'noche'];
+  currentHour = HOURS[(stage - 1) % 4];
+
+  // Clima atmosférico (cicla cada 3 etapas): despejado, lluvia, tormenta, neblina
+  const ATMOSPHERES = ['despejado', 'lluvia', 'tormenta', 'neblina'];
+  currentAtmosphere = ATMOSPHERES[Math.floor((stage - 1) / 3) % 4];
+
+  // Sincronizar currentWeather para lógica interna de dibujo de partículas y temas de música
+  if (currentAtmosphere === 'lluvia') {
+    currentWeather = 'rainy';
+  } else if (currentAtmosphere === 'tormenta') {
+    currentWeather = 'storm';
+  } else if (currentAtmosphere === 'neblina') {
+    currentWeather = 'fog';
+  } else {
+    // Despejado, el clima se define por la hora del día
+    if (currentHour === 'amanecer') {
+      currentWeather = 'sunrise';
+    } else if (currentHour === 'dia') {
+      currentWeather = 'sunny';
+    } else if (currentHour === 'atardecer') {
+      currentWeather = 'sunset';
+    } else {
+      currentWeather = 'night';
+    }
+  }
+
+  // Configurar tema de música procedural correspondiente al clima/hora del día
   if (window.audioEngine) {
-    window.audioEngine.setMusicTheme(env.music);
+    if (currentAtmosphere === 'lluvia' || currentAtmosphere === 'tormenta') {
+      window.audioEngine.setMusicTheme('sunset'); // Tensión media
+    } else if (currentAtmosphere === 'neblina') {
+      window.audioEngine.setMusicTheme('night'); // Relajado neblina
+    } else {
+      // Despejado, seguir hora del día
+      if (currentHour === 'amanecer') {
+        window.audioEngine.setMusicTheme('sunrise');
+      } else if (currentHour === 'dia') {
+        window.audioEngine.setMusicTheme('sunny');
+      } else if (currentHour === 'atardecer') {
+        window.audioEngine.setMusicTheme('sunset');
+      } else {
+        window.audioEngine.setMusicTheme('night');
+      }
+    }
   }
 }
 
@@ -725,115 +996,148 @@ function drawCanvasHUD() {
   ctx.stroke();
   ctx.restore();
   
-  // 2. Lado izquierdo: ETAPA y clima en una sola línea compacta
+  // Configuración de texto HUD
   ctx.font = '7px "Press Start 2P"';
-  ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
   
+  // 2. Columna 1: ETAPA (x=24)
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText(`ETAPA ${currentStage}`, 24, 24);
+  
+  // 3. Columna 2: CLIMA (x=88)
   let weatherText = 'DESPEJADO';
   let weatherIcon = '☀️';
+  let weatherColor = '#ffd166';
   
-  switch (currentWeather) {
-    case 'sunrise':
-      weatherText = 'AMANECER';
-      weatherIcon = '🌅';
-      break;
-    case 'sunny':
-      weatherText = 'DÍA SOLEADO';
-      weatherIcon = '☀️';
-      break;
-    case 'rainy':
-      weatherText = 'LLUVIA';
-      weatherIcon = '🌧️';
-      break;
-    case 'sunset':
-      weatherText = 'ATARDECER';
-      weatherIcon = '🌇';
-      break;
-    case 'night':
-      weatherText = 'NOCHE';
-      weatherIcon = '🌙';
-      break;
-    case 'fog':
-      weatherText = 'NEBLINA';
-      weatherIcon = '🌫️';
-      break;
-    case 'storm':
-      weatherText = 'TORMENTA';
-      weatherIcon = '⛈️';
-      break;
-    case 'eruption':
-      weatherText = 'ERUPCIÓN';
-      weatherIcon = '🌋';
-      break;
-    case 'tornado':
-      weatherText = 'TORNADO';
-      weatherIcon = '🌪️';
-      break;
+  if (currentAtmosphere === 'lluvia') {
+    weatherText = 'LLUVIA';
+    weatherIcon = '🌧️';
+    weatherColor = '#a5f3fc';
+  } else if (currentAtmosphere === 'tormenta') {
+    weatherText = 'TORMENTA';
+    weatherIcon = '⛈️';
+    weatherColor = '#c084fc';
+  } else if (currentAtmosphere === 'neblina') {
+    weatherText = 'NEBLINA';
+    weatherIcon = '🌫️';
+    weatherColor = '#cbd5e1';
   }
   
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(`ETAPA ${currentStage}`, 28, 24);
-  
-  const weatherColor = (currentWeather === 'eruption' || currentStage % 3 === 0) ? '#ff4d4d' : (currentWeather === 'tornado' ? '#b5e2fa' : '#ffd166');
   ctx.fillStyle = weatherColor;
-  ctx.fillText(`${weatherIcon} ${weatherText}`, 108, 24);
+  ctx.fillText(`${weatherIcon} ${weatherText}`, 88, 24);
   
-  // 3. Vidas (Corazones pixelados en x=205)
-  const heartXStart = 205;
-  const heartY = 24 - 6; // y=18 (corazón es de 6px de alto con size=2, queda perfectamente centrado en Y=24)
+  // 4. Columna 3: HORA (x=164)
+  let hourText = 'DÍA';
+  let hourIcon = '☀️';
+  let hourColor = '#ffd166';
   
-  if (lives <= 4) {
+  if (currentHour === 'amanecer') {
+    hourText = 'AMANECER';
+    hourIcon = '🌅';
+    hourColor = '#fb923c';
+  } else if (currentHour === 'atardecer') {
+    hourText = 'ATARDECER';
+    hourIcon = '🌇';
+    hourColor = '#f472b6';
+  } else if (currentHour === 'noche') {
+    hourText = 'NOCHE';
+    hourIcon = '🌙';
+    hourColor = '#818cf8';
+  }
+  
+  ctx.fillStyle = hourColor;
+  ctx.fillText(`${hourIcon} ${hourText}`, 164, 24);
+  
+  // 5. Columna 4: EVENTO ESPECIAL (x=247)
+  let eventText = '';
+  let eventIcon = '';
+  let eventColor = '';
+  
+  if (isEruptionStage || currentStage % 3 === 0) {
+    eventText = 'ERUPCIÓN';
+    eventIcon = '🌋';
+    eventColor = '#ef4444';
+  } else if (isTornadoStage) {
+    eventText = 'TORNADO';
+    eventIcon = '🌪️';
+    eventColor = '#38bdf8';
+  } else if (isGatoStage) {
+    eventText = 'GATO!';
+    eventIcon = '🐱';
+    eventColor = '#fbbf24';
+  }
+  
+  if (eventText) {
+    ctx.fillStyle = eventColor;
+    ctx.fillText(`${eventIcon} ${eventText}`, 247, 24);
+  }
+  
+  // 6. Columna 5: CORAZONES / VIDAS (x=322)
+  const heartXStart = 322;
+  const heartY = 24 - 6; // y=18
+  
+  if (lives <= 2) {
     for (let i = 0; i < lives; i++) {
-      drawPixelHeart(ctx, heartXStart + i * 16, heartY, 2);
+      drawPixelHeart(ctx, heartXStart + i * 14, heartY, 2);
     }
   } else {
     drawPixelHeart(ctx, heartXStart, heartY, 2);
     ctx.fillStyle = '#ffffff';
     ctx.font = '7px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`x${lives}`, heartXStart + 16, 24);
+    ctx.fillText(`x${lives}`, heartXStart + 14, 24);
   }
   
-  // 4. Salmones (x=285)
-  const salmonX = 285;
-  const itemY = 24 - 9; // y=15 (sprite es de 18px de alto)
+  // 7. Columna 6: SALMONES (x=362)
+  const salmonX = 362;
+  const itemY = 24 - 9; // y=15 (sprite es de 18x18)
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, salmonX, itemY, 18, 18);
-  ctx.fillStyle = '#ffd166'; // dorado salmón
+  ctx.fillStyle = '#ffd166';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText(`x${salmonsCount}`, salmonX + 22, 24);
+  ctx.fillText(`x${salmonsCount}`, salmonX + 20, 24);
   
-  // 5. Kuchens (x=350)
-  const kuchenX = 350;
+  // 8. Columna 7: KUCHENS (x=406)
+  const kuchenX = 406;
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, kuchenX, itemY, 18, 18);
-  ctx.fillStyle = '#f472b6'; // rosa kuchen
+  ctx.fillStyle = '#f472b6';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText(`x${kuchensCount}`, kuchenX + 22, 24);
-
-  // 6. Distancia (Metros recorridos en x=415)
-  const distX = 415;
-  ctx.fillStyle = '#cbd5e1'; // gris claro
+  ctx.fillText(`x${kuchensCount}`, kuchenX + 20, 24);
+  
+  // 9. Columna 8: MUNICIÓN DE CACA (x=450, sólo si poopAmmo > 0)
+  if (poopAmmo > 0) {
+    const poopX = 450;
+    drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, poopX, itemY, 18, 18);
+    ctx.fillStyle = '#7c5335'; // café marrón
+    ctx.font = '7px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`x${poopAmmo}`, poopX + 20, 24);
+  }
+  
+  // 10. Columna 9: DISTANCIA (x=495)
+  const distX = 495;
+  ctx.fillStyle = '#cbd5e1';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`DST:${Math.floor(distanceTraveled)}m`, distX, 24);
   
-  // 7. Puntaje (PTS en x=510)
-  const scoreX = 510;
-  ctx.fillStyle = '#00f0ff'; // cian brillante
+  // 11. Columna 10: PUNTAJE (x=564)
+  const scoreX = 564;
+  ctx.fillStyle = '#00f0ff';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`PTS:${String(score).padStart(6, '0')}`, scoreX, 24);
   
-  // 8. Récord (MAX en x=610)
-  const maxScoreX = 610;
-  ctx.fillStyle = '#ffb700'; // dorado
+  // 12. Columna 11: RÉCORD (x=640)
+  const maxScoreX = 640;
+  ctx.fillStyle = '#ffb700';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`MAX:${String(highScore).padStart(6, '0')}`, maxScoreX, 24);
   
-  // 9. Multiplicador (Pulsante/Wobbling animado en x=775, alineación derecha)
+  // 13. Columna 12: MULTIPLICADOR (x=775, alineación derecha)
   const multX = 775;
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'right';
@@ -841,17 +1145,17 @@ function drawCanvasHUD() {
   if (multiplier > 1.0) {
     ctx.save();
     const scale = 1.0 + Math.sin(Date.now() / 120) * 0.08;
-    const wobble = Math.cos(Date.now() / 180) * 2; // grados de rotación
+    const wobble = Math.cos(Date.now() / 180) * 2;
     
     ctx.translate(multX, 24);
     ctx.scale(scale, scale);
     ctx.rotate(wobble * Math.PI / 180);
     
-    ctx.fillStyle = '#ff007f'; // rosa brillante
+    ctx.fillStyle = '#ff007f';
     ctx.fillText(`x${multiplier.toFixed(1)}`, 0, 0);
     ctx.restore();
   } else {
-    ctx.fillStyle = '#7c8b9e'; // gris neutro si es x1.0
+    ctx.fillStyle = '#7c8b9e';
     ctx.fillText(`x1.0`, multX, 24);
   }
   
@@ -1176,41 +1480,48 @@ function resumeAfterCutscene() {
 }
 
 function drawParallax(weather) {
-  // 1. Capa 1: Cielo (Gradiente dinámico según clima, hora del día o erupción volcánica)
+  // 1. Capa 1: Cielo (Gradiente dinámico según hora del día o erupción volcánica)
   let skyGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-  if (currentStage % 3 === 0) {
+  
+  if (currentStage % 3 === 0 || isEruptionStage) {
     skyGrad.addColorStop(0, '#4a0815'); // Rojo apocalíptico muy oscuro
     skyGrad.addColorStop(0.5, '#8b0c22'); // Carmesí volcánico
     skyGrad.addColorStop(1, '#d83a15'); // Naranja lava
-  } else if (weather === 'sunrise') {
+  } else if (currentHour === 'amanecer') {
     skyGrad.addColorStop(0, '#e65c00'); // Naranja amanecer oscuro
     skyGrad.addColorStop(0.5, '#f9d423'); // Amarillo sol
     skyGrad.addColorStop(1, '#ffedd5'); // Crema suave
-  } else if (weather === 'sunny') {
+  } else if (currentHour === 'dia') {
     skyGrad.addColorStop(0, '#0d47a1'); // Azul rey oscuro
     skyGrad.addColorStop(0.5, '#1976d2'); // Azul cielo
     skyGrad.addColorStop(1, '#64b5f6'); // Celeste lago
-  } else if (weather === 'rainy') {
-    skyGrad.addColorStop(0, '#263238'); // Acero oscuro
-    skyGrad.addColorStop(0.6, '#37474f');
-    skyGrad.addColorStop(1, '#546e7a'); // Gris húmedo
-  } else if (weather === 'sunset') {
+  } else if (currentHour === 'atardecer') {
     skyGrad.addColorStop(0, '#4a148c'); // Púrpura atardecer
     skyGrad.addColorStop(0.4, '#880e4f'); // Magenta
     skyGrad.addColorStop(0.8, '#ff7043'); // Naranja cálido
     skyGrad.addColorStop(1, '#ffe082'); // Amarillo crepuscular
-  } else if (weather === 'night' || weather === 'fog') {
+  } else if (currentHour === 'noche') {
     skyGrad.addColorStop(0, '#0a0b1e'); // Azul noche profundo
     skyGrad.addColorStop(0.6, '#11122a');
     skyGrad.addColorStop(1, '#1b1d3a'); // Azul grisáceo
-  } else if (weather === 'storm') {
-    skyGrad.addColorStop(0, '#1a0f30'); // Violeta oscuro tormenta
-    skyGrad.addColorStop(0.7, '#2b1040');
-    skyGrad.addColorStop(1, '#0e081c'); // Casi negro
   }
   
   ctx.fillStyle = skyGrad;
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  // Procedural Mixture: Aplicar tintes translúcidos de clima sobre el gradiente base de la hora del día
+  if (currentStage % 3 !== 0 && !isEruptionStage) {
+    if (currentAtmosphere === 'lluvia') {
+      ctx.fillStyle = 'rgba(70, 80, 95, 0.38)'; // Tintado desaturado grisáceo de lluvia
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    } else if (currentAtmosphere === 'tormenta') {
+      ctx.fillStyle = 'rgba(45, 25, 75, 0.45)'; // Tintado púrpura/violeta de tormenta
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    } else if (currentAtmosphere === 'neblina') {
+      ctx.fillStyle = 'rgba(230, 240, 255, 0.15)'; // Tintado neblinoso claro
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+  }
 
   // Efecto Relámpago (Tormenta)
   if (weather === 'storm' && lightningFlash > 0) {
@@ -2017,42 +2328,60 @@ function updateSpawns() {
     const difficultyFactor = Math.max(0.4, 1.0 - (gameSpeed - 5.0) * 0.07);
     nextSpawnTime = minSpawnInterval + Math.random() * 1500 * difficultyFactor;
 
-    // Decidir aleatoriamente qué spawnear
-    // Probabilidades actualizadas: 25% Obstáculo Terrestre, 15% Queltehue (ave), 35% Salmón, 15% Kuchen, 10% Especiales
-    const rand = Math.random();
-    
-    if (rand < 0.25) {
-      // Spawn Obstáculo terrestre (25%)
-      // 'cow' duplicado para dar 40% de probabilidad relativa dentro de la categoría
-      const types = ['cow', 'cow', 'fence', 'stone', 'hole'];
-      // Si la velocidad es baja, evitar vacas demasiado seguidas
-      let typeIdx = Math.floor(Math.random() * types.length);
-      if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'cow').length > 0) {
-        typeIdx = 3; // piedra en su lugar
-      }
-      obstacles.push(new Obstacle(types[typeIdx]));
-    } else if (rand < 0.40) {
-      // Spawn Queltehue flying obstacle (15%)
-      obstacles.push(new Obstacle('queltehue'));
-    } else if (rand < 0.75) {
-      // Spawn Salmón (35%)
-      collectibles.push(new Collectible('salmon'));
-    } else if (rand < 0.90) {
-      // Spawn Kuchen (15%)
-      collectibles.push(new Collectible('kuchen'));
-    } else {
-      // El 10% restante se reparte en: 6% para Rosa y 4% para Hueso de vida extra
-      const subRand = Math.random();
-      if (subRand < 0.6) {
-        // Spawn Rosa Roja de Puerto Varas (6%)
-        if (collectibles.filter(c => c.type === 'rose').length === 0) {
-          collectibles.push(new Collectible('rose'));
+    if (isGatoStage) {
+      // En la etapa del gato, solo spawneamos obstáculos, sin coleccionables.
+      // Así se concentran en atrapar el gato y disparar.
+      if (Math.random() < 0.40) {
+        const rand = Math.random();
+        if (rand < 0.62) {
+          const types = ['cow', 'cow', 'fence', 'stone', 'hole'];
+          let typeIdx = Math.floor(Math.random() * types.length);
+          if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'cow').length > 0) {
+            typeIdx = 3;
+          }
+          obstacles.push(new Obstacle(types[typeIdx]));
         } else {
-          collectibles.push(new Collectible('salmon'));
+          obstacles.push(new Obstacle('queltehue'));
         }
+      }
+    } else {
+      // Decidir aleatoriamente qué spawnear
+      // Probabilidades actualizadas: 25% Obstáculo Terrestre, 15% Queltehue (ave), 35% Salmón, 15% Kuchen, 10% Especiales
+      const rand = Math.random();
+      
+      if (rand < 0.25) {
+        // Spawn Obstáculo terrestre (25%)
+        // 'cow' duplicado para dar 40% de probabilidad relativa dentro de la categoría
+        const types = ['cow', 'cow', 'fence', 'stone', 'hole'];
+        // Si la velocidad es baja, evitar vacas demasiado seguidas
+        let typeIdx = Math.floor(Math.random() * types.length);
+        if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'cow').length > 0) {
+          typeIdx = 3; // piedra en su lugar
+        }
+        obstacles.push(new Obstacle(types[typeIdx]));
+      } else if (rand < 0.40) {
+        // Spawn Queltehue flying obstacle (15%)
+        obstacles.push(new Obstacle('queltehue'));
+      } else if (rand < 0.75) {
+        // Spawn Salmón (35%)
+        collectibles.push(new Collectible('salmon'));
+      } else if (rand < 0.90) {
+        // Spawn Kuchen (15%)
+        collectibles.push(new Collectible('kuchen'));
       } else {
-        // Spawn Hueso Blanco de Vida Extra (4%)
-        collectibles.push(new Collectible('bone'));
+        // El 10% restante se reparte en: 6% para Rosa y 4% para Hueso de vida extra
+        const subRand = Math.random();
+        if (subRand < 0.6) {
+          // Spawn Rosa Roja de Puerto Varas (6%)
+          if (collectibles.filter(c => c.type === 'rose').length === 0) {
+            collectibles.push(new Collectible('rose'));
+          } else {
+            collectibles.push(new Collectible('salmon'));
+          }
+        } else {
+          // Spawn Hueso Blanco de Vida Extra (4%)
+          collectibles.push(new Collectible('bone'));
+        }
       }
     }
   }
@@ -2084,8 +2413,8 @@ function checkCollisions() {
       
       // Si estamos en MODO DIOS:
       if (isGodMode) {
-        if (window.audioEngine && window.audioEngine.playCollectSound) {
-          window.audioEngine.playCollectSound();
+        if (window.audioEngine && window.audioEngine.playGodDestroySound) {
+          window.audioEngine.playGodDestroySound();
         }
         
         // Spawnear 15 partículas de fuego / saiyajin
@@ -2266,6 +2595,85 @@ function checkCollisions() {
       updateUI();
     }
   }
+
+  // 3. Colisión con el Gato de la etapa especial
+  if (activeCat) {
+    const cBox = activeCat.getCollisionBox();
+    if (tBox.x < cBox.x + cBox.width &&
+        tBox.x + tBox.width > cBox.x &&
+        tBox.y < cBox.y + cBox.height &&
+        tBox.y + tBox.height > cBox.y) {
+      
+      poopAmmo = 12;
+      
+      // Sonar maullido de gato procedural
+      if (window.audioEngine && window.audioEngine.playCatMeowSound) {
+        window.audioEngine.playCatMeowSound();
+      }
+      
+      // Spawnear 20 partículas de color naranja/amarillo gato
+      for (let j = 0; j < 20; j++) {
+        sparkleParticles.push({
+          x: activeCat.x + activeCat.width / 2,
+          y: activeCat.y + activeCat.height / 2,
+          size: 3 + Math.random() * 4,
+          vx: (Math.random() * 8 - 4),
+          vy: (Math.random() * -6 - 2),
+          color: Math.random() < 0.6 ? '#fbbf24' : '#d97706',
+          alpha: 0.95
+        });
+      }
+      
+      createFloatyText("¡GATO ATRAPADO!", activeCat.x, activeCat.y - 10, '#fbbf24');
+      
+      // Mostrar botón táctil en móviles
+      const tShoot = document.getElementById('touch-shoot');
+      if (tShoot) {
+        tShoot.classList.remove('hidden');
+      }
+      
+      activeCat = null;
+    }
+  }
+
+  // 4. Colisiones de Proyectiles de Caca con Obstáculos
+  for (let pIdx = poopProjectiles.length - 1; pIdx >= 0; pIdx--) {
+    const proj = poopProjectiles[pIdx];
+    const pBox = proj.getCollisionBox();
+    let projCollided = false;
+    
+    for (let oIdx = obstacles.length - 1; oIdx >= 0; oIdx--) {
+      const obs = obstacles[oIdx];
+      // Ignorar hoyos
+      if (obs.type === 'hole') continue;
+      
+      const oBox = obs.getCollisionBox();
+      
+      if (pBox.x < oBox.x + oBox.width &&
+          pBox.x + pBox.width > oBox.x &&
+          pBox.y < oBox.y + oBox.height &&
+          pBox.y + pBox.height > oBox.y) {
+        
+        createPoopExplosion(obs.x + obs.width / 2, obs.y + obs.height / 2);
+        
+        if (window.audioEngine && window.audioEngine.playGodDestroySound) {
+          window.audioEngine.playGodDestroySound();
+        }
+        
+        const points = Math.floor(250 * multiplier);
+        score += points;
+        createFloatyText(`+${points} PTS`, obs.x, obs.y - 15, '#ffd166');
+        
+        obstacles.splice(oIdx, 1);
+        projCollided = true;
+        break;
+      }
+    }
+    
+    if (projCollided) {
+      poopProjectiles.splice(pIdx, 1);
+    }
+  }
 }
 
 
@@ -2356,7 +2764,7 @@ function updateGame() {
   // Aumentar velocidad paulatinamente
   gameSpeed += 0.0007;
   if (window.audioEngine) {
-    window.audioEngine.setMusicTempo(gameSpeed / 5.0);
+    window.audioEngine.setMusicTempo(multiplier);
   }
 
   // Spawn de rocas volcánicas si el clima es erupción
@@ -2381,6 +2789,20 @@ function updateGame() {
 
   // Actualizar Terrier
   terrier.update();
+
+  // Actualizar el Gato si existe
+  if (activeCat) {
+    activeCat.update();
+  }
+
+  // Actualizar proyectiles de caca
+  for (let i = poopProjectiles.length - 1; i >= 0; i--) {
+    const proj = poopProjectiles[i];
+    proj.update();
+    if (proj.isOutOfBounds()) {
+      poopProjectiles.splice(i, 1);
+    }
+  }
 
   // Actualizar bocadillo de ladrido
   if (barkBubble) {
@@ -2476,17 +2898,25 @@ function updateGame() {
       applyStageEnvironment(currentStage);
       stageTransitionTimer = 180; // 3 segundos (180 frames)
       
-      if (currentStage % 3 === 0) {
+      if (isGatoStage) {
+        stageTransitionText = `¡GATO! ¡GATO!`;
+      } else if (isEruptionStage) {
         stageTransitionText = `¡ETAPA ${currentStage}: ALERTA VOLCÁNICA!`;
-        if (window.audioEngine) {
-          window.audioEngine.setDangerTheme(true);
-          window.audioEngine.playPowerUpSound(); // Sonido emocionante
-        }
+      } else if (isTornadoStage) {
+        stageTransitionText = `¡ETAPA ${currentStage}: TORNADO!`;
       } else {
         stageTransitionText = `ETAPA ${currentStage}`;
-        if (window.audioEngine) {
+      }
+
+      if (window.audioEngine) {
+        if (isGatoStage) {
+          window.audioEngine.playPowerUpSound();
+        } else if (isEruptionStage || isTornadoStage) {
+          window.audioEngine.setDangerTheme(true);
+          window.audioEngine.playPowerUpSound();
+        } else {
           window.audioEngine.setDangerTheme(false);
-          window.audioEngine.playPowerUpSound(); // Sonido agradable
+          window.audioEngine.playPowerUpSound();
         }
       }
     }
@@ -2503,28 +2933,27 @@ function drawStageTransitionBanner() {
   ctx.save();
   
   const centerY = 80;
-  // Panel central semitransparente en el cielo
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-  ctx.fillRect(0, centerY - 18, CANVAS_WIDTH, 36);
   
-  // Borde superior e inferior retro
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#d61c4e' : '#ffe066'; // Rojo si es volcán, amarillo normal
-  ctx.fillRect(0, centerY - 18, CANVAS_WIDTH, 3);
-  ctx.fillRect(0, centerY + 15, CANVAS_WIDTH, 3);
-  
-  // Texto de la Etapa
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '11px "Press Start 2P"';
+  // Texto de la Etapa (50% más grande: de 11px a 16px)
+  ctx.font = '16px "Press Start 2P"';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   
-  // Parpadeo sutil en la animación
-  if (Math.floor(stageTransitionTimer / 10) % 2 === 0) {
-    ctx.fillText(stageTransitionText, CANVAS_WIDTH / 2, centerY);
-  } else {
-    ctx.fillStyle = (currentStage % 3 === 0) ? '#ff7096' : '#ffe066';
-    ctx.fillText(stageTransitionText, CANVAS_WIDTH / 2, centerY);
+  // Decidir color del texto basándose en parpadeo sutil de animación
+  let textColor = '#ffffff';
+  if (Math.floor(stageTransitionTimer / 10) % 2 !== 0) {
+    textColor = (currentStage % 3 === 0) ? '#ff7096' : '#ffe066';
   }
+  
+  // Dibujar contorno negro robusto (stroke) detrás del texto para máxima legibilidad sin tapar
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 6;
+  ctx.lineJoin = 'round';
+  ctx.strokeText(stageTransitionText, CANVAS_WIDTH / 2, centerY);
+  
+  // Dibujar el texto relleno
+  ctx.fillStyle = textColor;
+  ctx.fillText(stageTransitionText, CANVAS_WIDTH / 2, centerY);
   
   ctx.restore();
 }
@@ -2580,6 +3009,14 @@ function drawGame() {
 
   // 3. Dibujar Premios
   collectibles.forEach(col => col.draw());
+
+  // Dibujar Gato si está activo
+  if (activeCat) {
+    activeCat.draw();
+  }
+
+  // Dibujar proyectiles de caca
+  poopProjectiles.forEach(p => p.draw());
 
   // 4. Dibujar Terrier Chileno
   terrier.draw();
@@ -2833,6 +3270,19 @@ function resetGameVariables() {
   doubleJumpTimer = 0;
   lightningFlash = 0;
   barkBubble = null;
+
+  // Reiniciar variables de la etapa de persecución del gato y munición de caca
+  isGatoStage = false;
+  isEruptionStage = false;
+  isTornadoStage = false;
+  activeCat = null;
+  poopAmmo = 0;
+  poopProjectiles = [];
+  const touchShoot = document.getElementById('touch-shoot');
+  if (touchShoot) {
+    touchShoot.classList.add('hidden');
+  }
+
   if (window.audioEngine) {
     window.audioEngine.setDangerTheme(false);
   }
@@ -2995,6 +3445,11 @@ function setupEventListeners() {
       } else if (gameState === STATES.START || gameState === STATES.GAMEOVER) {
         startGame();
       }
+    }
+
+    if (e.code === 'KeyF') {
+      e.preventDefault();
+      shootPoop();
     }
     
     if (e.code === 'ArrowUp') {
@@ -3381,6 +3836,15 @@ function setupTouchControls() {
       startGame();
     }
   }, { passive: false });
+
+  // BOTÓN DISPARAR CACA (Móviles)
+  const touchShoot = document.getElementById('touch-shoot');
+  if (touchShoot) {
+    touchShoot.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      shootPoop();
+    }, { passive: false });
+  }
 }
 
 

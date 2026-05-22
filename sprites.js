@@ -486,6 +486,86 @@ const COLLECTIBLE_SPRITES = {
     "................",
     "................",
     "................"
+  ],
+
+  // Gato Naranjo Corriendo - Fotograma 1 (16x16 px)
+  cat_run1: [
+    "................",
+    "..........T...T.",
+    ".........TTT.TT.",
+    "....T....TTPTPT.",
+    "....TT...TTTTTT.",
+    "....TTT..TKTKTT.",
+    ".....TT..TTPPTT.",
+    ".....TTTTTTTTT..",
+    "......TTTTTTTT..",
+    ".....TTWWWWWWT..",
+    "....TTTWWWWWWT..",
+    "....T.T.WW.T.T..",
+    "....T.T....T.T..",
+    "....W.W....W.W..",
+    "................",
+    "................"
+  ],
+
+  // Gato Naranjo Corriendo - Fotograma 2 (16x16 px)
+  cat_run2: [
+    "................",
+    "..........T...T.",
+    ".........TTT.TT.",
+    ".........TTPTPT.",
+    "...T.....TTTTTT.",
+    "...TT....TKTKTT.",
+    "....TT...TTPPTT.",
+    "....TTTTTTTTTT..",
+    ".....TTTTTTTT...",
+    "......TWWWWWWT..",
+    ".....TTWWWWWWT..",
+    ".....T..WW..T...",
+    "....TT..TT..TT..",
+    "....WW..WW..WW..",
+    "................",
+    "................"
+  ],
+
+  // Gato Naranjo Saltando (16x16 px)
+  cat_jump: [
+    "..........T...T.",
+    ".........TTT.TT.",
+    ".........TTPTPT.",
+    ".........TTTTTT.",
+    ".........TKTKTT.",
+    ".........TTPPTT.",
+    "....T....TTTTT..",
+    "....TT..TTTTTT..",
+    ".....TTTTTTTT...",
+    "......TWWWWWWT..",
+    ".....TTWWWWWWT..",
+    "....TT..WW..TT..",
+    "....T....T...T..",
+    "....W....W...W..",
+    "................",
+    "................"
+  ],
+
+  // Proyectil de Caca Swirl Shaded (16x16 px)
+  poop: [
+    "......UU........",
+    ".....ULLU.......",
+    "....ULULLU......",
+    "....ULLLLU......",
+    ".....UUUU.......",
+    "....ULLLLU......",
+    "...ULULLLLU.....",
+    "..ULLLLLLLLU....",
+    "...UUUUUUUU.....",
+    "..ULLLLLLLLU....",
+    ".ULULLLLLLLLU...",
+    "ULLLLLLLLLLLLU..",
+    "UUUUUUUUUUUUUU..",
+    "................",
+    "................",
+    "................"
   ]
 };
 
