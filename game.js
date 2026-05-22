@@ -2289,6 +2289,13 @@ function triggerGameOver() {
 }
 
 function resetGameVariables() {
+  // Reiniciar estado de teclas para evitar que queden atascadas
+  keys.Space = false;
+  keys.ArrowUp = false;
+  keys.ArrowDown = false;
+  keys.ArrowLeft = false;
+  keys.ArrowRight = false;
+
   score = 0;
   multiplier = 1.0;
   salmonsCount = 0;
