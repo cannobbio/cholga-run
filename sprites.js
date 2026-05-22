@@ -547,6 +547,119 @@ const CINEMATIC_SPRITES = {
     "....KK    KK...."
   ],
 
+  // LA MAMÁ (Mujer de pelo castaño oscuro y blusa rosada)
+  mama: [
+    ".....UUUUUU.....", // U = Cabello castaño oscuro
+    "....UUUUUUUU....",
+    "....UUPPPPUU....", // P = Piel
+    "....UPPKKPPU....", // K = Ojos
+    "....UPPPPPPU....",
+    "....UPPPPPPU....",
+    ".....UPPPPU.....",
+    "......U UU......",
+    "....BBBBBBBB....", // B = Blusa rosada
+    "...BBBBBBBBBB...",
+    "..BBBBBBBBBBBB..",
+    "..BBBBBBBBBBBB..",
+    "...BBBBBBBBBB...",
+    "....AAAAAAAA....", // Jeans azules
+    "....AAAAAAAA....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....KK    KK....", // Zapatos
+    "....KK    KK...."
+  ],
+
+  // LA MAMÁ abrazando al Terrier
+  mama_hug: [
+    ".....UUUUUU.....",
+    "....UUUUUUUU....",
+    "....UUPPPPUU....",
+    "....UPPKKPPU....",
+    "....UPPPPPPU....",
+    "....UPPPPPPU.....",
+    ".....UPPPPU......",
+    "....BBBBBBBB....",
+    "...BBBBBBBBBB...",
+    "..BBBKKBBBKKBB..", // Brazos
+    "..BBKKWKKKKWKB..", // Sosteniendo al Terrier
+    "..BBKKWWKKWWKB..",
+    "...BKKWKKKKWKB..",
+    "....AAAAAAAA....",
+    "....AAAAAAAA....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....KK    KK....",
+    "....KK    KK...."
+  ],
+
+  // EL PAPÁ (Hombre de pelo corto castaño oscuro y bigote/barba, camisa verde y pantalones grises)
+  papa: [
+    ".....UUUUUU.....", // U = Cabello castaño corto
+    "....UUUUUUUU....",
+    "....UUPPPPUU....",
+    "....UPPKKPPU....",
+    "....PPPPPPPP....", // Sin cabello largo a los lados
+    "....PPPKKPPP....", // K = Bigote
+    ".....PKKKKP.....", // K = Barba
+    "......PPPP......", // Cuello
+    "....VVVVVVVV....", // V = Camisa verde
+    "...VVVVVVVVVV...",
+    "..VVVVVVVVVVVV..",
+    "..VVVVVVVVVVVV..",
+    "...VVVVVVVVVV...",
+    "....GGGGGGGG....", // G = Pantalón gris
+    "....GGGGGGGG....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....KK    KK....", // Zapatos
+    "....KK    KK...."
+  ],
+
+  // EL PAPÁ abrazando al Terrier
+  papa_hug: [
+    ".....UUUUUU.....",
+    "....UUUUUUUU....",
+    "....UUPPPPUU....",
+    "....UPPKKPPU....",
+    "....PPPPPPPP....",
+    "....PPPKKPPP....",
+    ".....PKKKKP.....",
+    "......PPPP......",
+    "....VVVVVVVV....",
+    "...VVVVVVVVVV...",
+    "..VVVKKVVVKKVV..", // Brazos
+    "..VVKKWKKKKWKV..", // Sosteniendo al Terrier
+    "..VVKKWWKKWWKV..",
+    "...VKKWKKKKWKV..",
+    "....GGGGGGGG....",
+    "....GGGGGGGG....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....G      G....",
+    "....KK    KK....",
+    "....KK    KK...."
+  ],
+
   // Cabaña Sureña de Madera (32x32 px)
   cozy_house: [
     "................................",
