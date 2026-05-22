@@ -1,0 +1,622 @@
+/**
+ * CHOLGA - 8-Bit Pixel Sprites & Drawing Engine
+ * Contiene los sprites de 8-bits renderizados dinámicamente en Canvas.
+ */
+
+// Paleta de colores para mapear caracteres a colores CSS
+const COLOR_MAP = {
+  '.': 'transparent', // Transparente
+  'W': '#ffffff',     // Blanco (Pelaje del terrier, manchas de vaca, crema de kuchen)
+  'K': '#1a1a1a',     // Negro (Cabeza del terrier, manchas de vaca, ojos)
+  'T': '#cf893c',     // Café/Tan (Mejillas y cejas del Terrier Chileno, cabello)
+  'R': '#d61c4e',     // Rojo (Collar, relleno del kuchen de frambuesa, rosa)
+  'P': '#ffb3c6',     // Rosado (Interior de oreja del terrier, hocico de vaca, piel)
+  'Y': '#ffe066',     // Amarillo/Beige (Cuernos de vaca, masa del kuchen, pico/patas de ave)
+  'G': '#4a4f5c',     // Gris Volcánico (Piedras, cuerpo de queltehue)
+  'S': '#a5ffd6',     // Plateado / Verde agua (Lomos del salmón)
+  'B': '#ff7096',     // Salmón rosado (Panza del salmón brillante)
+  'U': '#7c5335',     // Café oscuro (Madera de cerca, paredes de cabaña)
+  'L': '#ab7b56',     // Café claro (Vetaduras de madera, detalles)
+  'A': '#8ecae6',     // Azul agua (Detalles del salmón, jeans de Eloísa)
+  'H': '#e2e8f0',     // Blanco grisáceo (Nieve del volcán, reflejos de piedra)
+  'V': '#143825',     // Verde pino oscuro (Hojas de árbol)
+  'O': '#2e7d32',     // Verde bosque brillante (Puntos de árbol)
+  'E': '#38b000',     // Verde tallo (Rosa)
+  'X': '#800f2f'      // Rojo oscuro sombra (Rosa)
+};
+
+// --- SPRITES DEL TERRIER CHILENO MEJORADO (24x24 px) ---
+// Ajustes: Cabeza más baja (acortando cuello en 2px), gran mancha negra en lomo y cola muy corta.
+const TERRIER_SPRITES = {
+  // Parado / Idle
+  idle: [
+    "........................",
+    "........................",
+    "....K...................",
+    "...KK.K.................",
+    "..KPK.K.................",
+    "..KKKKK.................",
+    ".KKKTKKT................",
+    "KKKKKKKK................",
+    "KKKKWWKK................",
+    ".KKKKKKK...........KK...", // Cola muy corta de 3px
+    "..KKKKR...........KK....", // R = Collar
+    "...KWWK..........KK.....",
+    "..KWWWWKKKKKKKKKKKWWK...", // Mancha negra grande en lomo (K)
+    ".KWWWWKKKKKKKKKKWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    ".KWWWWWWWWWWWWWWWWWWK...",
+    "..KWWWWWWWWWWWWWWWWK....",
+    "...KWWWWWWWWWWWWWWK.....",
+    "....KWWWKKKWWWWKKK......",
+    "....KWK.KK..KWK.KK......",
+    "....KWK.KK..KWK.KK......",
+    "....KWK.KK..KWK.KK......",
+    "...KKK.KKK.KKK.KKK......"
+  ],
+
+  // Corriendo - Cuadro 1
+  run1: [
+    "........................",
+    "........................",
+    "....K...................",
+    "...KK.K.................",
+    "..KPK.K.................",
+    "..KKKKK.................",
+    ".KKKTKKT................",
+    "KKKKKKKK................",
+    "KKKKWWKK................",
+    ".KKKKKKK............K...", // Cola muy corta
+    "..KKKKR............KK...",
+    "...KWWK...........KK....",
+    "..KWWWWKKKKKKKKKKKWWK...", // Gran mancha lomo
+    ".KWWWWKKKKKKKKKKWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    ".KWWWWWWWWWWWWWWWWWWK...",
+    "..KWWWWWWWWWWWWWWWWK....",
+    "...KWWWWWWWWWWWWWWK.....",
+    "....KWWKKK.KWWWKKK......",
+    "....KWK.KK.KWK..KK......",
+    "....KWK....KWK..........",
+    "...KWK......KWK.........",
+    "..KKK........KKK........"
+  ],
+
+  // Corriendo - Cuadro 2
+  run2: [
+    "........................",
+    "........................",
+    "....K...................",
+    "...KK.K.................",
+    "..KPK.K.................",
+    "..KKKKK.................",
+    ".KKKTKKT................",
+    "KKKKKKKK................",
+    "KKKKWWKK................",
+    ".KKKKKKK...........KK...", // Cola muy corta
+    "..KKKKR...........KK....",
+    "...KWWK..........KK.....",
+    "..KWWWWKKKKKKKKKKKWWK...", // Gran mancha lomo
+    ".KWWWWKKKKKKKKKKWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    ".KWWWWWWWWWWWWWWWWWWK...",
+    "..KWWWWWWWWWWWWWWWWK....",
+    "...KWWWWWWWWWWWWWWK.....",
+    "....KWWWKK.KKWWKKK......",
+    ".....KWK.KK.KWK.KK......",
+    ".....KWK.....KWK........",
+    ".....KWK......KWK.......",
+    "....KKK........KKK......"
+  ],
+
+  // Saltando
+  jump: [
+    "........................",
+    "........................",
+    "....K...................",
+    "...KK.K.................",
+    "..KPK.K.................",
+    "..KKKKK.................",
+    ".KKKTKKT................",
+    "KKKKKKKK................",
+    "KKKKWWKK................",
+    ".KKKKKKK...........KK...", // Cola muy corta
+    "..KKKKR...........KK....",
+    "...KWWK..........KK.....",
+    "..KWWWWKKKKKKKKKKKWWK...", // Gran mancha lomo
+    ".KWWWWKKKKKKKKKKWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    ".KWWWWWWWWWWWWWWWWWWK...",
+    "..KWWWWWWWWWWWWWWWWK....",
+    "...KWWWWWWWWWWWWWWK.....",
+    "....KWWKK...KWWKKK......",
+    "....KWK......KWK........",
+    "....KWK......KWK........",
+    "....KWK......KWK........",
+    "....KKK......KKK........"
+  ],
+
+  // Agachado / Ladrando (Deslizándose)
+  duck: [
+    "........................",
+    "........................",
+    "........................",
+    "........................",
+    "........................",
+    "......K.K...............",
+    ".....KKKK...............",
+    "....KKKTK...............",
+    "...KKKKKKR..............",
+    "..KKKKWWKKWWKKKK........",
+    ".KKKKKKKWWWWWWWWKK......",
+    "KWWKKKKKKKKKKKKWWWKKKK..", // Mancha negra ensanchada en deslizamiento
+    "KWWKKKKKKKKKKKKWWWWWWK.",
+    "KWWWWWWWWWWWWWWWWWWWWWWK",
+    ".KWWWWWWWWWWWWWWWWWWWWK.",
+    "..KWWWWWWWWWWWWWWWWWWK..",
+    "...KWWWKKKWWWKKKWWWKK...",
+    "....KWK.KK.KWK.KK.KWK...",
+    "....KK..KK.KK..KK.KK....",
+    "........................",
+    "........................",
+    "........................",
+    "........................",
+    "........................"
+  ],
+
+  // Chocado / Game Over
+  crash: [
+    "........................",
+    "........................",
+    "....K...................",
+    "...K.KK.................",
+    "..K.PKK.................",
+    "..KKKKK.................",
+    ".KKKTKKT................",
+    "KKKKKKKK................",
+    "KKK.K.KK................", // Ojos dislocados
+    ".KKK.KKK...........KK...", // Cola caída muy corta
+    "..KKKKR...........KK....",
+    "...KWWK..........KK.....",
+    "..KWWWWKKKKKKKKKKKWWK...",
+    ".KWWWWKKKKKKKKKKWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    "KWWWWWWWWWWWWWWWWWWWK...",
+    ".KWWWWWWWWWWWWWWWWWWK...",
+    "..KWWWWWWWWWWWWWWWWK....",
+    "...KWWWWWWWWWWWWWWK.....",
+    "....KWKKKK...KWKKKK.....",
+    "....K..KK....K..KK......",
+    "....K.KK.....K.KK.......",
+    "....KKK......KKK........",
+    "........................"
+  ],
+
+  // Fantasmita / Death Ghost
+  ghost: [
+    "........................",
+    "........................",
+    "....W...................",
+    "...WW.W.................",
+    "..W.W.W.................",
+    "..WWWWW.................",
+    ".WWWWWWW................",
+    "WWWWWWWW................",
+    "WWWWWWWW................",
+    ".WWWWWWW................",
+    "..WWWWWW................",
+    "...WWWW.................",
+    "..WWWWWWWWWWWWWWWW......",
+    ".WWWWWWWWWWWWWWWWWW.....",
+    "WWWWWWWWWWWWWWWWWWWW....",
+    "WWWWWWWWWWWWWWWWWWWW....",
+    ".WWWWWWWWWWWWWWWWWW.....",
+    "..WWWWWWWWWWWWWWWW......",
+    "...WWWWWWWWWWWWWW.......",
+    "....WWWWWWWWWWWW........",
+    "......WWWWWWWW..........",
+    ".......WWWWWW...........",
+    "........WWWW............",
+    ".........WW............."
+  ]
+};
+
+// --- SPRITES DE OBSTÁCULOS ---
+const OBSTACLE_SPRITES = {
+  // Vaca Overo Negro (Típica vaca del sur de Chile, 32x24 px)
+  cow: [
+    "................................",
+    ".........HH..........HH.........", // H = Cuernos
+    ".........KK..........KK.........",
+    "........KKPKKKKKKKKKKPK.........", // P = Orejas
+    "........KKKKKKKKKKKKKKK.........",
+    "........KKKKKKKKKKKKKKK.........",
+    "........KKKPPKKKKKKPPKK.........", // P = Ojos / Hocico
+    "........KKPPPPKKKKPPPPK.........",
+    "........KKKPPKKKKKKPPKK.........",
+    "........KKKKKKKKKKKKKKK.........",
+    ".........KKKKKKKKKKKKK..........",
+    ".........KRRRRRRRRRRRK..........", // Collar/Cencerro dorado (R/Y)
+    ".........KWWWWWWWWWWWK..........",
+    "........KWWWWWWWWWWWWWK.........",
+    ".......KWWKKWWWWWKKWWWWK........", // Manchas negras (K) en cuerpo blanco (W)
+    "......KWWKKKKWWWWKKKKWWWWKK.....",
+    ".....KWWWWKKKWWWWWKKKWWWWK.K....",
+    ".....KWWWWWWWWWWWWWWWWWWWK..K...",
+    ".....KWWWWWWWWPPPPWWWWWWWK..K...", // P = Ubre rosada visible
+    ".....KWWWWWWWPPPPWWWWWWWWK.KK...",
+    "......KWWKKKWWWWWWKKKWWK.KKK....",
+    "......KWK..KWK...KWK..KWK.......", // Patas
+    "......KWK..KWK...KWK..KWK.......",
+    ".....KKK..KKK...KKK..KKK........"  // Pezuñas
+  ],
+
+  // Cerca de Madera de Puerto Varas (16x16 px)
+  fence: [
+    "................",
+    "....U......U....",
+    "....U......U....",
+    "...UUU....UUU...",
+    "..ULLLU..ULLLU..",
+    "..UL.LU..UL.LU..",
+    ".UUUUUUUUUUUUUU.",
+    ".ULLLLLLLLLLLLU.",
+    ".ULLLLLLLLLLLLU.",
+    ".UUUUUUUUUUUUUU.",
+    "..UL.LU..UL.LU..",
+    "..ULLLU..ULLLU...",
+    "...UUU....UUU...",
+    "....U......U....",
+    "....U......U....",
+    "....U......U...."
+  ],
+
+  // Piedra Volcánica de Alto Contraste (16x16 px)
+  // Se le da un borde negro grueso y reflejos blancos para mejor contraste en todos los climas
+  stone: [
+    "......KKKK......",
+    "....KKHHHHKK....", // H = Brillo blanco/gris
+    "...KHHGGGGHHK...",
+    "..KHGGGGGGGGHK..",
+    ".KHGGGGGGGGGGHK.",
+    "KHGGKKGGGGKKGGHK", // Grietas negras volcánicas (K)
+    "KGGKKKKGGKKKKGGK",
+    "KGGGGGGGGGGGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    " KGGGGGGGGGGGGK ",
+    "  KKKKKKKKKKKK  ",
+    "................"
+  ],
+
+  // Coihue / Alerce Sureño (Obstáculo terrestre alto, 16x24 px)
+  tree: [
+    "......VV........",
+    ".....VOVV.......",
+    "....VVOVVV......",
+    "....VVVVVV......",
+    "....VVOVVV......",
+    "....VVVVVV......",
+    "...VVOVVOVV.....",
+    "..VVVVVVVVVV....",
+    "..VVOVVOVVOV....",
+    "..VVVVVVVVVV....",
+    ".VVOVVOVVOVVO...",
+    "VVVVVVVVVVVVVV..",
+    "VVOVVOVVOVVOVV..",
+    "VVVVVVVVVVVVVV..",
+    "VVVVVVVVVVVVVV..",
+    ".VVOVVOVVOVVO...",
+    "..VVVVVVVVVV....",
+    "...VVOVVOVV.....",
+    "....VVVVVV......",
+    ".....TTTT.......",
+    ".....TTTT.......",
+    ".....TTTT.......",
+    ".....TTTT.......",
+    "....TTTTTT......"
+  ],
+
+  // --- SPRITES DEL QUELTEHUE (16x16 px) ---
+  // Cuadro 1: Alas arriba
+  queltehue1: [
+    "......KK........",
+    ".....KWWK.......",
+    "....KWWWWK.Y....", // Pico amarillo
+    "....KKKKKKYY....",
+    "..KKGGGGGGK.....", // Cuerpo gris
+    ".KGGGGGGGGK.....",
+    "KGGKKKKKGGK.....", // Ala arriba
+    "KGKKKKKKKGK.....",
+    "KKKK...KKKK.....",
+    "........KK......",
+    ".......Y..Y.....", // Patas
+    "......Y....Y....",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // Cuadro 2: Alas abajo
+  queltehue2: [
+    "......KK........",
+    ".....KWWK.......",
+    "....KWWWWK.Y....",
+    "....KKKKKKYY....",
+    "..KKGGGGGGK.....",
+    ".KGGGGGGGGK.....",
+    "KGGGGGGGGGK.....",
+    "KGKKKKKKKGK.....",
+    "KKKKKKKKKKK.....", // Ala abajo
+    "....KKKKK.......",
+    ".......Y..Y.....",
+    "......Y....Y....",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // Hoyo Volcánico en el Suelo (32x16 px)
+  hole: [
+    "................................",
+    "................................",
+    "................................",
+    "......KKKKKKKKKKKKKKKKKKKK......",
+    "....KKGGGGGGGGGGGGGGGGGGGGKK....",
+    "...KGGGGGGGGGGGGGGGGGGGGGGGGK...",
+    "..KGGKKKKKKKKKKKKKKKKKKKKKKGKK..",
+    ".KGKKKKKKKKKKKKKKKKKKKKKKKKKKGK.",
+    ".GKKKKKKKKKKKKKKKKKKKKKKKKKKKKG.",
+    "GKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKG",
+    "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "................................"
+  ]
+};
+
+// --- SPRITES DE COLECCIONABLES Y CINEMÁTICAS ---
+const COLLECTIBLE_SPRITES = {
+  // Salmón Plateado Saltón (16x16 px)
+  salmon: [
+    "......SS........",
+    "....SSBSSS......", // S = Plateado, B = Panza Rosada
+    "...SSBBSSSS.....",
+    "..SSBBBSSSSA....", // A = Azul agua
+    ".SSBBBBSSSAAK...", // K = Ojo negro
+    "SSBBBBBSSSSSAA..",
+    "SBBBBBBSSSSSS...",
+    "SBBBBBBSSSSS....",
+    "SBBBBBBSSSS.....",
+    "SBBBBBBSSS......",
+    ".SBBBBBSS.......",
+    "..SBBBBSS.......",
+    "...SBBBSS.......",
+    "....SBBSSS......",
+    ".....SSSSS......",
+    "......SSS......."
+  ],
+
+  // Kuchen de Frambuesa Sureño (16x16 px)
+  kuchen: [
+    "......WW........", // W = Crema chantilly arriba
+    ".....WWW........",
+    "....WWWWW.......",
+    "......R.........", // R = Frambuesa
+    "....YYYYY.......", // Y = Masa de kuchen
+    "...YRRRRRY......",
+    "..YRRRRRRRY.....",
+    ".YRRRRRRRRRY....",
+    "YYYYYYYYYYYYY...",
+    "YYYYYYYYYYYYY...",
+    "YCCYCCYCCYCCY...",
+    "YCCYCCYCCYCCY...",
+    "YYYYYYYYYYYYY...",
+    ".YYYYYYYYYYY....",
+    "..YYYYYYYYY.....",
+    "...YYYYYYY......"
+  ],
+
+  // Rosa Roja de Puerto Varas (Doble Salto y Escudo, 16x16 px)
+  rose: [
+    "......RR........",
+    "....RRRRRR......",
+    "...RRRRXXRR.....", // X = Rojo oscuro sombra
+    "..RRRXXXXRRR....",
+    "..RRXXXXXXRR....",
+    "...RRXXXXRR.....",
+    "....RRRRRR......",
+    "......RR........",
+    "......EE........", // E = Verde brillante (hojas y tallo)
+    "....EEEEE.......",
+    "...EEEEEE.......",
+    ".....EEE........",
+    ".....EE.........",
+    ".....EE.........",
+    ".....EE.........",
+    "....EEE........."
+  ],
+
+  // Hueso Blanco de Perro (Vida Extra, 16x16 px)
+  bone: [
+    "................",
+    "..WW.WW.........",
+    ".WWWWWWW........",
+    "..WW.WWWW.......",
+    ".....WWWW.......",
+    "......WWWW......",
+    ".......WWWW.....",
+    "........WWWW....",
+    "........WWWW.WW.",
+    ".........WWWWWWW",
+    ".........WW.WW..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ]
+};
+
+// --- SPRITES DE CINEMÁTICAS (Eloísa y Cabaña Sureña) ---
+const CINEMATIC_SPRITES = {
+  // Eloísa parada (16x24 px)
+  eloisa: [
+    ".....TTTTTT.....", // T = Cabello castaño
+    "....TTTTTTTT....",
+    "....TTPPPPTT....", // P = Piel
+    "....TPPKKPPT....", // K = Ojos
+    "....TPPPPPPT....",
+    "....TPPPPPPT....",
+    ".....TPPPPT.....",
+    "......T TT......",
+    "....RRRRRRRR....", // R = Camisa roja
+    "...RRRRRRRRRR...",
+    "..RRRRRRRRRRRR..",
+    "..RRRRRRRRRRRR..",
+    "...RRRRRRRRRR...",
+    "....AAAAAAAA....", // A = Jeans azules
+    "....AAAAAAAA....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....KK    KK....", // K = Zapatos
+    "....KK    KK...."
+  ],
+
+  // Eloísa abrazando al Terrier (16x24 px)
+  eloisa_hug: [
+    ".....TTTTTT.....",
+    "....TTTTTTTT....",
+    "....TTPPPPTT....",
+    "....TPPKKPPT....",
+    "....TPPPPPPT....",
+    "....TPPPPPPT.....",
+    ".....TPPPPT......",
+    "....RRRRRRRR....",
+    "...RRRRRRRRRR...",
+    "..RRRKKRRRKKRR..", // Brazos
+    "..RRKKWKKKKWKR..", // Sosteniendo al Terrier tricolor (K/W)
+    "..RRKKWWKKWWKR..",
+    "...RKKWKKKKWKR..",
+    "....AAAAAAAA....",
+    "....AAAAAAAA....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....A      A....",
+    "....KK    KK....",
+    "....KK    KK...."
+  ],
+
+  // Cabaña Sureña de Madera (32x32 px)
+  cozy_house: [
+    "................................",
+    ".............RRRRRR.............", // Chimenea
+    "............RLLLLLLR............", // L = Madera
+    "...........RLLLLLLLLR...........",
+    "..........RLLLLLLLLLLR..........",
+    ".........RLLLLLLLLLLLLR.........",
+    "........RLLLLLLLLLLLLLLR........",
+    ".......RLLLLLLLLLLLLLLLLR.......",
+    "......RLLLLLLLLLLLLLLLLLLR......",
+    ".....RLLLLLLLLLLLLLLLLLLLLR.....",
+    "....RRRRRRRRRRRRRRRRRRRRRRRR....", // Techo rojo
+    "....UUUUUUUUUUUUUUUUUUUUUUUU....", // U = Café oscuro pared
+    "....ULLLLLLULLLLLLLLULLLLLLU....", // L = Paredes de madera sólida
+    "....ULLYYLLULLLLLLLLULLYYLLU....", // Y = Ventanas amarillas
+    "....ULLYYLLULLLLLLLLULLYYLLU....",
+    "....ULLLLLLULLLLLLLLULLLLLLU....",
+    "....UUUUUUUULLLLLLLLUUUUUUUU....",
+    "....ULLLLLLULLLLLLLLULLLLLLU....",
+    "....ULLLLLLULLKKKKLLULLLLLLU....", // Puerta negra
+    "....ULLLLLLULLKWWKLLULLLLLLU....",
+    "....ULLLLLLULLKWWKLLULLLLLLU....",
+    "....ULLLLLLULLKWWKLLULLLLLLU....",
+    "....ULLLLLLULLKKKKLLULLLLLLU....",
+    "....UUUUUUUUUUUUUUUUUUUUUUUU....",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................"
+  ]
+};
+
+/**
+ * Dibuja un sprite 8-bit programático en el canvas.
+ * @param {CanvasRenderingContext2D} ctx - Contexto 2D del Canvas
+ * @param {Array<string>} spriteMatrix - Matriz del sprite (filas de caracteres)
+ * @param {number} x - Posición X de renderizado (esquina superior izquierda)
+ * @param {number} y - Posición Y de renderizado
+ * @param {number} width - Ancho final en la pantalla
+ * @param {number} height - Alto final en la pantalla
+ * @param {boolean} flipX - Indica si se debe reflejar horizontalmente
+ */
+function drawPixelSprite(ctx, spriteMatrix, x, y, width, height, flipX = false) {
+  const numRows = spriteMatrix.length;
+  const numCols = spriteMatrix[0].length;
+  
+  const pixelW = width / numCols;
+  const pixelH = height / numRows;
+
+  ctx.save();
+
+  // Si flipX es verdadero, trasladamos y escalamos el contexto negativamente en X
+  if (flipX) {
+    ctx.translate(x + width, y);
+    ctx.scale(-1, 1);
+  } else {
+    ctx.translate(x, y);
+  }
+
+  // Dibujamos bloque por bloque
+  for (let r = 0; r < numRows; r++) {
+    const rowStr = spriteMatrix[r];
+    for (let c = 0; c < numCols; c++) {
+      const char = rowStr[c];
+      const color = COLOR_MAP[char] || 'transparent';
+      
+      if (color !== 'transparent') {
+        ctx.fillStyle = color;
+        ctx.fillRect(
+          Math.floor(c * pixelW),
+          Math.floor(r * pixelH),
+          Math.ceil(pixelW),
+          Math.ceil(pixelH)
+        );
+      }
+    }
+  }
+
+  ctx.restore();
+}
+
+// Exportar a window para compatibilidad global en módulos Vite/ESM
+window.COLOR_MAP = COLOR_MAP;
+window.TERRIER_SPRITES = TERRIER_SPRITES;
+window.OBSTACLE_SPRITES = OBSTACLE_SPRITES;
+window.COLLECTIBLE_SPRITES = COLLECTIBLE_SPRITES;
+window.CINEMATIC_SPRITES = CINEMATIC_SPRITES;
+window.drawPixelSprite = drawPixelSprite;

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHOLGA: Aventura en Puerto Varas</title>
+  <meta name="description" content="Un juego 8-bit estilo Chrome Dino protagonizado por un Terrier Chileno, ambientado en Puerto Varas con clima dinámico y polka procedural.">
+  
+  <!-- SEO & Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Background Ambient Glow (changes with weather) -->
+    <div class="ambient-glow" id="ambient-glow"></div>
+    
+    <!-- Header -->
+    <header class="game-header">
+      <div class="header-logo">
+        <span class="pixel-text logo-title">CHOLGA</span>
+        <span class="logo-subtitle">Puerto Varas Edition</span>
+      </div>
+      
+      <!-- Live Score Dashboard -->
+      <div class="score-dashboard glass-panel">
+        <div class="score-item">
+          <span class="label">Etapa</span>
+          <span class="value pixel-text text-green" id="stage-val">1</span>
+        </div>
+        <div class="score-item">
+          <span class="label">Vidas</span>
+          <span class="value pixel-text text-danger" id="lives-val">❤️ 1</span>
+        </div>
+        <div class="score-item">
+          <span class="label">🐟</span>
+          <span class="value pixel-text text-gold" id="salmons-val">0</span>
+        </div>
+        <div class="score-item">
+          <span class="label">🍰</span>
+          <span class="value pixel-text text-pink" id="kuchens-val">0</span>
+        </div>
+        <div class="score-item">
+          <span class="label">Puntaje</span>
+          <span class="value pixel-text text-cyan" id="current-score-val">00000</span>
+        </div>
+        <div class="score-item">
+          <span class="label">Récord</span>
+          <span class="value pixel-text text-gold" id="high-score-val">00000</span>
+        </div>
+        <div class="score-item">
+          <span class="label">Multiplicador</span>
+          <span class="value pixel-text text-pink" id="multiplier-val">x1.0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Section -->
+    <main class="game-layout">
+      
+      <!-- Sidebar Left: Controls & Stats -->
+      <section class="game-sidebar left-sidebar glass-panel">
+        <h2 class="sidebar-title">Estadísticas de Aventura</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">🐟</span>
+            <span class="stat-label">Salmones</span>
+            <span class="stat-value pixel-text" id="stat-salmons">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🍰</span>
+            <span class="stat-label">Kuchens</span>
+            <span class="stat-value pixel-text" id="stat-kuchens">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🏃</span>
+            <span class="stat-label">Distancia</span>
+            <span class="stat-value pixel-text" id="stat-distance">0m</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-label">Vidas</span>
+            <span class="stat-value pixel-text" id="stat-lives">1</span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <h2 class="sidebar-title">Audio Retro</h2>
+        <div class="audio-controls">
+          <div class="audio-row">
+            <label for="music-toggle" class="audio-label">
+              <span>🎶 Polka Retro 8-bit</span>
+            </label>
+            <input type="checkbox" id="music-toggle" class="toggle-switch" checked>
+          </div>
+          <div class="audio-row">
+            <label for="music-volume" class="audio-sublabel">Volumen Música</label>
+            <input type="range" id="music-volume" min="0" max="100" value="40" class="volume-slider">
+          </div>
+          
+          <hr class="mini-divider">
+          
+          <div class="audio-row">
+            <label for="sfx-toggle" class="audio-label">
+              <span>🔊 Efectos de Sonido (SFX)</span>
+            </label>
+            <input type="checkbox" id="sfx-toggle" class="toggle-switch" checked>
+          </div>
+          <div class="audio-row">
+            <label for="sfx-volume" class="audio-sublabel">Volumen SFX</label>
+            <input type="range" id="sfx-volume" min="0" max="100" value="60" class="volume-slider">
+          </div>
+        </div>
+      </section>
+
+      <!-- Center: Screen Canvas -->
+      <section class="game-viewport-container">
+        
+        <!-- Game Viewport -->
+        <div class="game-screen-wrapper glass-panel">
+          <canvas id="game-canvas" width="800" height="400"></canvas>
+          
+          <!-- Fullscreen Toggle Button -->
+          <button id="fullscreen-btn" class="fullscreen-toggle-btn" title="Pantalla Completa">🖥️</button>
+
+          <!-- Mobile Controls (Minecraft Mobile style) -->
+          <div id="mobile-controls" class="mobile-controls">
+            <!-- Left Corner: Virtual Analog Joystick -->
+            <div id="joystick-container" class="joystick-container">
+              <div id="joystick-base" class="joystick-base">
+                <div id="joystick-knob" class="joystick-knob"></div>
+              </div>
+            </div>
+            
+            <!-- Right Corner: Action Button -->
+            <div class="action-buttons">
+              <button id="touch-jump" class="touch-jump-btn">SALTAR</button>
+            </div>
+          </div>
+
+          <!-- Orientation Alert Overlay for iOS/Mobile in Portrait -->
+          <div id="orientation-overlay" class="orientation-overlay">
+            <div class="orientation-content">
+              <div class="orientation-icon">🔄</div>
+              <h2 class="pixel-text">¡GIRA TU PANTALLA!</h2>
+              <p>Por favor, coloca tu celular en horizontal (Landscape) para poder jugar a CHOLGA.</p>
+            </div>
+          </div>
+          
+          <!-- Start / Game Over Overlays -->
+          <div id="start-overlay" class="screen-overlay active">
+            <div class="overlay-content">
+              <h1 class="pixel-text title-pulse">¡CHOLGA!</h1>
+              <p class="overlay-tagline">El Gran Escape de la Lluvia Sureña</p>
+              
+              <!-- Mascot Preview (Animated programmatically in canvas, details in overlay) -->
+              <div class="mascot-badge">
+                <span class="badge-icon">🐶</span>
+                <p>Protagonizado por un <strong>Terrier Chileno</strong> tricolor</p>
+              </div>
+
+              <button class="btn btn-primary btn-large pixel-text" id="start-btn">¡COMENZAR A CORRER!</button>
+              <p class="overlay-hint">Presiona ESPACIO o haz clic para empezar</p>
+            </div>
+          </div>
+
+          <div id="gameover-overlay" class="screen-overlay hidden">
+            <div class="overlay-content">
+              <h2 class="pixel-text text-danger title-shake">¡CHOQUE VOLCÁNICO!</h2>
+              <p class="overlay-tagline">El terrier tropezó y se puso a descansar...</p>
+              
+              <div class="game-summary glass-panel">
+                <div class="summary-row">
+                  <span>Puntaje Final:</span>
+                  <strong class="pixel-text text-cyan" id="final-score">0</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Salmones Atrapatdos:</span>
+                  <strong class="pixel-text text-gold" id="final-salmons">0</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Kuchens Devorados:</span>
+                  <strong class="pixel-text text-pink" id="final-kuchens">0</strong>
+                </div>
+              </div>
+
+              <button class="btn btn-accent btn-large pixel-text" id="restart-btn">INTENTAR DE NUEVO</button>
+              <p class="overlay-hint">Presiona ESPACIO para reiniciar</p>
+            </div>
+          </div>
+
+          <div id="pause-overlay" class="screen-overlay hidden">
+            <div class="overlay-content">
+              <h2 class="pixel-text text-warning">JUEGO EN PAUSA</h2>
+              <p>Tomando un cafecito con kuchen...</p>
+              <button class="btn btn-primary pixel-text" id="resume-btn">REANUDAR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Guide Bar (Under Game Viewport) -->
+        <div class="controls-bar glass-panel">
+          <div class="controls-bar-title pixel-text">CONTROLES</div>
+          <div class="controls-bar-grid">
+            <div class="control-item">
+              <span class="key">Espacio</span>
+              <span class="key">↑</span>
+              <span class="desc">Saltar (esquivar vacas/cercas)</span>
+            </div>
+            <div class="control-item">
+              <span class="key">↓</span>
+              <span class="desc">Agacharse / Ladrido dolor (deslizarse bajo verjas)</span>
+            </div>
+            <div class="control-item">
+              <span class="key">←</span>
+              <span class="key">→</span>
+              <span class="desc">Desplazarse atrás / adelante en X</span>
+            </div>
+            <div class="control-item">
+              <span class="key">P</span>
+              <span class="desc">Pausar / Reanudar</span>
+            </div>
+          </div>
+          <div class="controls-bar-notes">
+            <div class="note-item">
+              🌹 <strong>Rosa Roja:</strong> Escudo y Doble Salto (15s acumulables; absorbe choques restando 15s).
+            </div>
+            <div class="note-item">
+              📱 <strong>Móviles:</strong> Toca para saltar, desliza hacia abajo para agacharte.
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+    </main>
+
+    <!-- Footer with Southern Chilean Info -->
+    <footer class="game-footer">
+      <p>🐶 Hecho con 💚 e inspiración sureña. ¡El Terrier Chileno es la primera raza canina de Chile reconocida internacionalmente!</p>
+      <p class="footer-links">Puerto Varas • Lago Llanquihue • Región de Los Lagos • 🇨🇱</p>
+    </footer>
+  </div>
+
+  <!-- Game Scripts -->
+  <script type="module" src="sprites.js"></script>
+  <script type="module" src="audio.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

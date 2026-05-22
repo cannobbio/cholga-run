@@ -1,0 +1,23 @@
+{
+  "name": "cholga-run",
+  "version": "1.0.0",
+  "description": "Un juego 8-bit estilo Chrome Dino protagonizado por un Terrier Chileno, ambientado en Puerto Varas.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "terrier-chileno",
+    "puerto-varas",
+    "retro-game",
+    "8bit",
+    "web-audio-api"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
