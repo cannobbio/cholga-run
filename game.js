@@ -2616,6 +2616,7 @@ function resetGameVariables() {
   flagpoleCutsceneTimer = 0;
   
   currentStage = 1;
+  applyStageEnvironment(1);
   stageTransitionTimer = 0;
   stageTransitionText = '';
   lavaParticles = [];
@@ -2623,6 +2624,8 @@ function resetGameVariables() {
   floatyTexts = [];
   hasDoubleJump = false;
   doubleJumpTimer = 0;
+  lightningFlash = 0;
+  barkBubble = null;
   if (window.audioEngine) {
     window.audioEngine.setDangerTheme(false);
   }
