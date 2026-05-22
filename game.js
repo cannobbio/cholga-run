@@ -1007,7 +1007,7 @@ function drawCanvasHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`ETAPA ${currentStage}`, 24, 24);
   
-  // 3. Columna 2: CLIMA (x=88)
+  // 3. Columna 2: CLIMA (x=85)
   let weatherText = 'DESPEJADO';
   let weatherIcon = '☀️';
   let weatherColor = '#ffd166';
@@ -1027,9 +1027,9 @@ function drawCanvasHUD() {
   }
   
   ctx.fillStyle = weatherColor;
-  ctx.fillText(`${weatherIcon} ${weatherText}`, 88, 24);
+  ctx.fillText(`${weatherIcon} ${weatherText}`, 85, 24);
   
-  // 4. Columna 3: HORA (x=164)
+  // 4. Columna 3: HORA (x=165)
   let hourText = 'DÍA';
   let hourIcon = '☀️';
   let hourColor = '#ffd166';
@@ -1049,9 +1049,9 @@ function drawCanvasHUD() {
   }
   
   ctx.fillStyle = hourColor;
-  ctx.fillText(`${hourIcon} ${hourText}`, 164, 24);
+  ctx.fillText(`${hourIcon} ${hourText}`, 165, 24);
   
-  // 5. Columna 4: EVENTO ESPECIAL (x=247)
+  // 5. Columna 4: EVENTO ESPECIAL (x=252)
   let eventText = '';
   let eventIcon = '';
   let eventColor = '';
@@ -1072,11 +1072,11 @@ function drawCanvasHUD() {
   
   if (eventText) {
     ctx.fillStyle = eventColor;
-    ctx.fillText(`${eventIcon} ${eventText}`, 247, 24);
+    ctx.fillText(`${eventIcon} ${eventText}`, 252, 24);
   }
   
-  // 6. Columna 5: CORAZONES / VIDAS (x=322)
-  const heartXStart = 322;
+  // 6. Columna 5: CORAZONES / VIDAS (x=333)
+  const heartXStart = 333;
   const heartY = 24 - 6; // y=18
   
   if (lives <= 2) {
@@ -1091,8 +1091,8 @@ function drawCanvasHUD() {
     ctx.fillText(`x${lives}`, heartXStart + 14, 24);
   }
   
-  // 7. Columna 6: SALMONES (x=362)
-  const salmonX = 362;
+  // 7. Columna 6: SALMONES (x=372)
+  const salmonX = 372;
   const itemY = 24 - 9; // y=15 (sprite es de 18x18)
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, salmonX, itemY, 18, 18);
   ctx.fillStyle = '#ffd166';
@@ -1100,17 +1100,17 @@ function drawCanvasHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`x${salmonsCount}`, salmonX + 20, 24);
   
-  // 8. Columna 7: KUCHENS (x=406)
-  const kuchenX = 406;
+  // 8. Columna 7: KUCHENS (x=423)
+  const kuchenX = 423;
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, kuchenX, itemY, 18, 18);
   ctx.fillStyle = '#f472b6';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`x${kuchensCount}`, kuchenX + 20, 24);
   
-  // 9. Columna 8: MUNICIÓN DE CACA (x=450, sólo si poopAmmo > 0)
+  // 9. Columna 8: MUNICIÓN DE CACA (x=467, sólo si poopAmmo > 0)
   if (poopAmmo > 0) {
-    const poopX = 450;
+    const poopX = 467;
     drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, poopX, itemY, 18, 18);
     ctx.fillStyle = '#7c5335'; // café marrón
     ctx.font = '7px "Press Start 2P"';
@@ -1118,22 +1118,22 @@ function drawCanvasHUD() {
     ctx.fillText(`x${poopAmmo}`, poopX + 20, 24);
   }
   
-  // 10. Columna 9: DISTANCIA (x=495)
-  const distX = 495;
+  // 10. Columna 9: DISTANCIA (x=512)
+  const distX = 512;
   ctx.fillStyle = '#cbd5e1';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`DST:${Math.floor(distanceTraveled)}m`, distX, 24);
   
-  // 11. Columna 10: PUNTAJE (x=564)
-  const scoreX = 564;
+  // 11. Columna 10: PUNTAJE (x=582)
+  const scoreX = 582;
   ctx.fillStyle = '#00f0ff';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`PTS:${String(score).padStart(6, '0')}`, scoreX, 24);
   
-  // 12. Columna 11: RÉCORD (x=640)
-  const maxScoreX = 640;
+  // 12. Columna 11: RÉCORD (x=658)
+  const maxScoreX = 658;
   ctx.fillStyle = '#ffb700';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
