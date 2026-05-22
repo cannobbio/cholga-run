@@ -2197,6 +2197,14 @@ function drawGame() {
 
 let lastFrameTime = 0;
 const fpsInterval = 1000 / 60; // ~16.67 ms (60 FPS)
+let animationFrameId = null;
+
+function scheduleNextFrame() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+  }
+  animationFrameId = requestAnimationFrame(gameLoop);
+}
 
 // Bucle de fotogramas a 60 FPS controlado por tiempo
 function gameLoop(timestamp) {
@@ -2221,7 +2229,7 @@ function gameLoop(timestamp) {
   }
   
   if (gameState === STATES.PLAYING || gameState === STATES.CUTSCENE || gameState === STATES.DYING) {
-    requestAnimationFrame(gameLoop);
+    scheduleNextFrame();
   }
 }
 
@@ -2262,6 +2270,11 @@ function updateUI() {
 function triggerGameOver() {
   const cameFromDying = (gameState === STATES.DYING);
   gameState = STATES.GAMEOVER;
+  
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
   
   if (!cameFromDying) {
     terrier.state = 'crash';
@@ -2353,13 +2366,17 @@ function startGame() {
   }
 
   lastFrameTime = 0; // Reiniciar temporizador de frames
-  requestAnimationFrame(gameLoop);
+  scheduleNextFrame();
 }
 
 function openHelpModal() {
   if (gameState === STATES.PLAYING) {
     gameState = STATES.PAUSED;
     if (window.audioEngine) window.audioEngine.stopMusic();
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
   }
   const modal = document.getElementById('help-modal');
   modal.classList.remove('hidden');
@@ -2375,7 +2392,7 @@ function closeHelpModal() {
     gameState = STATES.PLAYING;
     if (window.audioEngine) window.audioEngine.startMusic();
     lastFrameTime = 0;
-    requestAnimationFrame(gameLoop);
+    scheduleNextFrame();
   }
 }
 
@@ -2385,13 +2402,17 @@ function togglePause() {
     if (window.audioEngine) window.audioEngine.stopMusic();
     document.getElementById('pause-overlay').classList.remove('hidden');
     document.getElementById('pause-overlay').classList.add('active');
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
   } else if (gameState === STATES.PAUSED) {
     gameState = STATES.PLAYING;
     if (window.audioEngine) window.audioEngine.startMusic();
     document.getElementById('pause-overlay').classList.add('hidden');
     document.getElementById('pause-overlay').classList.remove('active');
     lastFrameTime = 0; // Reiniciar temporizador de frames al reanudar
-    requestAnimationFrame(gameLoop);
+    scheduleNextFrame();
   }
 }
 
@@ -2494,8 +2515,7 @@ function setupEventListeners() {
   });
 
   window.addEventListener('keyup', (e) => {
-    if (gameState === STATES.DYING) return;
-    
+    // Ya no bloqueamos keyup en STATES.DYING para que las teclas soltadas durante la muerte no se queden atascadas en true
     if (e.code === 'ArrowUp') {
       keys.ArrowUp = false;
     }
