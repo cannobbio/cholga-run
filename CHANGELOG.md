@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.1] - 2026-05-22
+### Fixed
+- **Bug 10 (Líneas de Unión y Seams en Texturas Repetidas)**: Se eliminaron por completo las molestas líneas de unión semi-transparentes de 1 píxel (causadas por el renderizado de subpíxeles con antialiasing en coordenadas decimales de canvas) en el fondo del Lago Llanquihue, el follaje lejano del bosque y el suelo de arena volcánica negra. Esto se resolvió aplicando un solapamiento técnico de 2 píxeles (`CANVAS_WIDTH + 2`) en los bloques de renderizado contiguos.
+- **Sincronización de Olas y Detalles sin Saltos**: Se refactorizó la física de las olas del lago y los detalles del suelo volcánico. Se reemplazó el cálculo con modulo screen wrapping (`% CANVAS_WIDTH`) por coordenadas de renderizado 100% relativas a la coordenada base de scroll `x`, espaciando las olas y detalles uniformemente para evitar solapamientos dobles o recortes abruptos en los bordes del canvas.
+
 ## [1.13.0] - 2026-05-22
 ### Added
 - **Feature 16 (Saiyajin God Mode)**: Implementación de un comando secreto y oculto (`"god"`) que se puede tipear en el teclado durante el juego para alternar el "Modo Dios". En este estado, Cholga es completamente invulnerable a obstáculos y hoyos (los destruye en un espectacular estallido de fuego y muestra el texto flotante "¡DESTRUIDO!").
