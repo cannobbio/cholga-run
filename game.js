@@ -1703,6 +1703,13 @@ function checkCollisions() {
           });
         }
         
+        // Si es un hoyo, propulsamos a Cholga hacia arriba con un gran salto
+        if (obs.type === 'hole') {
+          terrier.vy = JUMP_FORCE * 1.0;
+          terrier.isGrounded = false;
+          terrier.state = 'jump';
+        }
+        
         // Eliminar el obstáculo chocado para poder pasar
         obstacles.splice(i, 1);
         i--;
@@ -2244,6 +2251,8 @@ function triggerGameOver() {
   document.getElementById('gameover-overlay').classList.remove('hidden');
   document.getElementById('gameover-overlay').classList.add('active');
   
+  // Garantizar que el multiplicador siempre se resetee a 1.0 al terminar la partida
+  multiplier = 1.0;
   updateUI();
 }
 
@@ -2315,11 +2324,13 @@ function openHelpModal() {
   }
   const modal = document.getElementById('help-modal');
   modal.classList.remove('hidden');
+  modal.classList.add('active');
 }
 
 function closeHelpModal() {
   const modal = document.getElementById('help-modal');
   modal.classList.add('hidden');
+  modal.classList.remove('active');
   
   if (gameState === STATES.PAUSED) {
     gameState = STATES.PLAYING;
