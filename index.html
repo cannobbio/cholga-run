@@ -45,9 +45,11 @@
     <header class="game-header">
       <div class="header-left">
         <div class="header-logo">
-          <span class="pixel-text logo-title">Cholga Run</span>
-          <span class="logo-subtitle">Puerto Varas Edition</span>
+          <span class="pixel-text logo-title">CHOLGA RUN</span>
+          <span class="pixel-text logo-subtitle">PUERTO VARAS EDITION</span>
         </div>
+      </div>
+      <div class="header-actions">
         <button class="btn-help pixel-text" id="help-btn" title="Ayuda y Controles">❓ Ayuda</button>
         <button class="btn-help pixel-text btn-theme" id="theme-btn" title="Cambiar Tema">🌓 Tema</button>
       </div>
@@ -87,63 +89,6 @@
 
     <!-- Main Game Section -->
     <main class="game-layout">
-      
-      <!-- Sidebar Left: Controls & Stats -->
-      <section class="game-sidebar left-sidebar glass-panel">
-        <h2 class="sidebar-title">Estadísticas de Aventura</h2>
-        
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span class="stat-icon">🐟</span>
-            <span class="stat-label">Salmones</span>
-            <span class="stat-value pixel-text" id="stat-salmons">0</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-icon">🍰</span>
-            <span class="stat-label">Kuchens</span>
-            <span class="stat-value pixel-text" id="stat-kuchens">0</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-icon">🏃</span>
-            <span class="stat-label">Distancia</span>
-            <span class="stat-value pixel-text" id="stat-distance">0m</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-icon">❤️</span>
-            <span class="stat-label">Vidas</span>
-            <span class="stat-value pixel-text" id="stat-lives">1</span>
-          </div>
-        </div>
-
-        <hr class="divider">
-
-        <h2 class="sidebar-title">Audio Retro</h2>
-        <div class="audio-controls">
-          <div class="audio-row">
-            <label for="music-toggle" class="audio-label">
-              <span>🎶 Polka Retro 8-bit</span>
-            </label>
-            <input type="checkbox" id="music-toggle" class="toggle-switch" checked>
-          </div>
-          <div class="audio-row">
-            <label for="music-volume" class="audio-sublabel">Volumen Música</label>
-            <input type="range" id="music-volume" min="0" max="100" value="40" class="volume-slider">
-          </div>
-          
-          <hr class="mini-divider">
-          
-          <div class="audio-row">
-            <label for="sfx-toggle" class="audio-label">
-              <span>🔊 Efectos de Sonido (SFX)</span>
-            </label>
-            <input type="checkbox" id="sfx-toggle" class="toggle-switch" checked>
-          </div>
-          <div class="audio-row">
-            <label for="sfx-volume" class="audio-sublabel">Volumen SFX</label>
-            <input type="range" id="sfx-volume" min="0" max="100" value="60" class="volume-slider">
-          </div>
-        </div>
-      </section>
 
       <!-- Center: Screen Canvas -->
       <section class="game-viewport-container">
@@ -231,6 +176,37 @@
           </div>
 
 
+        </div>
+
+        <!-- Relocated Audio Controls (Under Game Viewport) -->
+        <div class="audio-controls-panel glass-panel">
+          <div class="audio-panel-title pixel-text">🔊 SONIDO RETRO</div>
+          <div class="audio-controls-grid">
+            <div class="audio-control-item">
+              <div class="audio-row">
+                <label for="music-toggle" class="audio-label">
+                  <span>🎶 Polka Retro 8-bit</span>
+                </label>
+                <input type="checkbox" id="music-toggle" class="toggle-switch" checked>
+              </div>
+              <div class="audio-row volume-row">
+                <label for="music-volume" class="audio-sublabel">Volumen Música</label>
+                <input type="range" id="music-volume" min="0" max="100" value="40" class="volume-slider">
+              </div>
+            </div>
+            <div class="audio-control-item">
+              <div class="audio-row">
+                <label for="sfx-toggle" class="audio-label">
+                  <span>🔊 Efectos de Sonido (SFX)</span>
+                </label>
+                <input type="checkbox" id="sfx-toggle" class="toggle-switch" checked>
+              </div>
+              <div class="audio-row volume-row">
+                <label for="sfx-volume" class="audio-sublabel">Volumen SFX</label>
+                <input type="range" id="sfx-volume" min="0" max="100" value="60" class="volume-slider">
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Controls Guide Bar (Under Game Viewport) -->

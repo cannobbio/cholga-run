@@ -2,6 +2,15 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-05-22
+### Changed
+- **Eliminación de Barra Lateral Izquierda**: Se eliminó por completo la sección de estadísticas redundantes del sidebar izquierdo (`.left-sidebar`). El viewport del juego ahora ocupa el ancho completo del contenedor principal, brindando una experiencia de juego mucho más inmersiva y aprovechando el espacio disponible de la pantalla.
+- **Reubicación de Controles de Audio**: Los controles de música Polka Retro 8-bit y efectos de sonido (SFX) se reubicaron a un nuevo panel horizontal premium (`.audio-controls-panel`) posicionado directamente debajo del canvas del juego. El panel usa un diseño responsivo de 2 columnas en escritorio y 1 columna en móviles, con estilización glassmorphism coherente con el resto de la interfaz. En dispositivos táctiles (móviles), el panel se oculta automáticamente para maximizar el viewport.
+- **Rediseño del Encabezado en 8-bits**: El título del juego se convirtió a mayúsculas sostenidas `"CHOLGA RUN"` y el subtítulo a `"PUERTO VARAS EDITION"`, ambos con tipografía `Press Start 2P` y tamaños de fuente proporcionados (`2rem` y `0.95rem`) para lograr un acople visual simétrico y premium.
+- **Alineación de Botones de Acción**: Los botones `❓ Ayuda` y `🌓 Tema` se trasladaron a un contenedor `.header-actions` alineado a la derecha del encabezado, nivelados horizontalmente con el título principal. En pantallas móviles se centran automáticamente.
+- **Corrección de Solapamiento de Tecla "Espacio"**: Se aplicaron `flex-shrink: 0` y `white-space: nowrap` a las teclas (`.key`) y `flex-wrap: wrap` a los ítems de control (`.control-item`) para evitar que la tecla "Espacio" desborde o se superponga con las teclas adyacentes.
+- **Layout Simplificado**: La grilla principal del juego (`.game-layout`) se convirtió de un `grid` de 2 columnas a un `flexbox` vertical de ancho completo, eliminando la necesidad de media queries de reordenamiento de columnas.
+
 ## [1.14.3] - 2026-05-22
 ### Changed
 - **Espaciado y Coordenadas del HUD Superior**: Refactorizamos y equilibramos milimétricamente las coordenadas horizontales de las 12 columnas del HUD. Se reubicaron las posiciones X de la barra de puntuación y clima para predecir y evitar completamente las superposiciones y colisiones tipográficas generadas por palabras de longitud extensa (como `🌅 AMANECER`, `🌇 ATARDECER` o el estado `⛈️ TORMENTA`) y la aparición condicional de eventos especiales (`🌋 ERUPCIÓN`, `🌪️ TORNADO`, `🐱 GATO!`) o munición de caca.
