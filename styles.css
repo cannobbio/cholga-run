@@ -150,6 +150,7 @@ body {
 .text-cyan { color: var(--color-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.3); }
 .text-pink { color: var(--color-pink); text-shadow: 0 0 8px rgba(255, 0, 127, 0.3); }
 .text-danger { color: var(--color-danger); text-shadow: 0 0 8px rgba(255, 56, 56, 0.3); }
+.text-green { color: var(--color-green); text-shadow: 0 0 8px rgba(57, 255, 20, 0.3); }
 .text-warning { color: var(--color-gold); }
 
 /* Layout Grid */
@@ -1380,56 +1381,79 @@ body {
 }
 
 /* Sidebar & General Light Mode Contrast Fixes */
-:root.light-mode .sidebar-title {
-  color: var(--color-text);
+.light-mode .sidebar-title {
+  color: var(--color-text) !important;
 }
 
-:root.light-mode .stat-card {
+.light-mode .stat-card {
   background: rgba(15, 23, 42, 0.03);
   border-color: rgba(15, 23, 42, 0.06);
 }
 
-:root.light-mode .stat-card:hover {
+.light-mode .stat-card:hover {
   background: rgba(15, 23, 42, 0.06);
 }
 
-:root.light-mode .stat-value {
+.light-mode .stat-value {
   color: var(--color-text);
 }
 
-:root.light-mode .key {
-  background: rgba(15, 23, 42, 0.08);
-  border-color: rgba(15, 23, 42, 0.15);
-  border-bottom-color: rgba(15, 23, 42, 0.25);
+.light-mode .key,
+.light-mode .help-key {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.25) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .audio-label {
   color: var(--color-text);
 }
 
-:root.light-mode .audio-label {
+.light-mode .control-item {
   color: var(--color-text);
 }
 
-:root.light-mode .control-item {
-  color: var(--color-text);
-}
-
-:root.light-mode #help-modal {
+.light-mode #help-modal {
   background: rgba(241, 245, 249, 0.7);
 }
 
-:root.light-mode .controls-bar-title {
+.light-mode .help-section {
+  background: rgba(15, 23, 42, 0.02) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  color: var(--color-text) !important;
+}
+
+.light-mode .help-section h3 {
+  text-shadow: none !important;
+}
+
+.light-mode .help-control-row {
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.light-mode .help-item-info {
+  background: rgba(15, 23, 42, 0.03) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  color: var(--color-text) !important;
+}
+
+.light-mode .controls-bar-title {
   text-shadow: none;
 }
 
-:root.light-mode .logo-title {
+.light-mode .logo-title {
   color: var(--color-text);
   text-shadow: 0 0 10px rgba(15, 23, 42, 0.05), 3px 3px 0 var(--color-pink);
 }
 
-:root.light-mode .text-gold,
-:root.light-mode .text-cyan,
-:root.light-mode .text-pink,
-:root.light-mode .text-danger {
-  text-shadow: none;
+.light-mode .text-gold,
+.light-mode .text-cyan,
+.light-mode .text-pink,
+.light-mode .text-green,
+.light-mode .text-danger {
+  text-shadow: none !important;
 }
 
 
