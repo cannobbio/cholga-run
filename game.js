@@ -1461,7 +1461,7 @@ function drawLakeLlanquihue(x) {
   }
   
   ctx.fillStyle = waterGrad;
-  ctx.fillRect(x, lakeY, CANVAS_WIDTH, lakeHeight);
+  ctx.fillRect(x, lakeY, CANVAS_WIDTH + 2, lakeHeight);
 
   if (currentStage % 3 !== 0) {
     drawRetroBoat(x + 180, lakeY + 25);
@@ -1471,9 +1471,9 @@ function drawLakeLlanquihue(x) {
   ctx.fillStyle = (currentStage % 3 === 0) ? '#ffcc00' : (currentWeather === 'sunset' ? '#ffd166' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#2c5370' : '#90e0ef'));
   ctx.globalAlpha = 0.35;
   for (let i = 0; i < 6; i++) {
-    const waveX = (x + (i * 150)) % CANVAS_WIDTH;
+    const waveX = x + (i * 130) + 15;
     const waveY = lakeY + 15 + (i * 15);
-    const waveLen = 40 + (i * 20);
+    const waveLen = 40 + (i * 15);
     ctx.fillRect(waveX, waveY, waveLen, 3);
   }
   ctx.globalAlpha = 1.0;
@@ -1486,7 +1486,7 @@ function drawForestAndTown(x, blockId = 0) {
   ctx.fillStyle = (currentStage % 3 === 0) ? '#1f040a' : 
                   (currentWeather === 'sunset' ? '#3d1c3c' : 
                   ((currentWeather === 'night' || currentWeather === 'fog') ? '#081d0f' : '#1b5e20'));
-  ctx.fillRect(x, forestY - 5, CANVAS_WIDTH, GROUND_Y - (forestY - 5));
+  ctx.fillRect(x, forestY - 5, CANVAS_WIDTH + 2, GROUND_Y - (forestY - 5));
 
   // Lógica de transición a pradera verde limpia en etapa 10
   const isMeadow = isTransitioningToMeadow && (blockId >= meadowStartBlock);
@@ -1752,14 +1752,14 @@ function drawFlagpole() {
 
 function drawVolcanicGround(x) {
   ctx.fillStyle = '#1c1c1c';
-  ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
+  ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, CANVAS_HEIGHT - GROUND_Y);
   
   ctx.fillStyle = (currentStage % 3 === 0) ? '#4a0815' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0c3516' : '#2e7d32');
-  ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH, 6);
+  ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, 6);
 
   ctx.fillStyle = '#121212';
   for (let i = 0; i < 8; i++) {
-    const detailX = x + i * 110 + (i % 2 * 30);
+    const detailX = x + 15 + i * 95 + (i % 2 * 20);
     const detailY = GROUND_Y + 12 + (i % 3 * 8);
     ctx.fillRect(detailX, detailY, 12, 4);
     ctx.fillRect(detailX + 4, detailY - 4, 4, 12);
