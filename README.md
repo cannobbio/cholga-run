@@ -17,14 +17,16 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 ## ✨ Características
 
 ### 🕹️ Jugabilidad
-- **10+ etapas** con dificultad progresiva y velocidad incremental
-- **7 climas dinámicos**: amanecer, soleado, lluvia, atardecer, noche, neblina y tormenta
-- **Erupciones volcánicas** cada 3 etapas con temblor de pantalla y partículas de lava
-- **Sistema de vidas**: comienza con 1 vida, acumula más con huesos blancos
-- **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos)
-- **Cinemática de reencuentro** con Eloísa al completar cada ciclo de 10 etapas
-- **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego
-- **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` para un contraste óptimo en ambientes claros u oscuros
+- **10+ etapas** con dificultad progresiva y velocidad incremental.
+- **7 climas dinámicos**: amanecer, soleado, lluvia, atardecer, noche, neblina y tormenta.
+- **HUD Premium Integrado en Canvas**: Marcador de 8 bits unificado dentro del propio canvas (barra superior de datos). Cuenta con corazones pixelados para vidas, contadores dinámicos de salmón y kuchen con sus sprites originales, marcador con ceros a la izquierda y un multiplicador rosa brillante que oscila y pulsa con una animación sinusoidal `Math.sin(Date.now() / 120)` cuando supera `x1.0`.
+- **Meta Física y Ceremonia de la Etapa 10**: Al final de la etapa 10, el escenario transiciona suavemente a una pradera verde y despejada. Cholga colisiona en el suelo firme con un asta de bandera, deteniendo el movimiento y dando inicio a una síntesis procedural del Himno Nacional de Chile en 8 bits (onda cuadrada y sub-onda triangular armónica). La bandera de Chile se iza de forma fluida y sincronizada, dando paso al deslizamiento de la cabaña sureña y el emotivo abrazo con Eloísa.
+- **Variedad de Fondos y Edificaciones**: Parallax de 5 capas completamente continuo y libre de saltos de swaps, que incluye un cono nevado perfecto para el volcán Osorno y cumbres nevadas en el volcán Calbuco. Incluye araucarias, casas de colores de estilo alemán, una iglesia colonial y el nuevo **Chalet Sureño** con vigas de madera, chimenea activa que emite humo retro y bandera nacional.
+- **Erupciones volcánicas** cada 3 etapas con temblor de pantalla y partículas de lava.
+- **Sistema de vidas**: comienza con 1 vida, acumula más con huesos blancos.
+- **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos) que te salva incluso de caer en hoyos.
+- **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego.
+- **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` y total contraste legible.
 
 ### 🎮 Controles
 

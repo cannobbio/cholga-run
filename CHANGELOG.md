@@ -2,6 +2,16 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-05-22
+### Added
+- **Feature 12 (Marcador Unificado en Canvas)**: Rediseño completo del HUD para dibujarse directamente dentro del Canvas con estética premium de 8 bits, ocultando la barra superior HTML. Muestra corazones pixelados, contadores dinámicos de salmón/kuchen con sus sprites originales, puntaje con ceros a la izquierda y un multiplicador rosa brillante que oscila y pulsa con una micro-animación `Math.sin(Date.now() / 120)` cuando es superior a `x1.0`.
+- **Feature 13 (Asta de Bandera Meta-Física e Himno 8-bit en Etapa 10)**: Implementación de una meta física espectacular para la Etapa 10. Al llegar a la meta, el escenario transiciona suavemente a una pradera verde limpia. El perrito colisiona físicamente en el suelo con un asta de bandera, deteniendo el scroll y detonando una síntesis procedural en tiempo real del Himno Nacional de Chile en 8 bits (onda cuadrada brillante de trompeta y sub-onda triangular armónica). La bandera chilena se iza sincronizadamente y, al terminar, se desliza la cabaña para el abrazo final de Eloísa.
+- **Feature 14 (Chalet Sureño con Bandera)**: Cuarto tipo de edificación para el fondo del bosque/pueblo, caracterizado por vigas de madera verticales, chimenea activa que emite partículas de humo retro y una bandera de Chile permanente a su derecha.
+
+### Fixed
+- **Bug 4 (Eliminación de Saltos en Parallax)**: Refactorización completa de `drawParallax()` y sus capas (bosque, suelo, lago, volcanes) eliminando el uso de acumuladores con el operador módulo `%`. Ahora utiliza coordenadas de desplazamiento continuo basadas en bloques estables, erradicando por completo el molesto salto, parpadeo o desaparición ("swapping") de árboles y casas al resetear coordenadas.
+- **Bug 5 (Legibilidad en Tema Claro)**: Corrección de contraste en el tema claro agregando clases e incrementando la especificidad CSS sobre `.sidebar-title`, `.help-key` y `.help-item-info`. El texto y los comandos de ayuda ahora son 100% legibles sobre el fondo claro.
+
 ## [1.10.0] - 2026-05-22
 ### Added
 - Feature 10: Selector premium de modo claro-oscuro (`🌓 Tema`) en el encabezado con guardado persistente en `localStorage`. Cuenta con una paleta refinada gris pizarra claro en modo claro, adaptaciones responsivas y una transición fluida en toda la interfaz sin interferir en los gráficos del canvas arcade.
