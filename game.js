@@ -272,6 +272,7 @@ let volcanicRockInterval = 1000;
 let windParticles = [];
 let tornadoCowTimer = 0;
 let tornadoCowInterval = 800;
+let floatyTexts = [];
 
 // --- ENTRADA DE TECLADO ---
 const keys = {
@@ -1796,7 +1797,16 @@ function checkCollisions() {
         if (window.audioEngine) window.audioEngine.playPowerUpSound();
       } else if (col.type === 'bone') {
         lives++;
-        if (window.audioEngine) window.audioEngine.playPowerUpSound();
+        if (window.audioEngine) window.audioEngine.playOneUpSound();
+        // Generar texto flotante "1-UP!" en verde neón sobre Cholga
+        floatyTexts.push({
+          text: "1-UP!",
+          x: terrier.x + terrier.width / 2,
+          y: terrier.y - 10,
+          vy: -1.5,
+          alpha: 1.0,
+          color: '#39ff14' // Verde neón brillante
+        });
         // Generar unas lindas partículas blancas de hueso recogido
         for (let j = 0; j < 8; j++) {
           sparkleParticles.push({
@@ -1906,6 +1916,16 @@ function updateGame() {
 
   // Clima
   updateWeatherEffects();
+
+  // Actualizar textos flotantes
+  for (let i = floatyTexts.length - 1; i >= 0; i--) {
+    const ft = floatyTexts[i];
+    ft.y += ft.vy;
+    ft.alpha -= 0.02;
+    if (ft.alpha <= 0) {
+      floatyTexts.splice(i, 1);
+    }
+  }
 
   // Actualizar temporizador de Doble Salto si está activo
   if (hasDoubleJump) {
@@ -2120,6 +2140,19 @@ function drawGame() {
     drawCutsceneTextBox();
   }
 
+  // 9. Dibujar textos flotantes
+  if (floatyTexts.length > 0) {
+    ctx.save();
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    floatyTexts.forEach(ft => {
+      ctx.fillStyle = ft.color;
+      ctx.globalAlpha = ft.alpha;
+      ctx.fillText(ft.text, ft.x, ft.y);
+    });
+    ctx.restore();
+  }
+
   ctx.restore();
 }
 
@@ -2228,6 +2261,7 @@ function resetGameVariables() {
   stageTransitionText = '';
   lavaParticles = [];
   sparkleParticles = [];
+  floatyTexts = [];
   hasDoubleJump = false;
   doubleJumpTimer = 0;
   if (window.audioEngine) {

@@ -794,6 +794,40 @@ function playPowerUpSound() {
 }
 
 /**
+ * SFX Ganar vida al atrapar Hueso (Arpegio 8-bit ascendente brillante de "1-UP")
+ */
+function playOneUpSound() {
+  if (!sfxEnabled) return;
+  initAudio();
+  
+  const now = audioCtx.currentTime;
+  
+  // Notas C5, E5, G5, C6
+  const notes = [523.25, 659.25, 783.99, 1046.50];
+  const stepDuration = 0.06; // 60ms por nota
+  
+  notes.forEach((freq, idx) => {
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, now + idx * stepDuration);
+    
+    // Configurar envolvente de volumen para cada nota con un decaimiento rápido
+    gainNode.gain.setValueAtTime(0.15, now + idx * stepDuration);
+    gainNode.gain.setValueAtTime(0.15, now + idx * stepDuration + stepDuration * 0.7);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + idx * stepDuration + stepDuration);
+    
+    osc.connect(gainNode);
+    gainNode.connect(masterSFXGain);
+    
+    osc.start(now + idx * stepDuration);
+    osc.stop(now + idx * stepDuration + stepDuration);
+  });
+}
+
+/**
+
  * SFX Escudo Absorbe Impacto / Ruptura (Metal cristalino de 8 bits)
  */
 function playShieldAbsorbSound() {
@@ -1092,6 +1126,7 @@ window.audioEngine = {
   playPainYipSound,
   playGameOverSound,
   playPowerUpSound,
+  playOneUpSound,
   playShieldAbsorbSound,
   playMooSound,
   playQueltehueSound,

@@ -142,7 +142,7 @@ vercel deploy --prod
 | 🐟 | **Salmón** | +50 puntos base (×multiplicador) |
 | 🍰 | **Kuchen** | +100 puntos + incrementa el multiplicador ×0.1 |
 | 🌹 | **Rosa Roja** | Escudo temporal de 15s + doble salto aéreo |
-| 🦴 | **Hueso Blanco** | +1 vida extra (aparece con menor frecuencia) |
+| 🦴 | **Hueso Blanco** | +1 vida extra, emite un efecto retro \"1-UP!\" visual y sonoro |
 
 ---
 
