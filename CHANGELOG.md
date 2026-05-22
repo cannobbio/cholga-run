@@ -2,6 +2,14 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.3] - 2026-05-22
+### Added
+- **Cabello Rubio de El Papá**: Se modificaron las primeras 4 filas de los sprites de 8 bits `papa` y `papa_hug` en `sprites.js` para pintar el cabello de El Papá de color rubio (`'Y'`, amarillo/beige) en lugar de café oscuro.
+- **Himno de Chile Simplificado**: Se redujo la melodía de `playChileanAnthem()` en `audio.js` para reproducir exclusivamente la icónica secuencia de *"o el asilo contra la opresión"* (`G5-G5, F5, E5-D5, C5-D5, E5, C5`) una sola vez a 100 BPM, emulando la clásica fanfarria retro de 8 bits.
+
+### Fixed
+- **Sincronización Audiovisual del Izamiento**: Se ajustó el divisor del temporizador de izado de la bandera en `game.js` de `6.6` a `2.6`. Esto acelera el izamiento para que la estrella de la bandera de Chile llegue con orgullo al tope del asta exactamente al cabo de 4.32 segundos (260 frames a 60 FPS), sincronizándose milimétricamente con el acorde y decay final de la melodía procedural.
+
 ## [1.13.2] - 2026-05-22
 ### Added
 - **Finales Rotativos (Eloísa, La Mamá, El Papá)**: Se crearon programáticamente tres finales secuenciales hermosos y detallados de 8 bits en `sprites.js` y `game.js`. El primer final (etapas 10, 40...) es con Eloísa; el segundo (etapas 20, 50...) introduce a "La Mamá" con pelo castaño oscuro y una blusa rosada brillante (color de camisa `'B'` para contraste perfecto con su tono de piel `'P'`); el tercero (etapas 30, 60...) introduce a "El Papá" con barba, bigote, cabello castaño corto, camisa verde y pantalones grises.
