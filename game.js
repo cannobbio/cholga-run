@@ -297,8 +297,8 @@ class Obstacle {
       this.height = 48;
       this.y = GROUND_Y - this.height;
     } else if (type === 'fence') {
-      this.width = 32;  // 16x16 escalada x2
-      this.height = 32;
+      this.width = 52;  // Agrandada de 32x32 a 52x52 px
+      this.height = 52;
       this.y = GROUND_Y - this.height;
     } else if (type === 'stone') {
       this.width = 24;
