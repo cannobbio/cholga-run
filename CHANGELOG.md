@@ -2,6 +2,14 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.2] - 2026-05-22
+### Added
+- **Improvement 4 (Reducción de Suelo Subterráneo)**: Se redujo a la mitad el alto del suelo subterráneo (cambiando `GROUND_Y` de `320` a `360`), incrementando el cielo y el espacio vertical del juego en un 10%. Las capas de parallax (lago Llanquihue, bosque y edificaciones) y las físicas de juego se adaptaron dinámicamente.
+
+### Fixed
+- **Bug 8 (Reinicio Incorrecto en "Intentar de nuevo")**: Se corrigió el problema por el cual el clima, los efectos de partículas y el tema musical de etapas posteriores persistían al reiniciar una nueva partida. Ahora `resetGameVariables()` ejecuta `applyStageEnvironment(1)`, forzando al motor de audio y al clima a reestablecerse a la pacífica Etapa 1 (amanecer).
+- **Bug 9 (Superposición en Récord y Multiplicador del Canvas HUD)**: Se optimizó y rediseñó el marcador HUD. Se redujo el alto del contenedor a `32px` con un elegante diseño glassmorphic de bordes redondeados (`8px`), se fusionaron Etapa y Clima en una sola línea horizontal, y se cambió la alineación del multiplicador a la derecha en `x = 775` para erradicar cualquier superposición con `MAX`.
+
 ## [1.11.1] - 2026-05-22
 ### Fixed
 - **Bug 6 (Re-colisión Infinita de Bandera en Etapa 10)**: Se corrigió un bucle infinito en el cual, al reanudar la partida presionando cualquier tecla después de la cinemática de abrazo con Eloísa, el perro colisionaba inmediatamente de nuevo con el asta de la bandera porque esta seguía en pantalla a la izquierda del perro. Ahora, al continuar a la Etapa 11, se limpian y restablecen por completo el asta de la bandera y todas las variables físicas de la cinemática en `resumeAfterCutscene()`.
