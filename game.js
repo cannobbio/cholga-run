@@ -1,3 +1,8 @@
+import { inject } from '@vercel/analytics';
+
+// Inicializar Vercel Web Analytics
+inject();
+
 /**
  * Terrier Run - Motor de Juego Principal (Engine)
  * Gestiona el bucle de renderizado, físicas, colisiones, clima, parallax y estados.

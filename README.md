@@ -27,6 +27,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos) que te salva incluso de caer en hoyos.
 - **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego.
 - **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` y total contraste legible.
+- **Telemetría e Insights**: Integración nativa de Vercel Web Analytics para auditar el rendimiento técnico del juego y estadísticas básicas en tiempo real de forma anónima y 100% libre de cookies.
 
 ### 🎮 Controles
 
