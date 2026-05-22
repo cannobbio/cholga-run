@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.1] - 2026-05-22
+### Added
+- **Feature (Vercel Speed Insights)**: Integración nativa de la telemetría de rendimiento y Web Vitals de Vercel (`@vercel/speed-insights`). Se configuró la inicialización automática del rastreador al inicio de `game.js` mediante la función `injectSpeedInsights()`, permitiendo capturar métricas de rendimiento reales en producción de manera segura y sin cookies.
+
 ## [1.14.0] - 2026-05-22
 ### Added
 - **Etapa Especial de Persecución de Gato ("GATO! GATO!")**: En niveles múltiplos de 5 pero no de 10 (etapas 5, 15, 25...), se activa una etapa especial. Cholga persigue a un inquieto gato naranja que corre y salta de manera errática dentro del viewport. Capturar al gato otorga 12 proyectiles de caca (`💩`).

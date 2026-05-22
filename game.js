@@ -1,7 +1,9 @@
 import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
-// Inicializar Vercel Web Analytics
+// Inicializar telemetría de Vercel (Analytics y Speed Insights)
 inject();
+injectSpeedInsights();
 
 /**
  * Terrier Run - Motor de Juego Principal (Engine)
