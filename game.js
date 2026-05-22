@@ -505,6 +505,8 @@ let bgOffsetVolcano = 0;
 let bgOffsetLake = 0;
 let bgOffsetForest = 0;
 let bgOffsetGround = 0;
+let isTransitioningToMeadow = false;
+let meadowStartBlock = Infinity;
 
 // ==========================================
 // --- SISTEMA DE CLIMA DINÁMICO Y ETAPAS ---
@@ -990,27 +992,44 @@ function drawParallax(weather) {
 
   // 3. Capa 3: Volcanes alternados: Osorno (simétrico) y Calbuco (cráter colapsado irregular)
   // Se mueven al 8% de la velocidad del juego (Paralaje súper lento)
-  bgOffsetVolcano = (bgOffsetVolcano - gameSpeed * 0.08) % (CANVAS_WIDTH * 2);
-  
-  drawVolcanoOsorno(bgOffsetVolcano + 80);
-  drawVolcanoCalbuco(bgOffsetVolcano + 80 + CANVAS_WIDTH);
-  drawVolcanoOsorno(bgOffsetVolcano + 80 + CANVAS_WIDTH * 2);
-  drawVolcanoCalbuco(bgOffsetVolcano + 80 + CANVAS_WIDTH * 3);
+  bgOffsetVolcano -= gameSpeed * 0.08;
+  const volcanoScroll = -bgOffsetVolcano;
+  const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
+  for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
+    const drawX = b * CANVAS_WIDTH - volcanoScroll + 80;
+    if (b % 2 === 0) {
+      drawVolcanoOsorno(drawX);
+    } else {
+      drawVolcanoCalbuco(drawX);
+    }
+  }
 
   // 4. Capa 4: Lago Llanquihue
-  bgOffsetLake = (bgOffsetLake - gameSpeed * 0.2) % CANVAS_WIDTH;
-  drawLakeLlanquihue(bgOffsetLake);
-  drawLakeLlanquihue(bgOffsetLake + CANVAS_WIDTH);
+  bgOffsetLake -= gameSpeed * 0.2;
+  const lakeScroll = -bgOffsetLake;
+  const startLakeBlock = Math.floor(lakeScroll / CANVAS_WIDTH);
+  for (let b = startLakeBlock; b <= startLakeBlock + 1; b++) {
+    const drawX = b * CANVAS_WIDTH - lakeScroll;
+    drawLakeLlanquihue(drawX);
+  }
 
   // 5. Capa 5: Bosques Nativos y Casas de estilo alemán (Puerto Varas)
-  bgOffsetForest = (bgOffsetForest - gameSpeed * 0.45) % CANVAS_WIDTH;
-  drawForestAndTown(bgOffsetForest, 0);
-  drawForestAndTown(bgOffsetForest + CANVAS_WIDTH, 1);
+  bgOffsetForest -= gameSpeed * 0.45;
+  const forestScroll = -bgOffsetForest;
+  const startBlock = Math.floor(forestScroll / CANVAS_WIDTH);
+  for (let b = startBlock; b <= startBlock + 1; b++) {
+    const drawX = b * CANVAS_WIDTH - forestScroll;
+    drawForestAndTown(drawX, b);
+  }
 
   // 6. Capa 6: Suelo principal (Arena volcánica negra sureña)
-  bgOffsetGround = (bgOffsetGround - gameSpeed) % CANVAS_WIDTH;
-  drawVolcanicGround(bgOffsetGround);
-  drawVolcanicGround(bgOffsetGround + CANVAS_WIDTH);
+  bgOffsetGround -= gameSpeed;
+  const groundScroll = -bgOffsetGround;
+  const startGroundBlock = Math.floor(groundScroll / CANVAS_WIDTH);
+  for (let b = startGroundBlock; b <= startGroundBlock + 1; b++) {
+    const drawX = b * CANVAS_WIDTH - groundScroll;
+    drawVolcanicGround(drawX);
+  }
 }
 
 // Dibujadores de elementos 8-bit específicos para el fondo
@@ -1241,6 +1260,13 @@ function drawForestAndTown(x, blockId = 0) {
                   (currentWeather === 'sunset' ? '#3d1c3c' : 
                   ((currentWeather === 'night' || currentWeather === 'fog') ? '#081d0f' : '#1b5e20'));
   ctx.fillRect(x, 285, CANVAS_WIDTH, GROUND_Y - 285);
+
+  // Lógica de transición a pradera verde limpia en etapa 10
+  const isMeadow = isTransitioningToMeadow && (blockId >= meadowStartBlock);
+  if (isMeadow) {
+    // Si es pradera verde en etapa 10, no dibujamos árboles ni casas
+    return;
+  }
   
   // 2. Colores para los árboles del primer plano
   const trunkColor = (currentStage % 3 === 0) ? '#120205' : 
@@ -1309,10 +1335,10 @@ function drawForestAndTown(x, blockId = 0) {
     const houseY = forestY + 5;
     
     // Determinar tipo de edificación según bloque e índice
-    const buildingType = (i + blockId * 3) % 3;
+    const buildingType = (i + blockId * 7) % 4;
     
-    // Bandera de vez en cuando (solo en 1 de cada 6 edificios: i===1 en bloque 0)
-    const hasFlag = (i === 1 && blockId === 0);
+    // Bandera de vez en cuando de forma orgánica y estable (1 de cada 5 edificios)
+    const hasFlag = ((i + blockId * 5) % 5 === 0);
     
     if (buildingType === 0) {
       // Casa Alemana Estándar (Cottage)
@@ -1360,7 +1386,7 @@ function drawForestAndTown(x, blockId = 0) {
       if (hasFlag && currentStage % 3 !== 0) {
         drawChileanFlag(houseX + 36, mansionY + 2);
       }
-    } else {
+    } else if (buildingType === 2) {
       // Iglesia de Reloj Colonial (Sagrado Corazón)
       const churchY = houseY;
       ctx.fillStyle = houseColor;
@@ -1403,6 +1429,46 @@ function drawForestAndTown(x, blockId = 0) {
       
       if (hasFlag && currentStage % 3 !== 0) {
         drawChileanFlag(houseX + 44, churchY + 2);
+      }
+    } else {
+      // Chalet Sureño con Bandera Permanente
+      ctx.fillStyle = houseColor;
+      ctx.fillRect(houseX, houseY + 4, 40, 21); // Base de madera
+      
+      // Detalles de vigas verticales de madera
+      ctx.fillStyle = (currentStage % 3 === 0) ? '#120205' : '#5d4037';
+      ctx.fillRect(houseX + 8, houseY + 4, 3, 21);
+      ctx.fillRect(houseX + 20, houseY + 4, 3, 21);
+      ctx.fillRect(houseX + 32, houseY + 4, 3, 21);
+      
+      ctx.fillStyle = roofColor;
+      ctx.beginPath();
+      ctx.moveTo(houseX - 4, houseY + 4);
+      ctx.lineTo(houseX + 20, houseY - 14);
+      ctx.lineTo(houseX + 44, houseY + 4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Chimenea
+      ctx.fillStyle = (currentStage % 3 === 0) ? '#120205' : '#4e342e';
+      ctx.fillRect(houseX + 6, houseY - 10, 6, 12);
+      ctx.fillStyle = '#1c1c1c';
+      ctx.fillRect(houseX + 5, houseY - 12, 8, 2);
+
+      // Humo retro de la chimenea
+      const smokeTime = Date.now() * 0.003;
+      ctx.fillStyle = 'rgba(200, 200, 200, 0.4)';
+      ctx.fillRect(houseX + 7 + Math.sin(smokeTime) * 2, houseY - 18, 4, 4);
+      ctx.fillRect(houseX + 8 + Math.cos(smokeTime) * 3, houseY - 24, 5, 5);
+
+      // Ventana
+      ctx.fillStyle = windowColor;
+      ctx.fillRect(houseX + 13, houseY + 10, 6, 8);
+      ctx.fillRect(houseX + 25, houseY + 10, 6, 8);
+
+      // Bandera permanente a la derecha
+      if (currentStage % 3 !== 0) {
+        drawChileanFlag(houseX + 38, houseY - 4);
       }
     }
   }
@@ -1458,18 +1524,17 @@ function updateWeatherEffects() {
   if (currentStage % 3 === 0 && gameState === STATES.PLAYING) {
     // Engendrar partículas de lava
     if (Math.random() < 0.25) {
-      const c1 = bgOffsetVolcano + 80 + CANVAS_WIDTH;
-      const c2 = bgOffsetVolcano + 80 + CANVAS_WIDTH * 3;
+      const volcanoScroll = -bgOffsetVolcano;
+      const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
       let spawnX = -999;
-      
-      // Encontrar cuál Calbuco está visible en pantalla (o cerca)
-      if (c1 > -280 && c1 < CANVAS_WIDTH + 100) {
-        spawnX = c1;
-      } else if (c2 > -280 && c2 < CANVAS_WIDTH + 100) {
-        spawnX = c2;
-      } else {
-        const c1Wrapped = c1 % (CANVAS_WIDTH * 2);
-        spawnX = c1Wrapped > -280 && c1Wrapped < CANVAS_WIDTH + 100 ? c1Wrapped : c1Wrapped + CANVAS_WIDTH * 2;
+      for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
+        if (b % 2 === 1) {
+          const drawX = b * CANVAS_WIDTH - volcanoScroll + 80;
+          if (drawX > -280 && drawX < CANVAS_WIDTH + 100) {
+            spawnX = drawX;
+            break;
+          }
+        }
       }
       
       const craterX = spawnX + 140; // Centro de la erupción de Calbuco
@@ -2316,6 +2381,13 @@ function resetGameVariables() {
   distanceTraveled = 0;
   gameSpeed = 5.0;
   lives = 1;
+
+  bgOffsetVolcano = 0;
+  bgOffsetLake = 0;
+  bgOffsetForest = 0;
+  bgOffsetGround = 0;
+  isTransitioningToMeadow = false;
+  meadowStartBlock = Infinity;
   
   currentStage = 1;
   stageTransitionTimer = 0;
