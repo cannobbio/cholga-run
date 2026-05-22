@@ -2,9 +2,14 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.2] - 2026-05-22
+### Fixed
+- **Duración Limitada de Munición de Caca (`💩`)**: Se limitó el poder de disparar caca para que dure estrictamente hasta el asta de la bandera con el himno nacional y el reencuentro en la cabaña. Al colisionar físicamente con el asta de la bandera (cuando se activa la cinemática de la bandera), el contador de munición se restablece a `poopAmmo = 0`, se eliminan todos los proyectiles en pantalla (`poopProjectiles = []`) y se oculta el botón táctil móvil (`#touch-shoot`) aplicando la clase `.hidden`. Esto evita carry-overs o que el botón aparezca de forma persistente en cinemáticas o en etapas subsecuentes (como etapa 11).
+
 ## [1.14.1] - 2026-05-22
 ### Added
 - **Feature (Vercel Speed Insights)**: Integración nativa de la telemetría de rendimiento y Web Vitals de Vercel (`@vercel/speed-insights`). Se configuró la inicialización automática del rastreador al inicio de `game.js` mediante la función `injectSpeedInsights()`, permitiendo capturar métricas de rendimiento reales en producción de manera segura y sin cookies.
+
 
 ## [1.14.0] - 2026-05-22
 ### Added
