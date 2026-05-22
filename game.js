@@ -2750,6 +2750,14 @@ function updateGame() {
       terrier.isGrounded = true;
       terrier.state = 'idle';
       
+      // Limpiar poder de disparar caca al llegar a la bandera
+      poopAmmo = 0;
+      poopProjectiles = [];
+      const touchShoot = document.getElementById('touch-shoot');
+      if (touchShoot) {
+        touchShoot.classList.add('hidden');
+      }
+      
       // Apagar modo Dios temporalmente para que la animación del abrazo funcione perfectamente
       if (isGodMode) {
         isGodMode = false;
