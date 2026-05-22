@@ -1013,6 +1013,13 @@ function resumeAfterCutscene() {
   terrier.isGrounded = true;
   terrier.state = 'run';
   
+  // Limpiar el asta de la bandera y las variables de la cinemática de la etapa 10
+  flagpole = null;
+  isTransitioningToMeadow = false;
+  meadowStartBlock = Infinity;
+  isFlagpoleCutscene = false;
+  flagpoleCutsceneTimer = 0;
+  
   if (window.audioEngine) {
     window.audioEngine.startMusic();
   }
