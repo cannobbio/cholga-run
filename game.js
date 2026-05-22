@@ -1083,13 +1083,20 @@ function drawVolcanoOsorno(x) {
 
   ctx.fillStyle = '#ffffff';
   ctx.beginPath();
-  ctx.moveTo(x + volBaseWidth / 2 - 30, volY - volHeight * 0.7);
-  ctx.lineTo(x + volBaseWidth / 2 - 20, volY - volHeight);
-  ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight);
-  ctx.lineTo(x + volBaseWidth / 2 + 30, volY - volHeight * 0.7);
-  ctx.lineTo(x + volBaseWidth / 2 + 15, volY - volHeight * 0.66);
-  ctx.lineTo(x + volBaseWidth / 2, volY - volHeight * 0.62);
-  ctx.lineTo(x + volBaseWidth / 2 - 15, volY - volHeight * 0.66);
+  // Empezar en el borde inferior izquierdo de la nieve (45% de la ladera lateral)
+  ctx.moveTo(x + volBaseWidth / 2 - 69.5, volY - volHeight * 0.55);
+  ctx.lineTo(x + volBaseWidth / 2 - 20, volY - volHeight); // Ladera izquierda superior
+  ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight); // Cumbre
+  ctx.lineTo(x + volBaseWidth / 2 + 69.5, volY - volHeight * 0.55); // Ladera derecha superior
+  
+  // Lenguas de glaciar dentadas e irregulares (borde inferior pixelado)
+  ctx.lineTo(x + volBaseWidth / 2 + 50, volY - volHeight * 0.60);
+  ctx.lineTo(x + volBaseWidth / 2 + 35, volY - volHeight * 0.50); // Lengua larga derecha
+  ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight * 0.58);
+  ctx.lineTo(x + volBaseWidth / 2, volY - volHeight * 0.52); // Lengua media
+  ctx.lineTo(x + volBaseWidth / 2 - 15, volY - volHeight * 0.60);
+  ctx.lineTo(x + volBaseWidth / 2 - 30, volY - volHeight * 0.48); // Lengua larga izquierda
+  ctx.lineTo(x + volBaseWidth / 2 - 45, volY - volHeight * 0.58);
   ctx.closePath();
   ctx.fill();
 
@@ -1143,6 +1150,31 @@ function drawVolcanoCalbuco(x) {
   ctx.moveTo(x + volBaseWidth * 0.40, volY - volHeight);
   ctx.lineTo(x + volBaseWidth * 0.48, volY - volHeight * 0.85);
   ctx.lineTo(x + volBaseWidth * 0.62, volY - volHeight * 0.95);
+  ctx.lineTo(x + volBaseWidth * 0.58, volY - volHeight * 0.80);
+  ctx.closePath();
+  ctx.fill();
+
+  // Dibujar nieve en el volcán Calbuco
+  ctx.fillStyle = '#ffffff';
+  
+  // Pico 1 (Pico Izquierdo/Principal)
+  ctx.beginPath();
+  ctx.moveTo(x + volBaseWidth * 0.33, volY - volHeight * 0.80);
+  ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight);
+  ctx.lineTo(x + volBaseWidth * 0.45, volY - volHeight * 0.9125);
+  ctx.lineTo(x + volBaseWidth * 0.43, volY - volHeight * 0.85);
+  ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight * 0.88);
+  ctx.lineTo(x + volBaseWidth * 0.37, volY - volHeight * 0.83);
+  ctx.closePath();
+  ctx.fill();
+
+  // Pico 2 (Pico Derecho)
+  ctx.beginPath();
+  ctx.moveTo(x + volBaseWidth * 0.54, volY - volHeight * 0.89);
+  ctx.lineTo(x + volBaseWidth * 0.62, volY - volHeight * 0.95);
+  ctx.lineTo(x + volBaseWidth * 0.68, volY - volHeight * 0.72);
+  ctx.lineTo(x + volBaseWidth * 0.65, volY - volHeight * 0.82);
+  ctx.lineTo(x + volBaseWidth * 0.61, volY - volHeight * 0.85);
   ctx.lineTo(x + volBaseWidth * 0.58, volY - volHeight * 0.80);
   ctx.closePath();
   ctx.fill();
