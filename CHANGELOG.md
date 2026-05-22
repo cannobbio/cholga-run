@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-05-22
+### Added
+- **Feature 16 (Saiyajin God Mode)**: Implementación de un comando secreto y oculto (`"god"`) que se puede tipear en el teclado durante el juego para alternar el "Modo Dios". En este estado, Cholga es completamente invulnerable a obstáculos y hoyos (los destruye en un espectacular estallido de fuego y muestra el texto flotante "¡DESTRUIDO!").
+- **Aura y Aspecto Saiyajin**: Cholga adquiere un aspecto visual en llamas con un aura de partículas de fuego ascendentes en colores amarillo, naranja y rojo, combinada con un hermoso y vibrante resplandor/glow dorado (`shadowBlur = 15`, `shadowColor = '#ffcc00'`) alrededor de su sprite de píxeles.
+- **Desactivación Inteligente en Cinemática**: El modo Dios se desactiva de forma automática y transparente al llegar al asta de la bandera y reencontrarse con Eloísa (Etapa 10) para asegurar que la animación del abrazo funcione perfectamente sin auras de llamas sobre los personajes. Posteriormente, al presionar una tecla para continuar la aventura en la Etapa 11, el modo Dios se reactiva automáticamente si estaba encendido de antemano, reanudando la acción con una explosión de partículas.
+
 ## [1.12.0] - 2026-05-22
 ### Added
 - **Feature 15 (Vercel Web Analytics)**: Integración nativa del SDK de telemetría de Vercel (`@vercel/analytics`). Se configuró la inicialización automática del rastreador al inicio de `game.js` mediante la función `inject()`, permitiendo capturar métricas de rendimiento y telemetría de audiencia en tiempo real sin cookies ni impacto en la privacidad de los usuarios.
