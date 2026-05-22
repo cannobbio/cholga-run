@@ -870,11 +870,14 @@ body {
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.15s, border-color 0.15s;
 }
 
-/* Right Side: Big Pink Jump Button */
+/* Right Side: Action Buttons */
 .action-buttons {
   pointer-events: auto;
   margin-bottom: 4px;
   user-select: none;
+  display: flex;
+  gap: 16px;
+  align-items: center;
 }
 
 .touch-jump-btn {
@@ -902,6 +905,37 @@ body {
   background: rgba(255, 0, 127, 0.65);
   border-color: #fff;
   transform: scale(0.9);
+}
+
+.touch-shoot-btn {
+  width: 96px;
+  height: 96px;
+  background: rgba(124, 83, 53, 0.25);
+  border: 3.5px solid rgba(124, 83, 53, 0.6);
+  border-radius: 50%;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.58rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  box-shadow: 0 6px 18px rgba(124, 83, 53, 0.35);
+  text-shadow: 1px 1px 0 #000;
+  transition: background 0.05s, transform 0.05s, border-color 0.05s;
+  box-sizing: border-box;
+}
+
+.touch-shoot-btn:active {
+  background: rgba(124, 83, 53, 0.65);
+  border-color: #fff;
+  transform: scale(0.9);
+}
+
+.touch-shoot-btn.hidden {
+  display: none !important;
 }
 
 /* Orientation Lock Overlay */

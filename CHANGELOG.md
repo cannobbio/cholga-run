@@ -2,6 +2,27 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-05-22
+### Added
+- **Etapa Especial de Persecución de Gato ("GATO! GATO!")**: En niveles múltiplos de 5 pero no de 10 (etapas 5, 15, 25...), se activa una etapa especial. Cholga persigue a un inquieto gato naranja que corre y salta de manera errática dentro del viewport. Capturar al gato otorga 12 proyectiles de caca (`💩`).
+- **Disparo de Proyectiles de Caca (`💩`)**: El jugador puede disparar caca parabólica (tecla `F` en PC o el botón móvil táctil virtual "💩 DISPARAR"). Al colisionar con cualquier obstáculo (piedras, vacas, cercas, queltehues), el obstáculo explota en partículas color café y se destruye instantáneamente.
+- **Sintetizador Procedural de Audio Retro**:
+  - **Efecto "chhhhhhh"**: Un barrido de decaimiento exponencial descendente de ruido blanco (Q=4, filtro bandpass de 1000Hz a 300Hz en 0.45s) disparado al destruir obstáculos en Modo Dios o disparando caca.
+  - **Maullido Procedural de Gato**: Dos maullidos en secuencia (tono ascendente y descendente de 600Hz -> 1000Hz -> 550Hz con filtro bandpass de voz) disparados aleatoriamente por el gato o al atraparlo.
+  - **Melodía de Persecución ("Chase Theme")**: Melodía picada, tensa y rápida de 155 BPM en La Menor con arpegios y acordes staccato en canal square de 8 bits.
+- **Ciclo Atmosférico Cruzado**:
+  - **Horas del Día (ciclo de 1 etapa)**: Amanecer (sunrise), día (sunny), atardecer (sunset) y noche (night), representadas con hermosos gradientes pixel-art en el cielo.
+  - **Climas (ciclo de 3 etapas)**: Despejado (clear), lluvia (rain), tormenta con relámpago (storm) y neblina densa de doble capa oscilante (fog).
+  - La erupción volcánica, el tornado, el gato y la escena final de la bandera tienen su propia ambientación especial, pero las escenas finales del himno siempre fuerzan cielo soleado y despejado.
+- **HUD con Información Climática**: El HUD muestra el estado del clima (ícono y nombre), la hora del día y la munición activa de proyectiles de caca (`💩 x12`) sin superposición.
+- **Aviso de Cambio de Etapa Flotante**: Se removió el bloque negro de fondo del aviso. Ahora se renderiza con un texto flotante 50% más grande (16px) y un robusto contorno negro (stroke de 6px) para una visibilidad perfecta sin obstaculizar la vista.
+
+### Changed
+- **Tempo Ajustado por Multiplicador**: La velocidad (tempo BPM) de la música del juego se regula en base al multiplicador de puntaje del jugador (desde normal a 1.0 hasta acelerado y tenso a 5.0). Si el jugador choca, el tempo se reduce de inmediato a su ritmo relajado base.
+
+### Fixed
+- **Optimización de Distribución de Columnas en HUD**: Se reordenaron las coordenadas X de las columnas de la barra superior del juego para evitar cualquier superposición de textos largos como "TORMENTA", "ATARDECER", "ERUPCIÓN" o marcadores altos.
+
 ## [1.13.3] - 2026-05-22
 ### Added
 - **Cabello Rubio de El Papá**: Se modificaron las primeras 4 filas de los sprites de 8 bits `papa` y `papa_hug` en `sprites.js` para pintar el cabello de El Papá de color rubio (`'Y'`, amarillo/beige) en lugar de café oscuro.

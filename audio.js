@@ -12,7 +12,7 @@ let isMusicPlaying = false;
 let musicEnabled = true;
 let sfxEnabled = true;
 
-// Tema musical activo: 'sunrise', 'sunny', 'sunset', 'night', 'danger'
+// Tema musical activo: 'sunrise', 'sunny', 'sunset', 'night', 'danger', 'chase'
 let musicTheme = 'sunrise'; 
 let gameSpeedFactor = 1.0;
 
@@ -26,7 +26,7 @@ let currentStep = 0;
 const stepsInPattern = 64; // Patrón de 64 pasos (16 compases en 2/4)
 
 let currentBPM = 125;
-const maxBPM = 180;
+const maxBPM = 200;
 
 // Mapeo extendido de notas cromáticas a frecuencias (Hz)
 const NOTE_FREQS = {
@@ -157,6 +157,28 @@ const DANGER_CHORDS = [
 const DANGER_BASS = [
   'C3', 'G3', 'C3', 'G3',  'D3', 'Ab3', 'D3', 'Ab3',  'Eb3', 'Bb3', 'Eb3', 'Bb3',  'F3', 'C4', 'G3', 'D4',
   'C3', 'G3', 'C3', 'G3',  'D3', 'Ab3', 'D3', 'Ab3',  'C3', 'G3', 'G3', 'D3',  'C3', 'G3', 'C3', 'G3'
+];
+
+// 6. PERSECUCIÓN (GATO): Melodía súper rápida, tensa y arpegiada en La Menor (155 BPM)
+const CHASE_MELODY = [
+  'A4', 'C5', 'E5', 'A5',  'B4', 'D5', 'F5', 'B5',  'C5', 'E5', 'G5', 'C6',  'B5', 'G#5', 'E5', 'B4',
+  'A4', 'C5', 'E5', 'A5',  'B4', 'D5', 'F5', 'B5',  'C5', 'E5', 'D5', 'B4',  'A4', 'E5', 'A5', '-',
+  'E5', 'D5', 'C5', 'B4',  'A4', 'C5', 'E5', 'A5',  'F5', 'E5', 'D5', 'C5',  'B4', 'D5', 'F5', 'B5',
+  'C6', 'B5', 'A5', 'G#5', 'F5', 'E5', 'D5', 'B4',  'A4', 'C5', 'B4', 'G#4', 'A4', 'E4', 'A3', '-'
+];
+const CHASE_CHORDS = [
+  ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['E3', 'G#3', 'B3'], ['E3', 'G#3', 'B3'],
+  ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'],
+  ['C4', 'E4', 'G4'], ['E3', 'G#3', 'B3'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'],
+  ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'],
+  ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['E3', 'G#3', 'B3'], ['E3', 'G#3', 'B3'],
+  ['A3', 'C4', 'E4'], ['D3', 'F3', 'A3'], ['A3', 'C4', 'E4'], ['E3', 'G#3', 'B3'],
+  ['A3', 'C4', 'E4'], ['E3', 'G#3', 'B3'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4']
+];
+const CHASE_BASS = [
+  'A2', 'E3', 'D2', 'A2',  'C3', 'G3', 'E2', 'B2',  'A2', 'E3', 'D2', 'A2',  'C3', 'E3', 'A2', 'E3',
+  'D3', 'A3', 'A2', 'E3',  'D3', 'A3', 'E3', 'B3',  'A2', 'D3', 'A2', 'E3',  'A2', 'E3', 'A2', 'E3'
 ];
 
 // Cache de buffer de ruido
@@ -355,10 +377,15 @@ function scheduleNextStep(step, time) {
     chordArray = DANGER_CHORDS;
     bassArray = DANGER_BASS;
     themeBPM = 148;
+  } else if (musicTheme === 'chase') {
+    melodyArray = CHASE_MELODY;
+    chordArray = CHASE_CHORDS;
+    bassArray = CHASE_BASS;
+    themeBPM = 155;
   }
 
-  // Escalar BPM con velocidad del juego
-  currentBPM = Math.min(maxBPM, themeBPM + (gameSpeedFactor - 1.0) * 32);
+  // Escalar BPM con velocidad del juego (ligado al multiplicador de puntaje)
+  currentBPM = Math.min(maxBPM, themeBPM + (gameSpeedFactor - 1.0) * 10);
   const stepDuration = 60.0 / currentBPM / 4;
 
   // 1. Canal 1: Acordeón Coro 8-bit / Melodía
@@ -369,6 +396,9 @@ function scheduleNextStep(step, time) {
     
     if (musicTheme === 'danger') {
       synthNote(freq, time, noteDur, 'square', 0.12);
+    } else if (musicTheme === 'chase') {
+      // Persecución veloz: onda de pulso picada (square) con volumen un poco más alto
+      synthNote(freq, time, noteDur, 'square', 0.13);
     } else if (isNight) {
       // Flauta súper dulce y suave en la noche
       synthNote(freq, time, noteDur, 'triangle', 0.18);
@@ -392,7 +422,7 @@ function scheduleNextStep(step, time) {
     
     if (bassFreq) {
       // El bajo es más amortiguado y suave en la noche
-      const bassVol = isNight ? 0.16 : (musicTheme === 'danger' ? 0.32 : 0.28);
+      const bassVol = isNight ? 0.16 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.32 : 0.28);
       synthNote(bassFreq, time, bassDur, 'triangle', bassVol);
     }
   }
@@ -404,7 +434,7 @@ function scheduleNextStep(step, time) {
     const chordDur = stepDuration * 0.6;
     
     if (chordNotes) {
-      const chordVol = isNight ? 0.04 : (musicTheme === 'danger' ? 0.09 : 0.08);
+      const chordVol = isNight ? 0.04 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.09 : 0.08);
       playStaccatoChord(chordNotes, time, chordDur, chordVol);
     }
   }
@@ -419,7 +449,7 @@ function scheduleNextStep(step, time) {
   }
   // Caja staccato (Snare)
   if (stepInMeasure === 2 || stepInMeasure === 6) {
-    const snareVol = isNight ? 0.015 : (musicTheme === 'danger' ? 0.06 : 0.05);
+    const snareVol = isNight ? 0.015 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.06 : 0.05);
     playNoisePercussion(time, stepDuration * 0.45, true, snareVol);
   }
   // Hi-Hat cerrado muy corto
@@ -827,6 +857,80 @@ function playOneUpSound() {
 }
 
 /**
+ * SFX Destruir obstáculos en Modo Dios / Caca (Barrido retro "chhhhhhh" tipo white noise sweep)
+ */
+function playGodDestroySound() {
+  if (!sfxEnabled) return;
+  initAudio();
+  
+  const now = audioCtx.currentTime;
+  if (!audioCtx || !noiseBuffer) return;
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = noiseBuffer;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1000, now);
+  filter.frequency.exponentialRampToValueAtTime(300, now + 0.45);
+  filter.Q.setValueAtTime(4.0, now);
+
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.setValueAtTime(0.25, now);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+  noise.connect(filter);
+  filter.connect(gainNode);
+  gainNode.connect(masterSFXGain);
+
+  noise.start(now);
+  noise.stop(now + 0.45);
+}
+
+/**
+ * SFX Maullido de gato procedural ("MIAUUU MIAUUU" en estilo retro)
+ */
+function playCatMeowSound() {
+  if (!sfxEnabled) return;
+  initAudio();
+
+  const now = audioCtx.currentTime;
+
+  function triggerSingleMeow(delay) {
+    const time = now + delay;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, time);
+    osc.frequency.exponentialRampToValueAtTime(1000, time + 0.18);
+    osc.frequency.exponentialRampToValueAtTime(550, time + 0.32);
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1200, time);
+    filter.frequency.exponentialRampToValueAtTime(700, time + 0.32);
+    filter.Q.setValueAtTime(2.0, time);
+
+    gainNode.gain.setValueAtTime(0.001, time);
+    gainNode.gain.exponentialRampToValueAtTime(0.22, time + 0.06);
+    gainNode.gain.linearRampToValueAtTime(0.18, time + 0.16);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.32);
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(masterSFXGain);
+
+    osc.start(time);
+    osc.stop(time + 0.32);
+  }
+
+  // Activa doble maullido con separación de 420ms
+  triggerSingleMeow(0);
+  triggerSingleMeow(0.42);
+}
+
+/**
 
  * SFX Escudo Absorbe Impacto / Ruptura (Metal cristalino de 8 bits)
  */
@@ -1188,5 +1292,7 @@ window.audioEngine = {
   playQueltehueSound,
   playStageClearSound,
   playPointsConversionSound,
-  playChileanAnthem
+  playChileanAnthem,
+  playGodDestroySound,
+  playCatMeowSound
 };
