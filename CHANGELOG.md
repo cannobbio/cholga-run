@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-05-22
+### Added
+- **Feature 15 (Vercel Web Analytics)**: Integración nativa del SDK de telemetría de Vercel (`@vercel/analytics`). Se configuró la inicialización automática del rastreador al inicio de `game.js` mediante la función `inject()`, permitiendo capturar métricas de rendimiento y telemetría de audiencia en tiempo real sin cookies ni impacto en la privacidad de los usuarios.
+
 ## [1.11.2] - 2026-05-22
 ### Added
 - **Improvement 4 (Reducción de Suelo Subterráneo)**: Se redujo a la mitad el alto del suelo subterráneo (cambiando `GROUND_Y` de `320` a `360`), incrementando el cielo y el espacio vertical del juego en un 10%. Las capas de parallax (lago Llanquihue, bosque y edificaciones) y las físicas de juego se adaptaron dinámicamente.
