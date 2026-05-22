@@ -2,6 +2,14 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.2] - 2026-05-22
+### Added
+- **Finales Rotativos (Eloísa, La Mamá, El Papá)**: Se crearon programáticamente tres finales secuenciales hermosos y detallados de 8 bits en `sprites.js` y `game.js`. El primer final (etapas 10, 40...) es con Eloísa; el segundo (etapas 20, 50...) introduce a "La Mamá" con pelo castaño oscuro y una blusa rosada brillante (color de camisa `'B'` para contraste perfecto con su tono de piel `'P'`); el tercero (etapas 30, 60...) introduce a "El Papá" con barba, bigote, cabello castaño corto, camisa verde y pantalones grises.
+- **Diálogos de Final Dinámicos**: Cholga responde de forma interactiva y tierna a cada uno: responde `"I ❤️ ELOÍSA"`, `"TKM ❤️  MAMÁ"` (para La Mamá) o `"JAMONCITO ❤️  PAPÁ"` (para El Papá) utilizando alineaciones de texto y corazones de pixel art con márgenes calculados milimétricamente dentro del bocadillo retro.
+
+### Fixed
+- **Bandera e Himno Nacional en todas las Etapas de Final**: Se corrigió el problema por el cual el izamiento de la bandera chilena y la melodía procedural del Himno Nacional de Chile solo se reproducían al finalizar la Etapa 10 y se omitían en la Etapa 20. Al refactorizar el disparador de transición y las condiciones de etapa a módulos de 10 (`currentStage % 10 === 0` y `currentStage % 10 !== 0`), ahora el asta de la bandera física aparece, el himno nacional suena y la bandera se iza con orgullo al final de **cada décima etapa** (10, 20, 30, etc.) sin saltos ni evasiones basadas en distancia.
+
 ## [1.13.1] - 2026-05-22
 ### Fixed
 - **Bug 10 (Líneas de Unión y Seams en Texturas Repetidas)**: Se eliminaron por completo las molestas líneas de unión semi-transparentes de 1 píxel (causadas por el renderizado de subpíxeles con antialiasing en coordenadas decimales de canvas) en el fondo del Lago Llanquihue, el follaje lejano del bosque y el suelo de arena volcánica negra. Esto se resolvió aplicando un solapamiento técnico de 2 píxeles (`CANVAS_WIDTH + 2`) en los bloques de renderizado contiguos.

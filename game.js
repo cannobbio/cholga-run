@@ -953,19 +953,34 @@ function drawCutsceneTextBox() {
   ctx.lineWidth = 4;
   ctx.stroke();
   
-  // Texto de Cholga: "I ❤️ ELOÍSA" con el corazón de pixel art
+  // Texto de Cholga con el corazón de pixel art adaptado según el final
   ctx.fillStyle = '#1a1a1a';
   ctx.font = '8px "Press Start 2P"';
   ctx.textAlign = 'left';
   
-  const textX = b2X + 22;
-  const textY = b2Y + b2H / 2;
-  ctx.fillText("I", textX, textY);
-  
-  // Corazón pixel art retro
-  drawPixelHeart(ctx, textX + 16, textY - 6, 2);
-  
-  ctx.fillText("ELOÍSA", textX + 38, textY);
+  const endingIndex = (Math.floor(currentStage / 10) - 1) % 3;
+  if (endingIndex === 1) {
+    // LA MAMÁ: "TKM ❤️  MAMÁ"
+    const textX = b2X + 20;
+    const textY = b2Y + b2H / 2;
+    ctx.fillText("TKM", textX, textY);
+    drawPixelHeart(ctx, textX + 32, textY - 6, 2);
+    ctx.fillText("MAMÁ", textX + 54, textY);
+  } else if (endingIndex === 2) {
+    // EL PAPÁ: "JAMONCITO ❤️  PAPÁ"
+    const textX = b2X + 10;
+    const textY = b2Y + b2H / 2;
+    ctx.fillText("JAMONCITO", textX, textY);
+    drawPixelHeart(ctx, textX + 80, textY - 6, 2);
+    ctx.fillText("PAPÁ", textX + 102, textY);
+  } else {
+    // ELOÍSA: "I ❤️ ELOÍSA"
+    const textX = b2X + 22;
+    const textY = b2Y + b2H / 2;
+    ctx.fillText("I", textX, textY);
+    drawPixelHeart(ctx, textX + 16, textY - 6, 2);
+    ctx.fillText("ELOÍSA", textX + 38, textY);
+  }
   
   // 3. Instrucción blinking parpadeante abajo para reanudar
   if (Math.floor(Date.now() / 450) % 2 === 0) {
@@ -1223,9 +1238,9 @@ function drawParallax(weather) {
   const volcanoScroll = -bgOffsetVolcano;
   const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
   for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
-    const drawX = b * CANVAS_WIDTH - volcanoScroll + 80;
+    const drawX = Math.floor(b * CANVAS_WIDTH - volcanoScroll + 80);
     if (b % 2 === 0) {
-      drawVolcanoOsorno(drawX);
+      drawVolcanoOsorno(drawX, b);
     } else {
       drawVolcanoCalbuco(drawX);
     }
@@ -1236,7 +1251,7 @@ function drawParallax(weather) {
   const lakeScroll = -bgOffsetLake;
   const startLakeBlock = Math.floor(lakeScroll / CANVAS_WIDTH);
   for (let b = startLakeBlock; b <= startLakeBlock + 1; b++) {
-    const drawX = b * CANVAS_WIDTH - lakeScroll;
+    const drawX = Math.floor(b * CANVAS_WIDTH - lakeScroll);
     drawLakeLlanquihue(drawX);
   }
 
@@ -1244,9 +1259,17 @@ function drawParallax(weather) {
   bgOffsetForest -= gameSpeed * 0.45;
   const forestScroll = -bgOffsetForest;
   const startBlock = Math.floor(forestScroll / CANVAS_WIDTH);
+  
+  // 5a. Renderizar primero el fondo sólido de todos los bloques del bosque para evitar costuras/recortes en árboles
   for (let b = startBlock; b <= startBlock + 1; b++) {
-    const drawX = b * CANVAS_WIDTH - forestScroll;
-    drawForestAndTown(drawX, b);
+    const drawX = Math.floor(b * CANVAS_WIDTH - forestScroll);
+    drawForestBackground(drawX, b);
+  }
+  
+  // 5b. Renderizar el primer plano (árboles y casas) sobre los fondos
+  for (let b = startBlock; b <= startBlock + 1; b++) {
+    const drawX = Math.floor(b * CANVAS_WIDTH - forestScroll);
+    drawForestForeground(drawX, b);
   }
 
   // 6. Capa 6: Suelo principal (Arena volcánica negra sureña)
@@ -1254,7 +1277,7 @@ function drawParallax(weather) {
   const groundScroll = -bgOffsetGround;
   const startGroundBlock = Math.floor(groundScroll / CANVAS_WIDTH);
   for (let b = startGroundBlock; b <= startGroundBlock + 1; b++) {
-    const drawX = b * CANVAS_WIDTH - groundScroll;
+    const drawX = Math.floor(b * CANVAS_WIDTH - groundScroll);
     drawVolcanicGround(drawX);
   }
 }
@@ -1313,7 +1336,7 @@ function drawChileanFlag(x, y) {
   ctx.restore();
 }
 
-function drawVolcanoOsorno(x) {
+function drawVolcanoOsorno(x, blockId = 0) {
   const volBaseWidth = 260;
   const volHeight = 125;
   const volY = 220;
@@ -1349,7 +1372,7 @@ function drawVolcanoOsorno(x) {
   ctx.fillStyle = (currentWeather === 'sunset') ? '#2e143c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0e111a' : '#1d222e');
   ctx.fillRect(x + volBaseWidth / 2 - 20, volY - volHeight - 2, 40, 4);
 
-  const hasSombrero = (Math.floor((x + 10000) / 800) % 2 === 0);
+  const hasSombrero = (blockId % 2 === 0);
   if (hasSombrero) {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     ctx.beginPath();
@@ -1479,7 +1502,7 @@ function drawLakeLlanquihue(x) {
   ctx.globalAlpha = 1.0;
 }
 
-function drawForestAndTown(x, blockId = 0) {
+function drawForestBackground(x, blockId = 0) {
   const forestY = GROUND_Y - 30;
   
   // 1. Color de fondo del bosque (follaje lejano)
@@ -1487,6 +1510,10 @@ function drawForestAndTown(x, blockId = 0) {
                   (currentWeather === 'sunset' ? '#3d1c3c' : 
                   ((currentWeather === 'night' || currentWeather === 'fog') ? '#081d0f' : '#1b5e20'));
   ctx.fillRect(x, forestY - 5, CANVAS_WIDTH + 2, GROUND_Y - (forestY - 5));
+}
+
+function drawForestForeground(x, blockId = 0) {
+  const forestY = GROUND_Y - 30;
 
   // Lógica de transición a pradera verde limpia en etapa 10
   const isMeadow = isTransitioningToMeadow && (blockId >= meadowStartBlock);
@@ -2277,15 +2304,16 @@ function updateGame() {
   if (gameState !== STATES.PLAYING) return;
 
   // Lógica de meta física en Etapa 10
-  if (currentStage === 10) {
-    if (distanceTraveled >= 10 * DISTANCE_PER_STAGE - 25) {
+  if (currentStage % 10 === 0) {
+    const targetDistance = currentStage * DISTANCE_PER_STAGE;
+    if (distanceTraveled >= targetDistance - 25) {
       if (!isTransitioningToMeadow) {
         isTransitioningToMeadow = true;
         meadowStartBlock = Math.floor((-bgOffsetForest) / CANVAS_WIDTH) + 1;
       }
       
       // Spawnear la asta de bandera justo antes de llegar al límite
-      if (distanceTraveled >= 10 * DISTANCE_PER_STAGE - 5 && !flagpole) {
+      if (distanceTraveled >= targetDistance - 5 && !flagpole) {
         flagpole = {
           x: CANVAS_WIDTH + 50,
           y: GROUND_Y - 140,
@@ -2431,7 +2459,7 @@ function updateGame() {
   if (calculatedStage !== currentStage) {
     // Si completamos 10 etapas (ej. completamos la 10 y pasaríamos a la 11, que gatilla cuando calculatedStage === 11)
     if (calculatedStage > 1 && (calculatedStage - 1) % 10 === 0) {
-      if (currentStage !== 10) {
+      if (currentStage % 10 !== 0) {
         gameState = STATES.CUTSCENE;
         cutsceneStage = 0;
         cabinX = CANVAS_WIDTH + 100;
@@ -2529,8 +2557,17 @@ function drawGame() {
     drawPixelSprite(ctx, CINEMATIC_SPRITES.cozy_house, cabinX, GROUND_Y - 128, 128, 128);
     
     // Eloísa: width = 48, height = 72, y = GROUND_Y - 72
-    const eloSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.eloisa_hug : CINEMATIC_SPRITES.eloisa;
-    drawPixelSprite(ctx, eloSprite, eloisaX, GROUND_Y - 72, 48, 72);
+    // Seleccionar el sprite del personaje correspondiente al final actual
+    const endingIndex = (Math.floor(currentStage / 10) - 1) % 3;
+    let charSprite;
+    if (endingIndex === 1) {
+      charSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.mama_hug : CINEMATIC_SPRITES.mama;
+    } else if (endingIndex === 2) {
+      charSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.papa_hug : CINEMATIC_SPRITES.papa;
+    } else {
+      charSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.eloisa_hug : CINEMATIC_SPRITES.eloisa;
+    }
+    drawPixelSprite(ctx, charSprite, eloisaX, GROUND_Y - 72, 48, 72);
   }
 
   // Dibujar asta de bandera (meta física) si existe
