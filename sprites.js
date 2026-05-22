@@ -603,12 +603,12 @@ const CINEMATIC_SPRITES = {
     "....KK    KK...."
   ],
 
-  // EL PAPÁ (Hombre de pelo corto castaño oscuro y bigote/barba, camisa verde y pantalones grises)
+  // EL PAPÁ (Hombre de pelo corto rubio y bigote/barba, camisa verde y pantalones grises)
   papa: [
-    ".....UUUUUU.....", // U = Cabello castaño corto
-    "....UUUUUUUU....",
-    "....UUPPPPUU....",
-    "....UPPKKPPU....",
+    ".....YYYYYY.....", // Y = Cabello rubio corto
+    "....YYYYYYYY....",
+    "....YYPPPPYY....",
+    "....YPPKKPPY....",
     "....PPPPPPPP....", // Sin cabello largo a los lados
     "....PPPKKPPP....", // K = Bigote
     ".....PKKKKP.....", // K = Barba
@@ -633,10 +633,10 @@ const CINEMATIC_SPRITES = {
 
   // EL PAPÁ abrazando al Terrier
   papa_hug: [
-    ".....UUUUUU.....",
-    "....UUUUUUUU....",
-    "....UUPPPPUU....",
-    "....UPPKKPPU....",
+    ".....YYYYYY.....",
+    "....YYYYYYYY....",
+    "....YYPPPPYY....",
+    "....YPPKKPPY....",
     "....PPPPPPPP....",
     "....PPPKKPPP....",
     ".....PKKKKP.....",
