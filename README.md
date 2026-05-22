@@ -28,6 +28,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego.
 - **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` y total contraste legible.
 - **Telemetría e Insights**: Integración nativa de Vercel Web Analytics para auditar el rendimiento técnico del juego y estadísticas básicas en tiempo real de forma anónima y 100% libre de cookies.
+- **Modo Dios Saiyajin Oculto**: Al escribir de manera oculta la palabra `"god"` en el teclado durante el juego, alternas el Modo Dios. Cholga se transforma visualmente en un súper saiyajin con un aura de partículas de fuego ascendentes (en colores amarillo, naranja y rojo) y un resplandor dorado vibrante (`ctx.shadowBlur = 15`). Esto le confiere invulnerabilidad completa ante todos los obstáculos y hoyos (los cuales explotan al chocar con él). Se desactiva y guarda de forma inteligente cuando Cholga abraza a Eloísa (Etapa 10) para preservar la animación limpia y se reactiva automáticamente en la Etapa 11 al reanudar la carrera.
 
 ### 🎮 Controles
 
@@ -38,6 +39,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 | **Agacharse** | `↓` Flecha abajo | Joystick hacia abajo |
 | **Ladrar** | `↑` Flecha arriba | Joystick hacia arriba |
 | **Pausar** | `P` / `Esc` | — |
+| **Modo Dios Saiyajin** | Escribe `god` (secreto) | — |
 
 ### 📱 Soporte Mobile
 - **Joystick analógico virtual** con arrastre continuo y retorno elástico
