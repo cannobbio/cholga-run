@@ -24,6 +24,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos)
 - **Cinemática de reencuentro** con Eloísa al completar cada ciclo de 10 etapas
 - **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego
+- **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` para un contraste óptimo en ambientes claros u oscuros
 
 ### 🎮 Controles
 
@@ -52,7 +53,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Sprites pixel-art** dibujados a mano en matrices de caracteres
 - **Parallax de 4 capas**: cielo, volcanes, lago Llanquihue y pueblo/bosque
 - **Partículas dinámicas**: lluvia, lava, pétalos de rosa, destellos y relámpagos
-- **Volcanes Osorno y Calbuco** con nieve animada y lava
+- **Volcanes Osorno y Calbuco** con estética nevada mejorada de alta definición 8 bits (nieve en Osorno extendida hasta el 45% lateral con bordes de glaciar, y cumbres nevadas en los picos principales de Calbuco)
 - **Edificaciones variadas**: casas de colores, iglesias, árboles araucarias y banderas chilenas
 
 ---
