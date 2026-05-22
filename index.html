@@ -37,9 +37,12 @@
     
     <!-- Header -->
     <header class="game-header">
-      <div class="header-logo">
-        <span class="pixel-text logo-title">Cholga Run</span>
-        <span class="logo-subtitle">Puerto Varas Edition</span>
+      <div class="header-left">
+        <div class="header-logo">
+          <span class="pixel-text logo-title">Cholga Run</span>
+          <span class="logo-subtitle">Puerto Varas Edition</span>
+        </div>
+        <button class="btn-help pixel-text" id="help-btn" title="Ayuda y Controles">❓ Ayuda</button>
       </div>
       
       <!-- Live Score Dashboard -->
@@ -216,6 +219,90 @@
               <h2 class="pixel-text text-warning">JUEGO EN PAUSA</h2>
               <p>Tomando un cafecito con kuchen...</p>
               <button class="btn btn-primary pixel-text" id="resume-btn">REANUDAR</button>
+            </div>
+          </div>
+
+          <!-- Help Modal -->
+          <div id="help-modal" class="screen-overlay hidden">
+            <div class="modal-content glass-panel">
+              <button class="modal-close-btn" id="close-help-btn" aria-label="Cerrar">&times;</button>
+              <h2 class="pixel-text text-cyan modal-title">❓ AYUDA & CONTROLES</h2>
+              
+              <div class="modal-body">
+                <section class="help-section">
+                  <h3 class="pixel-text text-green">🎯 ¿De qué se trata?</h3>
+                  <p><strong>Cholga Run</strong> es un juego retro de 8 bits ambientado en los hermosos paisajes de Puerto Varas y el Lago Llanquihue. Controlas a <strong>Cholga</strong>, un valiente Terrier Chileno tricolor, en su gran escape de la persistente lluvia sureña para reencontrarse con su dueña <strong>Eloísa</strong>.</p>
+                </section>
+
+                <section class="help-section">
+                  <h3 class="pixel-text text-gold">🕹️ Controles del Juego</h3>
+                  <div class="help-controls-grid">
+                    <div class="help-control-row">
+                      <span class="help-key">Espacio / ↑</span>
+                      <span class="help-desc">Saltar (esquivar hoyos, vacas, rocas incandescentes)</span>
+                    </div>
+                    <div class="help-control-row">
+                      <span class="help-key">↓</span>
+                      <span class="help-desc">Agacharse (deslizarse bajo las vallas gigantes)</span>
+                    </div>
+                    <div class="help-control-row">
+                      <span class="help-key">← / →</span>
+                      <span class="help-desc">Moverse hacia atrás / adelante</span>
+                    </div>
+                    <div class="help-control-row">
+                      <span class="help-key">↑ (en el suelo)</span>
+                      <span class="help-desc">Ladrar (¡GUAU! retro para divertirse)</span>
+                    </div>
+                    <div class="help-control-row">
+                      <span class="help-key">P / Esc</span>
+                      <span class="help-desc">Pausar / Reanudar el juego</span>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="help-section">
+                  <h3 class="pixel-text text-pink">🎁 Ítems & Elementos</h3>
+                  <div class="help-items-grid">
+                    <div class="help-item-info">
+                      <span class="help-icon">🦴</span>
+                      <div>
+                        <strong>Hueso Blanco:</strong> +1 Vida extra (efecto visual y sonido 1-UP).
+                      </div>
+                    </div>
+                    <div class="help-item-info">
+                      <span class="help-icon">🌹</span>
+                      <div>
+                        <strong>Rosa Roja:</strong> Escudo protector y Doble Salto (15 segundos acumulativos). El escudo absorbe un choque reduciendo el tiempo restante.
+                      </div>
+                    </div>
+                    <div class="help-item-info">
+                      <span class="help-icon">🐟</span>
+                      <div>
+                        <strong>Salmón:</strong> +50 Puntos base aumentados por el multiplicador.
+                      </div>
+                    </div>
+                    <div class="help-item-info">
+                      <span class="help-icon">🍰</span>
+                      <div>
+                        <strong>Kuchen de Frambuesa:</strong> +100 Puntos e incrementa el multiplicador en +x0.2 (máx x5.0).
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="help-section">
+                  <h3 class="pixel-text text-warning">🌋 Climas y Peligros Sureños</h3>
+                  <p>El clima cambia dinámicamente cada etapa. Presta especial atención a:</p>
+                  <ul>
+                    <li>🌪️ <strong>Etapa de Tornado (múltiplos de 5):</strong> Vientos brutales y vacas voladoras giratorias que debes esquivar.</li>
+                    <li>🌋 <strong>Etapa de Erupción (múltiplos de 3):</strong> Temblor de pantalla y lluvia de rocas volcánicas incandescentes cayendo del cielo.</li>
+                  </ul>
+                </section>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-accent pixel-text" id="start-help-btn">¡ENTENDIDO!</button>
+              </div>
             </div>
           </div>
         </div>

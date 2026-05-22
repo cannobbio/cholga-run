@@ -23,6 +23,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Sistema de vidas**: comienza con 1 vida, acumula más con huesos blancos
 - **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos)
 - **Cinemática de reencuentro** con Eloísa al completar cada ciclo de 10 etapas
+- **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego
 
 ### 🎮 Controles
 

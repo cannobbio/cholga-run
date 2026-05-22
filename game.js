@@ -2308,6 +2308,27 @@ function startGame() {
   requestAnimationFrame(gameLoop);
 }
 
+function openHelpModal() {
+  if (gameState === STATES.PLAYING) {
+    gameState = STATES.PAUSED;
+    if (window.audioEngine) window.audioEngine.stopMusic();
+  }
+  const modal = document.getElementById('help-modal');
+  modal.classList.remove('hidden');
+}
+
+function closeHelpModal() {
+  const modal = document.getElementById('help-modal');
+  modal.classList.add('hidden');
+  
+  if (gameState === STATES.PAUSED) {
+    gameState = STATES.PLAYING;
+    if (window.audioEngine) window.audioEngine.startMusic();
+    lastFrameTime = 0;
+    requestAnimationFrame(gameLoop);
+  }
+}
+
 function togglePause() {
   if (gameState === STATES.PLAYING) {
     gameState = STATES.PAUSED;
@@ -2350,6 +2371,16 @@ function setupEventListeners() {
   
   // Teclas físicas
   window.addEventListener('keydown', (e) => {
+    // Si el modal de ayuda está abierto, cerrar con Escape, P, o Espacio
+    const isHelpOpen = !document.getElementById('help-modal').classList.contains('hidden');
+    if (isHelpOpen) {
+      if (e.code === 'KeyP' || e.code === 'Escape' || e.code === 'Space') {
+        e.preventDefault();
+        closeHelpModal();
+        return;
+      }
+    }
+
     // Si Cholga está en animación de muerte, bloquear todos los inputs
     if (gameState === STATES.DYING) {
       e.preventDefault();
@@ -2436,6 +2467,14 @@ function setupEventListeners() {
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
   document.getElementById('resume-btn').addEventListener('click', togglePause);
+  document.getElementById('help-btn').addEventListener('click', openHelpModal);
+  document.getElementById('close-help-btn').addEventListener('click', closeHelpModal);
+  document.getElementById('start-help-btn').addEventListener('click', closeHelpModal);
+  document.getElementById('help-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('help-modal')) {
+      closeHelpModal();
+    }
+  });
 
   // Clic en el canvas (Mobile y Desktop click)
   canvas.addEventListener('mousedown', (e) => {
