@@ -1120,38 +1120,48 @@ function playChileanAnthem() {
   const beat = 60 / tempo; // 0.5 segundos por tiempo
   
   const melody = [
-    { note: 'C4', time: 0.0 * beat, dur: 0.5 * beat },
-    { note: 'E4', time: 0.5 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 1.0 * beat, dur: 0.5 * beat },
-    { note: 'E4', time: 1.5 * beat, dur: 0.5 * beat },
-    { note: 'C4', time: 2.0 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 2.5 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 3.0 * beat, dur: 1.0 * beat },
-    
-    { note: 'E4', time: 4.5 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 5.0 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 5.5 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 6.0 * beat, dur: 0.5 * beat },
-    { note: 'E4', time: 6.5 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 7.0 * beat, dur: 1.0 * beat },
-    
-    { note: 'E5', time: 8.5 * beat, dur: 0.5 * beat },
-    { note: 'E5', time: 9.0 * beat, dur: 0.5 * beat },
-    { note: 'D5', time: 9.5 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 10.0 * beat, dur: 0.5 * beat },
-    { note: 'B4', time: 10.5 * beat, dur: 0.5 * beat },
-    { note: 'A4', time: 11.0 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 11.5 * beat, dur: 1.0 * beat },
-    
-    { note: 'G4', time: 13.0 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 13.5 * beat, dur: 0.5 * beat },
-    { note: 'F4', time: 14.0 * beat, dur: 0.5 * beat },
-    { note: 'A4', time: 14.5 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 15.0 * beat, dur: 0.5 * beat },
-    { note: 'B4', time: 15.5 * beat, dur: 0.5 * beat },
-    { note: 'G4', time: 16.0 * beat, dur: 0.5 * beat },
-    { note: 'B4', time: 16.5 * beat, dur: 0.5 * beat },
-    { note: 'C5', time: 17.0 * beat, dur: 1.5 * beat }
+    // 1. "Puro, Chile, es tu cielo azulado"
+    { note: 'G4', time: 0.0 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 0.5 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 1.0 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 1.5 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 2.0 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 2.5 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 3.0 * beat, dur: 0.4 * beat },
+    { note: 'F5', time: 3.5 * beat, dur: 0.6 * beat },
+    { note: 'F5', time: 4.25 * beat, dur: 1.0 * beat },
+
+    // 2. "Puras brisas te cruzan también"
+    { note: 'F5', time: 6.0 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 6.5 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 7.0 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 7.5 * beat, dur: 0.4 * beat },
+    { note: 'G5', time: 8.0 * beat, dur: 0.4 * beat },
+    { note: 'F5', time: 8.5 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 9.0 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 9.5 * beat, dur: 0.6 * beat },
+    { note: 'C5', time: 10.25 * beat, dur: 1.0 * beat },
+
+    // 3. "Y tu campo de flores bordado"
+    { note: 'G4', time: 12.0 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 12.5 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 13.0 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 13.5 * beat, dur: 0.4 * beat },
+    { note: 'C5', time: 14.0 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 14.5 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 15.0 * beat, dur: 0.4 * beat },
+    { note: 'F5', time: 15.5 * beat, dur: 0.6 * beat },
+    { note: 'F5', time: 16.25 * beat, dur: 1.0 * beat },
+
+    // 4. "Es la copia feliz del Edén"
+    { note: 'F5', time: 18.0 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 18.5 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 19.0 * beat, dur: 0.4 * beat },
+    { note: 'D5', time: 19.5 * beat, dur: 0.4 * beat },
+    { note: 'G5', time: 20.0 * beat, dur: 0.4 * beat },
+    { note: 'G5', time: 20.5 * beat, dur: 0.4 * beat },
+    { note: 'E5', time: 21.0 * beat, dur: 0.6 * beat },
+    { note: 'C5', time: 21.75 * beat, dur: 2.0 * beat }
   ];
   
   melody.forEach((n) => {

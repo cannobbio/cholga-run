@@ -2091,7 +2091,7 @@ function updateGame() {
   if (isFlagpoleCutscene) {
     flagpoleCutsceneTimer++;
     if (flagpole) {
-      flagpole.flagRaisedPercent = Math.min(100, flagpoleCutsceneTimer / 5.5);
+      flagpole.flagRaisedPercent = Math.min(100, flagpoleCutsceneTimer / 6.6);
     }
     
     // Forzar Terrier al piso en posición idle
