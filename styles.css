@@ -99,9 +99,9 @@ body {
 
 .logo-subtitle {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 0.5px;
   color: var(--color-cyan);
   text-shadow: 0 0 5px rgba(0, 240, 255, 0.4);
 }
@@ -153,104 +153,20 @@ body {
 .text-green { color: var(--color-green); text-shadow: 0 0 8px rgba(57, 255, 20, 0.3); }
 .text-warning { color: var(--color-gold); }
 
-/* Layout Grid */
+/* Layout */
 .game-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .game-layout {
-    grid-template-columns: 1fr;
-  }
-  
-  .left-sidebar {
-    order: 2;
-  }
-  
-  .game-viewport-container {
-    order: 1;
-  }
-}
-
-/* Sidebars styling */
-.game-sidebar {
-  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
 }
 
-.sidebar-title {
-  font-size: 1rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #fff;
-  border-left: 3px solid var(--color-cyan);
-  padding-left: 10px;
-}
-
+/* Divider utility */
 .divider {
   border: none;
   height: 1px;
   background: var(--border-light);
   margin: 8px 0;
-}
-
-/* Statistics Grid */
-.stats-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.stat-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  padding: 10px 16px;
-  border-radius: 12px;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.stat-icon {
-  font-size: 1.5rem;
-}
-
-.stat-label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-dim);
-  flex-grow: 1;
-}
-
-.stat-value {
-  font-size: 0.9rem;
-  color: #fff;
-}
-
-/* Controls Guide */
-.controls-guide {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.control-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
 }
 
 .key {
@@ -264,73 +180,8 @@ body {
   color: #fff;
   min-width: 32px;
   text-align: center;
-}
-
-.control-row .desc {
-  color: var(--color-text-dim);
-  margin-left: 4px;
-}
-
-.control-note {
-  font-size: 0.8rem;
-  color: var(--color-text-dim);
-  background: rgba(255, 0, 127, 0.05);
-  border: 1px dashed rgba(255, 0, 127, 0.2);
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 6px;
-}
-
-/* Weather Selection */
-.weather-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.weather-btn {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 10px 14px;
-  border-radius: 12px;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.weather-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--color-cyan);
-  transform: translateX(4px);
-}
-
-.weather-btn.active {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--color-cyan);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-}
-
-.weather-btn .icon {
-  font-size: 1.4rem;
-}
-
-.weather-btn .btn-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.weather-btn .btn-info .title {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.weather-btn .btn-info .sub {
-  font-size: 0.75rem;
-  color: var(--color-text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Audio Settings */
@@ -430,6 +281,44 @@ body {
 .volume-slider::-webkit-slider-thumb:hover {
   background: var(--color-cyan);
   transform: scale(1.2);
+}
+
+/* --- RELOCATED AUDIO CONTROLS PANEL (Under Game Viewport) --- */
+.audio-controls-panel {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audio-panel-title {
+  font-size: 0.65rem;
+  color: var(--color-cyan);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.audio-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 32px;
+}
+
+@media (max-width: 600px) {
+  .audio-controls-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.audio-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audio-control-item .volume-row {
+  padding-left: 4px;
 }
 
 /* Viewport / Screen */
@@ -719,11 +608,14 @@ body {
   gap: 8px;
   font-size: 0.8rem;
   color: #f5f6f8;
+  flex-wrap: wrap;
 }
 
 .control-item .desc {
   color: var(--color-text-dim);
   font-size: 0.78rem;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .controls-bar-notes {
@@ -1034,14 +926,6 @@ body {
     display: flex; /* Show touch buttons */
   }
 
-  .left-sidebar {
-    display: none !important; /* Hide left statistics panel */
-  }
-
-  .game-layout {
-    grid-template-columns: 1fr !important; /* Force single column on mobile */
-  }
-
   /* Make overlays more compact on mobile */
   .overlay-content h1 {
     font-size: 1.8rem !important;
@@ -1051,6 +935,10 @@ body {
   }
   .overlay-tagline {
     font-size: 0.85rem !important;
+  }
+
+  .audio-controls-panel {
+    display: none !important; /* Hide audio panel on touch devices to save viewport space */
   }
 }
 
@@ -1064,28 +952,35 @@ body {
 @media (max-width: 768px) {
   .game-header {
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 12px !important;
     align-items: center !important;
     text-align: center !important;
   }
-  
-  .score-dashboard {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 16px !important;
-    padding: 8px 16px !important;
+
+  .header-actions {
+    justify-content: center;
   }
-  
-  .score-item {
-    align-items: center !important;
+
+  .logo-title {
+    font-size: 1.4rem !important;
+  }
+
+  .logo-subtitle {
+    font-size: 0.68rem !important;
   }
 }
 
 /* --- BOTÓN DE AYUDA EN EL HEADER --- */
 .header-left {
   display: flex;
+  align-items: flex-start;
+}
+
+.header-actions {
+  display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  padding-top: 6px;
 }
 
 .btn-help {
@@ -1414,24 +1309,7 @@ body {
   background: rgba(15, 23, 42, 0.15);
 }
 
-/* Sidebar & General Light Mode Contrast Fixes */
-.light-mode .sidebar-title {
-  color: var(--color-text) !important;
-}
-
-.light-mode .stat-card {
-  background: rgba(15, 23, 42, 0.03);
-  border-color: rgba(15, 23, 42, 0.06);
-}
-
-.light-mode .stat-card:hover {
-  background: rgba(15, 23, 42, 0.06);
-}
-
-.light-mode .stat-value {
-  color: var(--color-text);
-}
-
+/* General Light Mode Contrast Fixes */
 .light-mode .key,
 .light-mode .help-key {
   background: rgba(15, 23, 42, 0.08) !important;
@@ -1475,6 +1353,11 @@ body {
 
 .light-mode .controls-bar-title {
   text-shadow: none;
+}
+
+.light-mode .audio-panel-title {
+  text-shadow: none;
+  color: var(--color-cyan);
 }
 
 .light-mode .logo-title {
