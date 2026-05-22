@@ -508,6 +508,11 @@ let bgOffsetGround = 0;
 let isTransitioningToMeadow = false;
 let meadowStartBlock = Infinity;
 
+// Variables de control de la Meta Física de la Bandera Chilena
+let flagpole = null; // { x, y, width, height, flagRaisedPercent }
+let isFlagpoleCutscene = false;
+let flagpoleCutsceneTimer = 0;
+
 // ==========================================
 // --- SISTEMA DE CLIMA DINÁMICO Y ETAPAS ---
 // ==========================================
@@ -861,9 +866,12 @@ function updateCutscene() {
     cabinX -= gameSpeed;
     eloisaX = cabinX + 130;
     
-    // Desplazar obstáculos y premios en pantalla
+    // Desplazar obstáculos, premios y asta de bandera en pantalla
     obstacles.forEach(o => o.x -= gameSpeed);
     collectibles.forEach(c => c.x -= gameSpeed);
+    if (flagpole) {
+      flagpole.x -= gameSpeed;
+    }
     
     if (gameSpeed < 0.15) {
       gameSpeed = 0;
@@ -1554,6 +1562,55 @@ function drawForestAndTown(x, blockId = 0) {
   }
 }
 
+/**
+ * Dibuja el asta y la bandera chilena de meta física.
+ * Se dibuja en pixel art retro puro con gradientes y bordes nítidos.
+ */
+function drawFlagpole() {
+  if (!flagpole) return;
+  
+  // Dibujar asta (tubo gris metálico con esfera dorada arriba)
+  ctx.fillStyle = '#94a3b8'; // Gris metal
+  ctx.fillRect(flagpole.x, flagpole.y, 6, flagpole.height);
+  
+  ctx.fillStyle = '#fbbf24'; // Oro esfera superior
+  ctx.fillRect(flagpole.x - 2, flagpole.y - 6, 10, 6);
+  
+  // Dibujar bandera chilena izándose
+  // Altura del asta = 140px. La bandera mide 36x24.
+  // flagY va desde flagpole.y + flagpole.height - 30 (abajo) hasta flagpole.y + 10 (arriba)
+  const minY = flagpole.y + flagpole.height - 30;
+  const maxY = flagpole.y + 10;
+  const flagY = minY - (minY - maxY) * (flagpole.flagRaisedPercent / 100);
+  
+  const flagWidth = 36;
+  const flagHeight = 24;
+  const flagX = flagpole.x + 6;
+  
+  // Fondo/Base de la bandera
+  // Mitad superior izquierda: azul (12x12)
+  ctx.fillStyle = '#002f6c'; // Azul chileno oscuro premium
+  ctx.fillRect(flagX, flagY, 12, 12);
+  
+  // Estrella blanca en el centro de la zona azul
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(flagX + 5, flagY + 4, 2, 4);
+  ctx.fillRect(flagX + 4, flagY + 5, 4, 2);
+  
+  // Mitad superior derecha: blanco (24x12)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(flagX + 12, flagY, 24, 12);
+  
+  // Mitad inferior: rojo (36x12)
+  ctx.fillStyle = '#c8102e'; // Rojo chileno premium
+  ctx.fillRect(flagX, flagY + 12, 36, 12);
+  
+  // Borde negro fino retro
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(flagX, flagY, flagWidth, flagHeight);
+}
+
 function drawVolcanicGround(x) {
   ctx.fillStyle = '#1c1c1c';
   ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
@@ -1781,6 +1838,10 @@ function triggerStormLightningUI() {
 // ==========================================
 
 function updateSpawns() {
+  if (isTransitioningToMeadow) {
+    return; // No spawnear nada durante la transición a la pradera limpia
+  }
+
   spawnTimer += 16.67; // Aprox 60fps (1000/60)
 
   if (spawnTimer >= nextSpawnTime) {
@@ -2020,7 +2081,76 @@ function checkCollisions() {
 // ==========================================
 
 function updateGame() {
+  if (isFlagpoleCutscene) {
+    flagpoleCutsceneTimer++;
+    if (flagpole) {
+      flagpole.flagRaisedPercent = Math.min(100, flagpoleCutsceneTimer / 5.5);
+    }
+    
+    // Forzar Terrier al piso en posición idle
+    terrier.y = GROUND_Y - 48;
+    terrier.vy = 0;
+    terrier.isGrounded = true;
+    terrier.state = 'idle';
+    
+    if (flagpole && flagpole.flagRaisedPercent >= 100) {
+      gameState = STATES.CUTSCENE;
+      cutsceneStage = 0;
+      gameSpeed = 4.0; // velocidad para que la cabaña se deslice hermosamente
+      cabinX = CANVAS_WIDTH + 100;
+      eloisaX = CANVAS_WIDTH + 240;
+      eloisaY = GROUND_Y - 48;
+      eloisaSprite = CINEMATIC_SPRITES.eloisa;
+      isFlagpoleCutscene = false;
+    }
+    
+    updateWeatherEffects();
+    return;
+  }
+
   if (gameState !== STATES.PLAYING) return;
+
+  // Lógica de meta física en Etapa 10
+  if (currentStage === 10) {
+    if (distanceTraveled >= 10 * DISTANCE_PER_STAGE - 25) {
+      if (!isTransitioningToMeadow) {
+        isTransitioningToMeadow = true;
+        meadowStartBlock = Math.floor((-bgOffsetForest) / CANVAS_WIDTH) + 1;
+      }
+      
+      // Spawnear la asta de bandera justo antes de llegar al límite
+      if (distanceTraveled >= 10 * DISTANCE_PER_STAGE - 5 && !flagpole) {
+        flagpole = {
+          x: CANVAS_WIDTH + 50,
+          y: GROUND_Y - 140,
+          width: 6,
+          height: 140,
+          flagRaisedPercent: 0
+        };
+      }
+    }
+  }
+
+  // Actualizar asta de bandera y su colisión
+  if (flagpole && !isFlagpoleCutscene) {
+    flagpole.x -= gameSpeed;
+    
+    // Comprobar colisión física con Terrier
+    if (terrier.x >= flagpole.x - 10) {
+      isFlagpoleCutscene = true;
+      flagpoleCutsceneTimer = 0;
+      gameSpeed = 0;
+      
+      terrier.y = GROUND_Y - 48;
+      terrier.vy = 0;
+      terrier.isGrounded = true;
+      terrier.state = 'idle';
+      
+      if (window.audioEngine && window.audioEngine.playChileanAnthem) {
+        window.audioEngine.playChileanAnthem();
+      }
+    }
+  }
 
   // Aumentar velocidad paulatinamente
   gameSpeed += 0.0007;
@@ -2123,21 +2253,22 @@ function updateGame() {
   // Puntaje por distancia recorrida continua
   distanceTraveled += gameSpeed * 0.03;
   score += Math.floor(multiplier); // El puntaje avanza más rápido si tienes más kuchens
-
   // Verificar cambio de etapa
   const calculatedStage = Math.floor(distanceTraveled / DISTANCE_PER_STAGE) + 1;
   if (calculatedStage !== currentStage) {
     // Si completamos 10 etapas (ej. completamos la 10 y pasaríamos a la 11, que gatilla cuando calculatedStage === 11)
     if (calculatedStage > 1 && (calculatedStage - 1) % 10 === 0) {
-      gameState = STATES.CUTSCENE;
-      cutsceneStage = 0;
-      cabinX = CANVAS_WIDTH + 100;
-      eloisaX = CANVAS_WIDTH + 240;
-      eloisaY = GROUND_Y - 48;
-      eloisaSprite = CINEMATIC_SPRITES.eloisa;
-      
-      if (window.audioEngine && window.audioEngine.stopMusic) {
-        window.audioEngine.stopMusic();
+      if (currentStage !== 10) {
+        gameState = STATES.CUTSCENE;
+        cutsceneStage = 0;
+        cabinX = CANVAS_WIDTH + 100;
+        eloisaX = CANVAS_WIDTH + 240;
+        eloisaY = GROUND_Y - 48;
+        eloisaSprite = CINEMATIC_SPRITES.eloisa;
+        
+        if (window.audioEngine && window.audioEngine.stopMusic) {
+          window.audioEngine.stopMusic();
+        }
       }
     } else {
       currentStage = calculatedStage;
@@ -2227,6 +2358,11 @@ function drawGame() {
     // Eloísa: width = 48, height = 72, y = GROUND_Y - 72
     const eloSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.eloisa_hug : CINEMATIC_SPRITES.eloisa;
     drawPixelSprite(ctx, eloSprite, eloisaX, GROUND_Y - 72, 48, 72);
+  }
+
+  // Dibujar asta de bandera (meta física) si existe
+  if (flagpole) {
+    drawFlagpole();
   }
 
   // 2. Dibujar Obstáculos
@@ -2468,6 +2604,9 @@ function resetGameVariables() {
   bgOffsetGround = 0;
   isTransitioningToMeadow = false;
   meadowStartBlock = Infinity;
+  flagpole = null;
+  isFlagpoleCutscene = false;
+  flagpoleCutsceneTimer = 0;
   
   currentStage = 1;
   stageTransitionTimer = 0;
