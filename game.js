@@ -1026,10 +1026,19 @@ function drawCanvasHUD() {
     weatherColor = '#cbd5e1';
   }
   
-  ctx.fillStyle = weatherColor;
-  ctx.fillText(`${weatherIcon} ${weatherText}`, 85, 24);
+  // Draw weather emoji icon at larger size for proper rendering
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(weatherIcon, 85, 24);
   
-  // 4. Columna 3: HORA (x=165)
+  // Draw weather text label
+  ctx.font = '7px "Press Start 2P"';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = weatherColor;
+  ctx.fillText(weatherText, 103, 24);
+  
+  // 4. Columna 3: HORA (x=175)
   let hourText = 'DÍA';
   let hourIcon = '☀️';
   let hourColor = '#ffd166';
@@ -1048,10 +1057,19 @@ function drawCanvasHUD() {
     hourColor = '#818cf8';
   }
   
-  ctx.fillStyle = hourColor;
-  ctx.fillText(`${hourIcon} ${hourText}`, 165, 24);
+  // Draw hour emoji icon at larger size for proper rendering
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(hourIcon, 175, 24);
   
-  // 5. Columna 4: EVENTO ESPECIAL (x=252)
+  // Draw hour text label
+  ctx.font = '7px "Press Start 2P"';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = hourColor;
+  ctx.fillText(hourText, 193, 24);
+  
+  // 5. Columna 4: EVENTO ESPECIAL (x=270)
   let eventText = '';
   let eventIcon = '';
   let eventColor = '';
@@ -1071,8 +1089,17 @@ function drawCanvasHUD() {
   }
   
   if (eventText) {
+    // Draw event emoji icon at larger size
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(eventIcon, 270, 24);
+    
+    // Draw event text label
+    ctx.font = '7px "Press Start 2P"';
+    ctx.textBaseline = 'middle';
     ctx.fillStyle = eventColor;
-    ctx.fillText(`${eventIcon} ${eventText}`, 252, 24);
+    ctx.fillText(eventText, 288, 24);
   }
   
   // 6. Columna 5: CORAZONES / VIDAS (x=333)
