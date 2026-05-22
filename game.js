@@ -269,6 +269,9 @@ let lightningFlash = 0;  // Duración del destello de relámpago
 // Temporizadores para nuevos climas y eventos
 let volcanicRockTimer = 0;
 let volcanicRockInterval = 1000;
+let windParticles = [];
+let tornadoCowTimer = 0;
+let tornadoCowInterval = 800;
 
 // --- ENTRADA DE TECLADO ---
 const keys = {
@@ -332,6 +335,15 @@ class Obstacle {
       // Velocidades de caída en diagonal
       this.vy = 3.5 + Math.random() * 2.5; // Cae hacia abajo
       this.vx = -(gameSpeed + 1 + Math.random() * 2); // Se mueve hacia la izquierda
+    } else if (type === 'flyingCow') {
+      this.width = 64; // 32x24 escalada x2
+      this.height = 48;
+      this.x = CANVAS_WIDTH + 60;
+      this.baseY = 60 + Math.random() * 120; // Altura base en el cielo
+      this.angle = Math.random() * Math.PI * 2;
+      this.rotationAngle = 0;
+      this.y = this.baseY;
+      this.vx = -(gameSpeed + 2 + Math.random() * 2); // Viaja rápido
     }
   }
 
@@ -339,6 +351,11 @@ class Obstacle {
     if (this.type === 'volcanicRock') {
       this.x += this.vx;
       this.y += this.vy;
+    } else if (this.type === 'flyingCow') {
+      this.x += this.vx;
+      this.angle += 0.08;
+      this.y = this.baseY + Math.sin(this.angle) * 35;
+      this.rotationAngle -= 0.05; // Rotación en espiral de tornado
     } else {
       this.x -= gameSpeed;
     }
@@ -353,6 +370,17 @@ class Obstacle {
   }
 
   draw() {
+    if (this.type === 'flyingCow') {
+      ctx.save();
+      // Trasladar al centro de la vaca para rotar sobre su eje
+      ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+      ctx.rotate(this.rotationAngle);
+      // Dibujar centrada en el origen
+      drawPixelSprite(ctx, OBSTACLE_SPRITES.cow, -this.width / 2, -this.height / 2, this.width, this.height, true);
+      ctx.restore();
+      return;
+    }
+
     let matrix = OBSTACLE_SPRITES.cow;
     if (this.type === 'fence') matrix = OBSTACLE_SPRITES.fence;
     if (this.type === 'stone') matrix = OBSTACLE_SPRITES.stone;
@@ -377,6 +405,10 @@ class Obstacle {
   getCollisionBox() {
     if (this.type === 'cow') {
       return { x: this.x + 8, y: this.y + 6, width: this.width - 16, height: this.height - 8 };
+    }
+    if (this.type === 'flyingCow') {
+      // Un poco más pequeña debido a la rotación
+      return { x: this.x + 12, y: this.y + 10, width: this.width - 24, height: this.height - 20 };
     }
     if (this.type === 'queltehue') {
       return { x: this.x + 4, y: this.y + 4, width: this.width - 8, height: this.height - 8 };
@@ -481,6 +513,16 @@ function applyStageEnvironment(stage) {
   // Limpiar partículas climáticas anteriores para evitar acumulaciones/fugas estáticas
   rainParticles = [];
   lavaParticles = [];
+  windParticles = [];
+  
+  // Etapa de Tornado (múltiplos de 5 pero no de 10, ej: 5, 15, 25...)
+  if (stage % 5 === 0 && stage % 10 !== 0) {
+    currentWeather = 'tornado';
+    if (window.audioEngine) {
+      window.audioEngine.setMusicTheme('danger');
+    }
+    return;
+  }
   
   // Las etapas múltiplos de 3 son SIEMPRE de Erupción Volcánica
   if (stage % 3 === 0) {
@@ -592,9 +634,13 @@ function drawCanvasHUD() {
       weatherText = 'ERUPCIÓN';
       weatherIcon = '🌋';
       break;
+    case 'tornado':
+      weatherText = 'TORNADO';
+      weatherIcon = '🌪️';
+      break;
   }
   
-  ctx.fillStyle = (currentWeather === 'eruption' || currentStage % 3 === 0) ? '#ff3300' : '#ffd166';
+  ctx.fillStyle = (currentWeather === 'eruption' || currentStage % 3 === 0) ? '#ff3300' : (currentWeather === 'tornado' ? '#b5e2fa' : '#ffd166');
   ctx.fillText(`${weatherIcon} ${weatherText}`, 25, 46);
   
   ctx.restore();
@@ -1460,6 +1506,30 @@ function updateWeatherEffects() {
       rainParticles.splice(i, 1);
     }
   }
+
+  // Generación y actualización de Partículas de Viento (Tornado)
+  if (currentWeather === 'tornado') {
+    if (Math.random() < 0.5) {
+      windParticles.push({
+        x: CANVAS_WIDTH + 50,
+        y: Math.random() * (CANVAS_HEIGHT - 60) + 10,
+        length: 40 + Math.random() * 70,
+        speed: 12 + Math.random() * 8,
+        opacity: 0.12 + Math.random() * 0.22,
+        angle: Math.random() * 0.1 - 0.05
+      });
+    }
+  }
+
+  for (let i = windParticles.length - 1; i >= 0; i--) {
+    const p = windParticles[i];
+    p.x -= p.speed;
+    // Sutil oscilación vertical para simular torbellino
+    p.y += Math.sin(p.x * 0.02) * 2.5;
+    if (p.x < -p.length) {
+      windParticles.splice(i, 1);
+    }
+  }
 }
 
 function drawWeatherEffects() {
@@ -1501,6 +1571,19 @@ function drawWeatherEffects() {
       ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
     });
     ctx.globalAlpha = 1.0;
+  }
+
+  // 5. Partículas de Viento (Tornado)
+  if (currentWeather === 'tornado') {
+    windParticles.forEach(p => {
+      ctx.strokeStyle = `rgba(220, 230, 250, ${p.opacity})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const endX = p.x + p.length;
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(endX, p.y + Math.sin(p.x * 0.02) * 2);
+      ctx.stroke();
+    });
   }
 }
 
@@ -1758,6 +1841,16 @@ function updateGame() {
       volcanicRockTimer = 0;
       volcanicRockInterval = 600 + Math.random() * 800;
       obstacles.push(new Obstacle('volcanicRock'));
+    }
+  }
+
+  // Spawn de vacas voladoras si el clima es tornado
+  if (currentWeather === 'tornado') {
+    tornadoCowTimer += 16.67;
+    if (tornadoCowTimer >= tornadoCowInterval) {
+      tornadoCowTimer = 0;
+      tornadoCowInterval = 700 + Math.random() * 800;
+      obstacles.push(new Obstacle('flyingCow'));
     }
   }
 
