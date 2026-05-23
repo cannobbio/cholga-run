@@ -1242,7 +1242,7 @@ function drawCutsceneTextBox() {
   ctx.font = '8px "Press Start 2P"';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText("HAZ VUELTO CHOLGA!", b1X + b1W / 2, b1Y + b1H / 2);
+  ctx.fillText("HAS VUELTO CHOLGA!", b1X + b1W / 2, b1Y + b1H / 2);
   
   // 2. Burbuja de Cholga
   const b2X = 400;

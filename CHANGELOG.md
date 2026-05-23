@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.4] - 2026-05-22
+### Fixed
+- **Corrección de Ortografía en Diálogo**: Corregimos un error ortográfico en el diálogo de Eloísa de la cinemática de reencuentro en la cabaña. Se reemplazó el texto `"HAZ VUELTO CHOLGA!"` (del verbo *hacer*) por el correcto `"HAS VUELTO CHOLGA!"` (del verbo auxiliar *haber*).
+
 ## [1.15.3] - 2026-05-22
 ### Changed
 - **Calbuco como Volcán Activo Único y Osorno Pacífico**:
