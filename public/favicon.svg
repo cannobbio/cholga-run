@@ -1,32 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32" shape-rendering="crispEdges">
   <!-- Orejas Negras -->
-  <rect x="2" y="2" width="2" height="3" fill="#1a1a1a"/>
-  <rect x="12" y="2" width="2" height="3" fill="#1a1a1a"/>
+  <rect x="2" y="2" width="2" height="3" fill="#111111"/>
+  <rect x="12" y="2" width="2" height="3" fill="#111111"/>
   
   <!-- Cabeza Superior Negra -->
-  <rect x="4" y="4" width="8" height="4" fill="#1a1a1a"/>
+  <rect x="4" y="4" width="8" height="4" fill="#111111"/>
   
-  <!-- Cejas Cafés -->
+  <!-- Cejas Cafés / Tan -->
   <rect x="4" y="6" width="2" height="1" fill="#c68b59"/>
   <rect x="10" y="6" width="2" height="1" fill="#c68b59"/>
   
-  <!-- Ojos Negros -->
-  <rect x="5" y="7" width="1" height="1" fill="#1a1a1a"/>
-  <rect x="10" y="7" width="1" height="1" fill="#1a1a1a"/>
+  <!-- Ojos Blancos (Brillantes en la cabeza negra) -->
+  <rect x="5" y="7" width="1" height="1" fill="#ffffff"/>
+  <rect x="10" y="7" width="1" height="1" fill="#ffffff"/>
   
-  <!-- Mejillas Cafés -->
+  <!-- Mejillas Cafés / Tan -->
   <rect x="3" y="8" width="2" height="2" fill="#c68b59"/>
   <rect x="11" y="8" width="2" height="2" fill="#c68b59"/>
   
-  <!-- Cara Blanca -->
-  <rect x="5" y="8" width="6" height="5" fill="#ffffff"/>
-  <rect x="6" y="7" width="4" height="1" fill="#ffffff"/>
-  <rect x="4" y="8" width="1" height="2" fill="#ffffff"/>
-  <rect x="11" y="8" width="1" height="2" fill="#ffffff"/>
+  <!-- Resto de la cara en Negro (Terrier Cabeza Negra) -->
+  <rect x="5" y="8" width="6" height="5" fill="#111111"/>
+  <rect x="6" y="7" width="4" height="1" fill="#111111"/>
+  <rect x="4" y="8" width="1" height="2" fill="#111111"/>
+  <rect x="11" y="8" width="1" height="2" fill="#111111"/>
   
-  <!-- Hocico Negro/Nariz -->
-  <rect x="7" y="10" width="2" height="1" fill="#1a1a1a"/>
-  <rect x="7" y="11" width="2" height="2" fill="#ffffff"/>
-  <!-- Boca/Nariz -->
-  <rect x="7" y="11" width="2" height="1" fill="#1a1a1a"/>
+  <!-- Detalles del Hocico (Gris Oscuro / Blanco para definir volumen) -->
+  <!-- Nariz Negra -->
+  <rect x="7" y="9" width="2" height="1" fill="#000000"/>
+  <rect x="7" y="10" width="2" height="1" fill="#c68b59"/>
+  <!-- Barbilla Negra -->
+  <rect x="6" y="11" width="4" height="1" fill="#111111"/>
 </svg>

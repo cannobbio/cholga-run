@@ -54,8 +54,11 @@
     <header class="game-header">
       <div class="header-left">
         <div class="header-logo">
-          <span class="pixel-text logo-title">CHOLGA RUN</span>
-          <span class="pixel-text logo-subtitle">PUERTO VARAS EDITION</span>
+          <img src="/favicon.svg" alt="Cholga Logo" class="logo-image" id="header-logo-image" title="¡GUAU! 🐶">
+          <div class="logo-text-group">
+            <span class="pixel-text logo-title">CHOLGA RUN</span>
+            <span class="pixel-text logo-subtitle">PUERTO VARAS EDITION</span>
+          </div>
         </div>
       </div>
       <div class="header-actions">
@@ -89,7 +92,7 @@
         </div>
         <div class="score-item">
           <span class="label">Puntaje</span>
-          <span class="value pixel-text text-cyan" id="current-score-val">00000</span>
+          <span class="value pixel-text text-white" id="current-score-val">00000</span>
         </div>
         <div class="score-item">
           <span class="label">Récord</span>
@@ -142,43 +145,130 @@
           
           <!-- Start / Game Over Overlays -->
           <div id="start-overlay" class="screen-overlay active">
-            <div class="overlay-content">
-              <h1 class="pixel-text title-pulse">¡CHOLGA RUN!</h1>
-              <p class="overlay-tagline">El Gran Escape de la Lluvia Sureña</p>
-              
-              <!-- Mascot Preview (Animated programmatically in canvas, details in overlay) -->
-              <div class="mascot-badge">
-                <span class="badge-icon">🐶</span>
-                <p>Protagonizado por un <strong>Terrier Chileno</strong> tricolor</p>
-              </div>
+            <div class="overlay-content start-content">
+              <div class="start-columns">
+                
+                <!-- Left Column: Title, mascot, actions and arcade signals -->
+                <div class="start-main-panel">
+                  <h1 class="pixel-text title-pulse">¡CHOLGA RUN!</h1>
+                  <p class="overlay-tagline">Aventuras de un Terrier Chileno</p>
+                  
+                  <!-- Mascot Preview with a fun speech bubble -->
+                  <div class="mascot-badge">
+                    <span class="badge-icon">🐶</span>
+                    <p>Protagonizado por un <strong>Terrier Chileno</strong> tricolor</p>
+                    <div id="mascot-speech-bubble" class="pixel-text mascot-bubble">¿INSERT COIN? 🪙</div>
+                  </div>
 
-              <button class="btn btn-primary btn-large pixel-text" id="start-btn">¡COMENZAR A CORRER!</button>
-              <p class="overlay-hint">Presiona ESPACIO o haz clic para empezar</p>
+                  <div class="start-actions">
+                    <button class="btn btn-primary btn-large pixel-text" id="start-btn">
+                      <span class="btn-emoji">🎮</span>
+                      <span class="btn-label">COMENZAR</span>
+                    </button>
+                    <button class="btn btn-accent btn-large pixel-text" id="view-leaderboard-btn">
+                      <span class="btn-emoji">🏆</span>
+                      <span class="btn-label">TOP-10</span>
+                    </button>
+                  </div>
+                  
+                  <div class="arcade-status-row">
+                    <span class="pixel-text blinking-arcade">★ INSERT COIN ★</span>
+                    <span class="pixel-text player-1up">1UP: 00000</span>
+                  </div>
+                  <p class="overlay-hint">Presiona ESPACIO o haz clic para empezar</p>
+                </div>
+
+                <!-- Right Column: Live Leaderboard TOP 10 -->
+                <div class="start-leaderboard-panel glass-panel">
+                  <h3 class="pixel-text summary-title text-gold">🏆 TOP-10 🏆</h3>
+                  <div class="leaderboard-rows" id="start-leaderboard-rows">
+                    <!-- Dinámico vía JS -->
+                  </div>
+                </div>
+                
+              </div>
             </div>
           </div>
 
           <div id="gameover-overlay" class="screen-overlay hidden">
-            <div class="overlay-content">
+            <div class="overlay-content gameover-content">
               <h2 class="pixel-text text-danger title-shake">¡CHOQUE VOLCÁNICO!</h2>
               <p class="overlay-tagline">El terrier tropezó y se puso a descansar...</p>
               
-              <div class="game-summary glass-panel">
-                <div class="summary-row">
-                  <span>Puntaje Final:</span>
-                  <strong class="pixel-text text-cyan" id="final-score">0</strong>
+              <div class="gameover-columns">
+                <!-- Left: Partida Stats -->
+                <div class="game-summary glass-panel">
+                  <h3 class="pixel-text summary-title">TU PARTIDA</h3>
+                  <div class="summary-row">
+                    <span>Puntaje Final:</span>
+                    <strong class="pixel-text text-white" id="final-score">0</strong>
+                  </div>
+                  <div class="summary-row">
+                    <span>Salmones:</span>
+                    <strong class="pixel-text text-gold" id="final-salmons">0</strong>
+                  </div>
+                  <div class="summary-row">
+                    <span>Kuchens:</span>
+                    <strong class="pixel-text text-pink" id="final-kuchens">0</strong>
+                  </div>
                 </div>
-                <div class="summary-row">
-                  <span>Salmones Atrapatdos:</span>
-                  <strong class="pixel-text text-gold" id="final-salmons">0</strong>
-                </div>
-                <div class="summary-row">
-                  <span>Kuchens Devorados:</span>
-                  <strong class="pixel-text text-pink" id="final-kuchens">0</strong>
+
+                <!-- Right: Leaderboard TOP 10 -->
+                <div class="leaderboard-summary glass-panel">
+                  <h3 class="pixel-text summary-title text-gold">🏆 TOP-10 🏆</h3>
+                  <div class="leaderboard-rows" id="leaderboard-rows">
+                    <!-- Dinámico vía JS -->
+                  </div>
                 </div>
               </div>
 
-              <button class="btn btn-accent btn-large pixel-text" id="restart-btn">INTENTAR DE NUEVO</button>
-              <p class="overlay-hint">Presiona ESPACIO para reiniciar</p>
+              <div class="gameover-actions">
+                <div class="gameover-buttons-row">
+                  <button class="btn btn-accent btn-large pixel-text" id="restart-btn">
+                    <span class="btn-emoji">🔄</span>
+                    <span class="btn-label">REINTENTAR</span>
+                  </button>
+                  <button class="btn btn-primary btn-large pixel-text" id="gameover-menu-btn">
+                    <span class="btn-emoji">🏠</span>
+                    <span class="btn-label">INICIO</span>
+                  </button>
+                </div>
+                <p class="overlay-hint">Espacio para REINTENTAR • ESC para volver al INICIO</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal para Registrar Nuevo Récord (Top 10) -->
+          <div id="record-modal" class="screen-overlay hidden">
+            <div class="modal-content glass-panel record-content">
+              <h2 class="pixel-text text-gold title-pulse">🏆 ¡NUEVO RÉCORD! 🏆</h2>
+              <p class="record-subtitle">Clasificaste en el Top 10 Global. ¡Registra tu hazaña! (Presiona ESC u OMITIR para continuar)</p>
+              
+              <div class="record-input-group">
+                <label for="player-name-input" class="pixel-text input-label">TU NOMBRE (MÁX 12):</label>
+                <input type="text" id="player-name-input" class="pixel-text name-input" maxlength="12" autofocus placeholder="CHOLGA-RUNNER">
+              </div>
+              
+              <div class="record-actions-row" style="display: flex; gap: 10px; width: 100%; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                <button class="btn btn-primary pixel-text btn-large" id="submit-record-btn" style="flex: 1; min-width: 140px;">REGISTRAR</button>
+                <button class="btn btn-accent pixel-text btn-large" id="cancel-record-btn" style="flex: 1; min-width: 140px;">OMITIR</button>
+              </div>
+              <p id="record-error-msg" class="pixel-text text-danger hidden">Escribe un nombre válido.</p>
+            </div>
+          </div>
+
+          <!-- Modal para ver el TOP-10 (Leaderboard) -->
+          <div id="leaderboard-modal" class="screen-overlay hidden">
+            <div class="modal-content glass-panel record-content leaderboard-modal-content">
+              <button class="modal-close-btn" id="close-leaderboard-btn" aria-label="Cerrar">&times;</button>
+              <h2 class="pixel-text text-gold title-pulse">🏆 TOP-10 🏆</h2>
+              <p class="record-subtitle">Los corredores más rápidos de Puerto Varas</p>
+              
+              <div class="leaderboard-rows" id="leaderboard-modal-rows">
+                <!-- Dinámico vía JS -->
+              </div>
+              
+              <button class="btn btn-accent pixel-text btn-large" id="close-leaderboard-btn-ok" style="margin-top: 15px;">¡ENTENDIDO!</button>
             </div>
           </div>
 
@@ -278,7 +368,7 @@
       <div class="modal-body">
         <section class="help-section">
           <h3 class="pixel-text text-green">🎯 ¿De qué se trata?</h3>
-          <p><strong>Cholga Run</strong> es un juego retro de 8 bits ambientado en los hermosos paisajes de Puerto Varas y el Lago Llanquihue. Controlas a <strong>Cholga</strong>, un valiente Terrier Chileno tricolor, en su gran escape de la persistente lluvia sureña para reencontrarse con su dueña <strong>Eloísa</strong>.</p>
+          <p><strong>Cholga Run</strong> es un juego retro de 8 bits ambientado en los hermosos paisajes de Puerto Varas y el Lago Llanquihue. Controlas a <strong>Cholga</strong>, un valiente Terrier Chileno tricolor, en su gran escape de la persistente lluvia sureña para reencontrarse con su dueña <strong>Elo</strong>.</p>
         </section>
 
         <section class="help-section">
