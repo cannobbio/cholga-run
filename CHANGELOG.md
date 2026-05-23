@@ -2,6 +2,35 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-05-23
+### Added
+- **Rediseño de HUD Autoadaptable Premium (v1.19.0)**:
+  - **Dynamic Flow Layout**: Reemplazo de coordenadas estáticas absolutas en el HUD de Canvas por un cálculo dinámico de anchos con `ctx.measureText().width`, eliminando por completo las colisiones físicas de textos.
+  - **Premium Vertical Dividers**: Líneas verticales semi-translúcidas sutiles (`rgba(255, 255, 255, 0.12)`) entre secciones que ordenan la pantalla como un juego arcade premium.
+  - **Smart Collapse Mode**: Si las condiciones extremas activas superan los 490px de espacio, el HUD entra automáticamente en modo ultra-compacto ocultando las leyendas escritas (`DESPEJADO`, `NOCHE`, etc.) y conservando únicamente los preciosos iconos pixel-art para garantizar cero overlaps.
+  - **Anclaje de Puntajes a la Derecha**: Re-mapeo del bloque `Puntos / Récord` dibujado a la inversa de derecha a izquierda partiendo del límite estático (`x=730`), lo cual asegura que se expanda armoniosamente hacia la izquierda sin pisar al multiplicador o al inventario de objetos.
+  - **Active Event Badges**: Fondo con brillo y color de borde de evento activo (`ERUPCIÓN` en rojo, `TORNADO` en cian, `GATO!` en ámbar) con pulsación luminosa de opacidad (`Math.sin()`) sutil.
+- **Banderas Alemanas Procedimentales (1:10)**:
+  - Agregamos banderas alemanas tricolores en pixel art (Negro, Rojo, Amarillo) de forma procedural estable y libre de estados mutables mediante la fórmula determinista `((blockId * 3 + i) % 10 === 0)`. Una de cada 10 banderas de casas y Chalets Sureños será la bandera alemana.
+- **Etapa Especial "Salida de Colegios" (Etapa 6 y 26)**:
+  - **Edificación Colegio Alemán**: Pabellones amarillos escolares y una réplica del *Colegio Alemán de Puerto Varas* de colores básicos (amarillo, rojo, negro y azul) con una gran bandera alemana dinámica ondeando sobre su techo.
+  - **Obstáculo Automóvil (`car`)**: Vehículo retro de 64x48px (sedán rojo/azul) que spawnearán bloqueando las calles y requerirán saltos hábiles.
+  - **SFX de Bocina Retro**: Sonido de claxon de doble bocina aguda `¡PIIIIP!` en 8 bits gatillado en Web Audio API cuando el automóvil aparece en el horizonte.
+  - **Pista de Audio Timbre Escolar**: Música melódica alegre con efectos de timbres de salida inarmónicos, ruidos de motores y bocinas sintéticas retro en `audio.js`.
+- **Etapa Especial "Turistas" (Etapa 13 y 33)**:
+  - **Playa de Arena Dorada**: Escenario veraniego completo, desactivando el césped para renderizar un suelo de playa con arena dorada veraniega, conchitas, toallas de playa a rayas y veraneantes pixel art descansando bajo el sol.
+  - **Obstáculo Quitasol (`quitasol`)**: Sombrillas de playa a rayas de colores que bloquean el paso y deben ser saltadas sobre la arena.
+  - **Pista de Audio Cumbia Playera**: Melodía cumbiera tropical sabrosa en 8 bits con bajo sincopado tumbao en onda triangular, percusión/güiro sintética de ruido blanco periódico y armonías brillantes en acordeón de onda cuadrada.
+
+### Changed
+- **Duración del Recorrido a 20 Etapas**: Extendimos la duración necesaria para llegar a casa (reencuentro y abrazo final de Elo/Padres en la cabaña sureña) a **20 etapas** (múltiplos de 20), redistribuyendo los 5 eventos especiales a lo largo del trayecto de forma equilibrada:
+  - Etapa 3: Erupción Volcánica
+  - Etapa 6: Salida de Colegios (¡Nueva!)
+  - Etapa 10: Tornado
+  - Etapa 13: Turistas en la Playa (¡Nueva!)
+  - Etapa 17: ¡Alerta de Gato!
+  - Etapa 20: Llegada a Casa / Bandera final.
+
 ## [1.18.0] - 2026-05-23
 ### Added
 - **Pantalla de Inicio Dual Column con Leaderboard y Animación Blinking**: Implementamos un rediseño retro de la pantalla de inicio con dos columnas: panel de controles y menú arcade a la izquierda (con mascot interactiva `🐶` que ladra y emite divertidas burbujas de diálogo cómico como *"¡DAME KUCHEN! 🍰"* al hacerle clic) y un leaderboard TOP-10 dinámico visible permanentemente a la derecha. Añadimos leyendas blinking clásicas `★ INSERT COIN ★` y `1UP: 00000` con música ligera de intro.

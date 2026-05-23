@@ -300,6 +300,54 @@ const OBSTACLE_SPRITES = {
     "................"
   ],
 
+  // Automóvil de apoderado en Puerto Varas (32x24 px)
+  car: [
+    "................................",
+    "................................",
+    "................................",
+    "..........KKKKKKKKKK............",
+    "........KKAAAAAAAAAAKK..........",
+    ".......KAAAHHHAAAHHHAAK.........",
+    "......KAAAHHHHAAAHHHHAAK........",
+    ".....KAAAHHHHHAAAHHHHHAAAK......",
+    "....KKKKKKKKKKKKKKKKKKKKKK......",
+    "....KRRRRRRRRRRRRRRRRRRRRK......",
+    "...KRRRRRRRRRRRRRRRRRRRRRRK.....",
+    "..KRRRRRRRRRRRRRRRRRRRRRRRRK....",
+    "..KRRRRRRRRRRRRRRRRRRRRRRRRK....",
+    "..KWWKRRRRRRRRRRRRRRRRRRKWWK....",
+    "...KKRRRRRRRRRRRRRRRRRRRRKK.....",
+    ".....KKKKKKKKKKKKKKKKKKKK.......",
+    ".......KKK.........KKK..........",
+    "......KGGGK.......KGGGK.........",
+    "......KGGGK.......KGGGK.........",
+    ".......KKK.........KKK..........",
+    "................................",
+    "................................",
+    "................................",
+    "................................"
+  ],
+
+  // Quitasol / Sombrilla de playa veraniega (16x16 px)
+  quitasol: [
+    "......RRRR......",
+    "....RRWWYWRR....",
+    "...RWWWWYYYWR...",
+    "..RWWWRRRYYYYWR.",
+    ".RWWWRRRRRRYYYYW",
+    "RWWWRRRRRRRRYYYY",
+    "KKKKKKKKKKKKKKKK",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH.......",
+    ".......HH......."
+  ],
+
   // Coihue / Alerce Sureño (Obstáculo terrestre alto, 16x24 px)
   tree: [
     "......VV........",

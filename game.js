@@ -364,6 +364,8 @@ let typedKeys = '';
 let isGatoStage = false;
 let isEruptionStage = false;
 let isTornadoStage = false;
+let isColegioStage = false;
+let isTuristasStage = false;
 let activeCat = null;
 let poopAmmo = 0;
 let poopProjectiles = [];
@@ -488,6 +490,17 @@ class Obstacle {
       this.rotationAngle = 0;
       this.y = this.baseY;
       this.vx = -(gameSpeed + 2 + Math.random() * 2); // Viaja rápido
+    } else if (type === 'car') {
+      this.width = 64; // 32x24 escalada x2
+      this.height = 48;
+      this.y = GROUND_Y - this.height;
+      if (window.audioEngine && window.audioEngine.playCarSpawnSound) {
+        window.audioEngine.playCarSpawnSound();
+      }
+    } else if (type === 'quitasol') {
+      this.width = 36;
+      this.height = 36;
+      this.y = GROUND_Y - this.height;
     }
   }
 
@@ -530,11 +543,14 @@ class Obstacle {
     if (this.type === 'stone') matrix = OBSTACLE_SPRITES.stone;
     if (this.type === 'hole') matrix = OBSTACLE_SPRITES.hole;
     if (this.type === 'volcanicRock') matrix = OBSTACLE_SPRITES.volcanicRock;
+    if (this.type === 'car') matrix = OBSTACLE_SPRITES.car;
+    if (this.type === 'quitasol') matrix = OBSTACLE_SPRITES.quitasol;
     if (this.type === 'queltehue') {
       matrix = this.frame === 0 ? OBSTACLE_SPRITES.queltehue1 : OBSTACLE_SPRITES.queltehue2;
     }
     
-    // Las vacas y queltehues miran hacia la izquierda, por lo que las volteamos (flipX = true)
+    // Las vacas y queltehues miran hacia la izquierda, por lo que las volteamos (flipX = true).
+    // Para el auto, el sprite ya mira hacia la izquierda por defecto.
     const flipX = (this.type === 'cow' || this.type === 'queltehue');
     drawPixelSprite(ctx, matrix, this.x, this.y, this.width, this.height, flipX);
   }
@@ -547,7 +563,7 @@ class Obstacle {
   }
 
   getCollisionBox() {
-    if (this.type === 'cow') {
+    if (this.type === 'cow' || this.type === 'car') {
       return { x: this.x + 8, y: this.y + 6, width: this.width - 16, height: this.height - 8 };
     }
     if (this.type === 'flyingCow') {
@@ -866,10 +882,12 @@ function applyStageEnvironment(stage) {
   isGatoStage = false;
   isEruptionStage = false;
   isTornadoStage = false;
+  isColegioStage = false;
+  isTuristasStage = false;
   activeCat = null;
 
-  // Si llegamos a la cinemática de la bandera (múltiplos de 10) o fin del juego, forzar despejado y día
-  const isFlagScene = (stage % 10 === 0) || (gameState === STATES.CUTSCENE);
+  // Si llegamos a la cinemática de la bandera (múltiplos de 20) o fin del juego, forzar despejado y día
+  const isFlagScene = (stage % 20 === 0) || (gameState === STATES.CUTSCENE);
   
   if (isFlagScene) {
     currentHour = 'dia';
@@ -881,8 +899,8 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 1. Etapa Especial GATO: una vez por tramo de 10 etapas (ej. 5, 15, 25...)
-  if (stage % 10 === 5) {
+  // 1. Etapa Especial GATO: etapa 17 del ciclo de 20 (ej. 17, 37...)
+  if (stage % 20 === 17) {
     isGatoStage = true;
     currentWeather = 'gato';
     currentHour = 'dia'; // Forzamos día/despejado para la persecución del gato
@@ -894,8 +912,8 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 2. Etapa de Erupción Volcánica: exactamente una vez por tramo de 10 etapas (ej. 3, 13, 23...)
-  if (stage % 10 === 3) {
+  // 2. Etapa de Erupción Volcánica: etapa 3 del ciclo de 20 (ej. 3, 23...)
+  if (stage % 20 === 3) {
     isEruptionStage = true;
     currentWeather = 'eruption';
     currentHour = 'noche'; // La erupción se ve espectacular de noche
@@ -906,14 +924,38 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 3. Etapa de Tornado: exactamente una vez por tramo de 10 etapas (ej. 7, 17, 27...)
-  if (stage % 10 === 7) {
+  // 3. Etapa de Tornado: etapa 10 del ciclo de 20 (ej. 10, 30...)
+  if (stage % 20 === 10) {
     isTornadoStage = true;
     currentWeather = 'tornado';
     currentHour = 'atardecer'; // El tornado se ve genial con cielo de atardecer
     currentAtmosphere = 'tormenta'; // Mezclado con tormenta
     if (window.audioEngine) {
       window.audioEngine.setMusicTheme('danger');
+    }
+    return;
+  }
+
+  // 4. Etapa Especial: Salida de Colegios: etapa 6 del ciclo de 20 (ej. 6, 26...)
+  if (stage % 20 === 6) {
+    isColegioStage = true;
+    currentWeather = 'colegio';
+    currentHour = 'dia'; // Salida de colegios es de tarde soleada/clara
+    currentAtmosphere = 'despejado';
+    if (window.audioEngine) {
+      window.audioEngine.setMusicTheme('colegio');
+    }
+    return;
+  }
+
+  // 5. Etapa Especial: Turistas en la Playa: etapa 13 del ciclo de 20 (ej. 13, 33...)
+  if (stage % 20 === 13) {
+    isTuristasStage = true;
+    currentWeather = 'turistas';
+    currentHour = 'dia'; // Sol radiante para la playa
+    currentAtmosphere = 'despejado';
+    if (window.audioEngine) {
+      window.audioEngine.setMusicTheme('cumbia');
     }
     return;
   }
@@ -1428,7 +1470,7 @@ function drawCutsceneTextBox() {
   ctx.font = '8px "Press Start 2P"';
   ctx.textAlign = 'left';
   
-  const endingIndex = (Math.floor(currentStage / 10) - 1) % 3;
+  const endingIndex = (Math.floor(currentStage / 20) - 1) % 3;
   if (endingIndex === 1) {
     // LA MAMÁ: "TKM ❤️  MAMÁ"
     const textX = b2X + 20;
@@ -1813,6 +1855,47 @@ function drawChileanFlag(x, y) {
   ctx.restore();
 }
 
+function drawGermanFlag(x, y) {
+  ctx.save();
+  ctx.fillStyle = '#e2e8f0';
+  ctx.fillRect(x, y - 24, 2, 24); // Asta de la bandera (Gris claro)
+  
+  // Franja superior negra
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x + 2, y - 24, 16, 3.5);
+  
+  // Franja del medio roja
+  ctx.fillStyle = '#d61c4e';
+  ctx.fillRect(x + 2, y - 20.5, 16, 3.5);
+  
+  // Franja inferior dorada/amarilla
+  ctx.fillStyle = '#ffe066';
+  ctx.fillRect(x + 2, y - 17, 16, 3);
+  ctx.restore();
+}
+
+function drawLargeGermanFlag(x, y) {
+  ctx.save();
+  ctx.fillStyle = '#e2e8f0';
+  ctx.fillRect(x, y - 36, 3, 36); // Asta de la bandera más gruesa y alta (36px)
+  
+  // Efecto dinámico de ondeado
+  const wave = Math.sin(Date.now() / 120 + x) * 2.2;
+  
+  // Franja superior negra
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x + 3, y - 36 + wave, 24, 5);
+  
+  // Franja del medio roja
+  ctx.fillStyle = '#d61c4e';
+  ctx.fillRect(x + 3, y - 31 + wave, 24, 5);
+  
+  // Franja inferior dorada/amarilla
+  ctx.fillStyle = '#ffe066';
+  ctx.fillRect(x + 3, y - 26 + wave, 24, 5);
+  ctx.restore();
+}
+
 function drawVolcanoOsorno(x, blockId = 0) {
   const volBaseWidth = 260;
   const volHeight = 125;
@@ -2014,6 +2097,7 @@ function drawLakeLlanquihue(x) {
 }
 
 function drawForestBackground(x, blockId = 0) {
+  if (isTuristasStage) return; // Omitir fondo de bosque para revelar el lago Llanquihue como mar/playa!
   const forestY = GROUND_Y - 30;
   
   // 1. Color de fondo del bosque (follaje lejano)
@@ -2031,6 +2115,62 @@ function drawForestForeground(x, blockId = 0) {
   if (isMeadow) {
     // Si es pradera verde en etapa 10, no dibujamos árboles ni casas
     return;
+  }
+  
+  if (isTuristasStage) {
+    // Escenario de Playa veraniega con sombrillas, toallas y veraneantes
+    const beachBgY = forestY + 5;
+    
+    // Arena de fondo de playa
+    ctx.fillStyle = '#e8b87d';
+    ctx.fillRect(x, beachBgY, CANVAS_WIDTH + 2, GROUND_Y - beachBgY);
+    
+    // Toallas, quitasoles y turistas
+    for (let i = 0; i < 3; i++) {
+      const itemX = x + i * 290 + 90;
+      const itemY = GROUND_Y - 5;
+      
+      // Dibujamos toalla (cian o rosa)
+      ctx.fillStyle = (i % 2 === 0) ? '#38bdf8' : '#f472b6';
+      ctx.fillRect(itemX, itemY - 2, 28, 4);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(itemX + 6, itemY - 2, 4, 4);
+      ctx.fillRect(itemX + 18, itemY - 2, 4, 4);
+      
+      // Dibujamos turista en pixel art
+      ctx.fillStyle = '#ffb3c6'; // Piel
+      ctx.fillRect(itemX + 12, itemY - 14, 6, 6); // Cabeza
+      ctx.fillRect(itemX + 10, itemY - 8, 10, 6); // Torso
+      ctx.fillStyle = (i % 2 === 0) ? '#f472b6' : '#38bdf8'; // Bañador
+      ctx.fillRect(itemX + 10, itemY - 4, 10, 2);
+      
+      // Quitasol clavado en la arena
+      const umbrellaX = itemX - 20;
+      const umbrellaY = itemY - 4;
+      
+      ctx.fillStyle = '#e2e8f0'; // Poste de metal
+      ctx.fillRect(umbrellaX + 8, umbrellaY - 24, 2, 24);
+      
+      // Copa del quitasol de color a rayas
+      ctx.fillStyle = (i % 2 === 0) ? '#ef4444' : '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(umbrellaX + 9, umbrellaY - 22, 10, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(umbrellaX + 9, umbrellaY - 22, 6, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.fillStyle = (i % 2 === 0) ? '#ef4444' : '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(umbrellaX + 9, umbrellaY - 22, 3, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+    }
+    return; // Saltar árboles y casas regulares
   }
   
   // 2. Colores para los árboles del primer plano
@@ -2105,6 +2245,70 @@ function drawForestForeground(x, blockId = 0) {
     // Bandera de vez en cuando de forma orgánica y estable (1 de cada 5 edificios)
     const hasFlag = ((i + blockId * 5) % 5 === 0);
     
+    // Determinar si la bandera es alemana (1 de cada 10 banderas es alemana)
+    const isGerman = ((blockId * 3 + i) % 10 === 0);
+    
+    if (isColegioStage) {
+      if (i === 1) {
+        // Colegio Alemán de Puerto Varas (Edificaciones de colores básicos)
+        // 1. Paredes de colores básicos
+        ctx.fillStyle = '#0f47af'; // Azul
+        ctx.fillRect(houseX, houseY, 25, 25);
+        
+        ctx.fillStyle = '#ffe066'; // Amarillo
+        ctx.fillRect(houseX + 25, houseY, 25, 25);
+        
+        ctx.fillStyle = '#1a1a1a'; // Negro
+        ctx.fillRect(houseX + 50, houseY, 25, 25);
+        
+        // 2. Base de cemento gris
+        ctx.fillStyle = '#4a4f5c';
+        ctx.fillRect(houseX - 4, houseY + 23, 83, 2);
+        
+        // 3. Techo del bloque del medio (Rojo)
+        ctx.fillStyle = '#d61c4e';
+        ctx.beginPath();
+        ctx.moveTo(houseX + 20, houseY);
+        ctx.lineTo(houseX + 37.5, houseY - 14);
+        ctx.lineTo(houseX + 55, houseY);
+        ctx.closePath();
+        ctx.fill();
+        
+        // 4. Puerta del medio (Café)
+        ctx.fillStyle = '#7c5335';
+        ctx.fillRect(houseX + 32, houseY + 9, 11, 15);
+        
+        // 5. Ventanas (Amarillo brillante/cristal)
+        ctx.fillStyle = '#ffe082';
+        ctx.fillRect(houseX + 6, houseY + 6, 6, 6);
+        ctx.fillRect(houseX + 14, houseY + 6, 6, 6);
+        ctx.fillRect(houseX + 56, houseY + 6, 6, 6);
+        ctx.fillRect(houseX + 64, houseY + 6, 6, 6);
+        
+        // 6. Gran Bandera Alemana flameando arriba del Colegio
+        drawLargeGermanFlag(houseX + 36, houseY - 14);
+      } else {
+        // Pabellón / Aulas de clases del colegio
+        ctx.fillStyle = '#ffe066'; // Amarillo básico
+        ctx.fillRect(houseX, houseY + 4, 45, 21);
+        
+        ctx.fillStyle = '#d61c4e'; // Techo Rojo
+        ctx.beginPath();
+        ctx.moveTo(houseX - 4, houseY + 4);
+        ctx.lineTo(houseX + 22.5, houseY - 12);
+        ctx.lineTo(houseX + 49, houseY + 4);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Puerta y ventanas escolares
+        ctx.fillStyle = '#1a1a1a'; // Puerta negra
+        ctx.fillRect(houseX + 8, houseY + 11, 8, 14);
+        ctx.fillStyle = '#ffe082'; // Ventana de clases
+        ctx.fillRect(houseX + 24, houseY + 9, 14, 8);
+      }
+      continue; // Saltar casas estándar para este loop
+    }
+    
     if (buildingType === 0) {
       // Casa Alemana Estándar (Cottage)
       ctx.fillStyle = houseColor;
@@ -2124,7 +2328,11 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 24, houseY + 6, 8, 8);
       
       if (hasFlag && !isEruptionStage) {
-        drawChileanFlag(houseX + 32, houseY + 2);
+        if (isGerman) {
+          drawGermanFlag(houseX + 32, houseY + 2);
+        } else {
+          drawChileanFlag(houseX + 32, houseY + 2);
+        }
       }
     } else if (buildingType === 1) {
       // Mansión Alemana de 2 Pisos
@@ -2149,7 +2357,11 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 28, mansionY + 20, 8, 8);
       
       if (hasFlag && !isEruptionStage) {
-        drawChileanFlag(houseX + 36, mansionY + 2);
+        if (isGerman) {
+          drawGermanFlag(houseX + 36, mansionY + 2);
+        } else {
+          drawChileanFlag(houseX + 36, mansionY + 2);
+        }
       }
     } else if (buildingType === 2) {
       // Iglesia de Reloj Colonial (Sagrado Corazón)
@@ -2193,7 +2405,11 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 38, churchY + 6, 6, 12);
       
       if (hasFlag && !isEruptionStage) {
-        drawChileanFlag(houseX + 44, churchY + 2);
+        if (isGerman) {
+          drawGermanFlag(houseX + 44, churchY + 2);
+        } else {
+          drawChileanFlag(houseX + 44, churchY + 2);
+        }
       }
     } else {
       // Chalet Sureño con Bandera Permanente
@@ -2233,7 +2449,11 @@ function drawForestForeground(x, blockId = 0) {
 
       // Bandera permanente a la derecha
       if (!isEruptionStage) {
-        drawChileanFlag(houseX + 38, houseY - 4);
+        if (isGerman) {
+          drawGermanFlag(houseX + 38, houseY - 4);
+        } else {
+          drawChileanFlag(houseX + 38, houseY - 4);
+        }
       }
     }
   }
@@ -2289,6 +2509,24 @@ function drawFlagpole() {
 }
 
 function drawVolcanicGround(x) {
+  if (isTuristasStage) {
+    // Playa de arena fina y dorada veraniega
+    ctx.fillStyle = '#f3c68f'; // Arena húmeda
+    ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, CANVAS_HEIGHT - GROUND_Y);
+    
+    ctx.fillStyle = '#e8b87d'; // Arena seca del borde superior
+    ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, 6);
+    
+    // Conchas y detalles de arena
+    ctx.fillStyle = '#dca668';
+    for (let i = 0; i < 8; i++) {
+      const detailX = x + 15 + i * 95 + (i % 2 * 20);
+      const detailY = GROUND_Y + 12 + (i % 3 * 8);
+      ctx.fillRect(detailX, detailY, 6, 2);
+    }
+    return;
+  }
+
   ctx.fillStyle = '#1c1c1c';
   ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, CANVAS_HEIGHT - GROUND_Y);
   
@@ -2630,11 +2868,16 @@ function updateSpawns() {
       
       if (rand < 0.25) {
         // Spawn Obstáculo terrestre (25%)
-        // 'cow' duplicado para dar 40% de probabilidad relativa dentro de la categoría
-        const types = ['cow', 'cow', 'fence', 'stone', 'hole'];
-        // Si la velocidad es baja, evitar vacas demasiado seguidas
+        let types = ['cow', 'cow', 'fence', 'stone', 'hole'];
+        if (isColegioStage) {
+          types = ['car', 'car', 'fence', 'stone', 'hole'];
+        } else if (isTuristasStage) {
+          types = ['quitasol', 'quitasol', 'quitasol', 'stone', 'hole'];
+        }
+        
         let typeIdx = Math.floor(Math.random() * types.length);
-        if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
+        // Si la velocidad es baja, evitar vacas/autos demasiado seguidos
+        if ((types[typeIdx] === 'cow' || types[typeIdx] === 'car') && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
           typeIdx = 3; // piedra en su lugar
         }
         obstacles.push(new Obstacle(types[typeIdx]));
@@ -2999,8 +3242,8 @@ function updateGame() {
 
   if (gameState !== STATES.PLAYING) return;
 
-  // Lógica de meta física en Etapa 10
-  if (currentStage % 10 === 0) {
+  // Lógica de meta física en Etapa 20
+  if (currentStage % 20 === 0) {
     const targetDistance = currentStage * DISTANCE_PER_STAGE;
     if (distanceTraveled >= targetDistance - 25) {
       if (!isTransitioningToMeadow) {
@@ -3179,9 +3422,9 @@ function updateGame() {
   // Verificar cambio de etapa
   const calculatedStage = Math.floor(distanceTraveled / DISTANCE_PER_STAGE) + 1;
   if (calculatedStage !== currentStage) {
-    // Si completamos 10 etapas (ej. completamos la 10 y pasaríamos a la 11, que gatilla cuando calculatedStage === 11)
-    if (calculatedStage > 1 && (calculatedStage - 1) % 10 === 0) {
-      if (currentStage % 10 !== 0) {
+    // Si completamos 20 etapas (ej. completamos la 20 y pasaríamos a la 21, que gatilla cuando calculatedStage === 21)
+    if (calculatedStage > 1 && (calculatedStage - 1) % 20 === 0) {
+      if (currentStage % 20 !== 0) {
         gameState = STATES.CUTSCENE;
         cutsceneStage = 0;
         cabinX = CANVAS_WIDTH + 100;
@@ -3288,7 +3531,7 @@ function drawGame() {
     
     // Elo: width = 48, height = 72, y = GROUND_Y - 72
     // Seleccionar el sprite del personaje correspondiente al final actual
-    const endingIndex = (Math.floor(currentStage / 10) - 1) % 3;
+    const endingIndex = (Math.floor(currentStage / 20) - 1) % 3;
     let charSprite;
     if (endingIndex === 1) {
       charSprite = (cutsceneStage === 4) ? CINEMATIC_SPRITES.mama_hug : CINEMATIC_SPRITES.mama;
