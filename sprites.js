@@ -17,7 +17,7 @@ const COLOR_MAP = {
   'B': '#ff7096',     // Salmón rosado (Panza del salmón brillante)
   'U': '#7c5335',     // Café oscuro (Madera de cerca, paredes de cabaña)
   'L': '#ab7b56',     // Café claro (Vetaduras de madera, detalles)
-  'A': '#8ecae6',     // Azul agua (Detalles del salmón, jeans de Eloísa)
+  'A': '#8ecae6',     // Azul agua (Detalles del salmón, jeans de Elo)
   'H': '#e2e8f0',     // Blanco grisáceo (Nieve del volcán, reflejos de piedra)
   'V': '#143825',     // Verde pino oscuro (Hojas de árbol)
   'O': '#2e7d32',     // Verde bosque brillante (Puntos de árbol)
@@ -573,9 +573,9 @@ const COLLECTIBLE_SPRITES = {
   ]
 };
 
-// --- SPRITES DE CINEMÁTICAS (Eloísa y Cabaña Sureña) ---
+// --- SPRITES DE CINEMÁTICAS (Elo y Cabaña Sureña) ---
 const CINEMATIC_SPRITES = {
-  // Eloísa parada (16x24 px)
+  // Elo parada (16x24 px)
   eloisa: [
     ".....TTTTTT.....", // T = Cabello castaño
     "....TTTTTTTT....",
@@ -603,7 +603,7 @@ const CINEMATIC_SPRITES = {
     "....KK    KK...."
   ],
 
-  // Eloísa abrazando al Terrier (16x24 px)
+  // Elo abrazando al Terrier (16x24 px)
   eloisa_hug: [
     ".....TTTTTT.....",
     "....TTTTTTTT....",
