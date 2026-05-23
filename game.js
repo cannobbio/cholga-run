@@ -1009,96 +1009,84 @@ function drawCanvasHUD() {
   
   // 3. Columna 2: CLIMA (x=85)
   let weatherText = 'DESPEJADO';
-  let weatherIcon = '☀️';
+  let weatherSprite = HUD_SPRITES.sun;
   let weatherColor = '#ffd166';
   
   if (currentAtmosphere === 'lluvia') {
     weatherText = 'LLUVIA';
-    weatherIcon = '🌧️';
+    weatherSprite = HUD_SPRITES.rain;
     weatherColor = '#a5f3fc';
   } else if (currentAtmosphere === 'tormenta') {
     weatherText = 'TORMENTA';
-    weatherIcon = '⛈️';
+    weatherSprite = HUD_SPRITES.storm;
     weatherColor = '#c084fc';
   } else if (currentAtmosphere === 'neblina') {
     weatherText = 'NEBLINA';
-    weatherIcon = '🌫️';
+    weatherSprite = HUD_SPRITES.fog;
     weatherColor = '#cbd5e1';
   }
   
-  // Draw weather emoji icon at larger size for proper rendering
-  ctx.font = '14px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(weatherIcon, 85, 24);
+  // Draw weather pixel sprite
+  drawPixelSprite(ctx, weatherSprite, 85, 16, 16, 16);
   
   // Draw weather text label
-  ctx.font = '7px "Press Start 2P"';
-  ctx.textBaseline = 'middle';
   ctx.fillStyle = weatherColor;
+  ctx.textAlign = 'left';
   ctx.fillText(weatherText, 103, 24);
   
   // 4. Columna 3: HORA (x=175)
   let hourText = 'DÍA';
-  let hourIcon = '☀️';
+  let hourSprite = HUD_SPRITES.sun;
   let hourColor = '#ffd166';
   
   if (currentHour === 'amanecer') {
     hourText = 'AMANECER';
-    hourIcon = '🌅';
+    hourSprite = HUD_SPRITES.sunrise;
     hourColor = '#fb923c';
   } else if (currentHour === 'atardecer') {
     hourText = 'ATARDECER';
-    hourIcon = '🌇';
+    hourSprite = HUD_SPRITES.sunset;
     hourColor = '#f472b6';
   } else if (currentHour === 'noche') {
     hourText = 'NOCHE';
-    hourIcon = '🌙';
+    hourSprite = HUD_SPRITES.night;
     hourColor = '#818cf8';
   }
   
-  // Draw hour emoji icon at larger size for proper rendering
-  ctx.font = '14px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(hourIcon, 175, 24);
+  // Draw hour pixel sprite
+  drawPixelSprite(ctx, hourSprite, 175, 16, 16, 16);
   
   // Draw hour text label
-  ctx.font = '7px "Press Start 2P"';
-  ctx.textBaseline = 'middle';
   ctx.fillStyle = hourColor;
+  ctx.textAlign = 'left';
   ctx.fillText(hourText, 193, 24);
   
   // 5. Columna 4: EVENTO ESPECIAL (x=270)
   let eventText = '';
-  let eventIcon = '';
+  let eventSprite = null;
   let eventColor = '';
   
   if (isEruptionStage || currentStage % 3 === 0) {
     eventText = 'ERUPCIÓN';
-    eventIcon = '🌋';
+    eventSprite = HUD_SPRITES.eruption;
     eventColor = '#ef4444';
   } else if (isTornadoStage) {
     eventText = 'TORNADO';
-    eventIcon = '🌪️';
+    eventSprite = HUD_SPRITES.tornado;
     eventColor = '#38bdf8';
   } else if (isGatoStage) {
     eventText = 'GATO!';
-    eventIcon = '🐱';
+    eventSprite = HUD_SPRITES.cat_face;
     eventColor = '#fbbf24';
   }
   
-  if (eventText) {
-    // Draw event emoji icon at larger size
-    ctx.font = '14px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(eventIcon, 270, 24);
+  if (eventText && eventSprite) {
+    // Draw event pixel sprite
+    drawPixelSprite(ctx, eventSprite, 270, 16, 16, 16);
     
     // Draw event text label
-    ctx.font = '7px "Press Start 2P"';
-    ctx.textBaseline = 'middle';
     ctx.fillStyle = eventColor;
+    ctx.textAlign = 'left';
     ctx.fillText(eventText, 288, 24);
   }
   
