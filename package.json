@@ -1,6 +1,6 @@
 {
   "name": "cholga-run",
-  "version": "1.15.5",
+  "version": "1.15.6",
   "description": "Un juego 8-bit estilo Chrome Dino protagonizado por un Terrier Chileno, ambientado en Puerto Varas.",
   "main": "index.html",
   "scripts": {

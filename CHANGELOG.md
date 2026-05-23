@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.6] - 2026-05-23
+### Added
+- **Inicialización de Tema basada en Preferencias del Sistema**: Implementamos un mecanismo de inicialización de tema inline en el `<head>` de `index.html` que detecta la preferencia de color del sistema operativo (`prefers-color-scheme`) como respaldo por defecto en caso de no existir una preferencia manual del usuario guardada (`terrier_theme` en `localStorage`). Si el sistema prefiere modo claro, se activa `.light-mode` inmediatamente antes de renderizar la página para evitar destellos visuales (FOUC).
+- **Decisión de Almacenamiento local vs. Cookies**: Optamos explícitamente por `localStorage` frente a cookies debido a que `localStorage` funciona localmente sin enviar datos redundantes en cada petición HTTP, ofrece una API más limpia y nativa de JS y respeta la privacidad de los usuarios al no requerir banners invasivos de consentimiento de cookies de terceros.
+
 ## [1.15.5] - 2026-05-22
 ### Changed
 - **Ampliación del Ancho de Contenedor**: Incrementamos el ancho máximo del contenedor principal de la aplicación (`.app-container`) de `1300px` a `1440px` en `styles.css` para aprovechar mejor el espacio horizontal en pantallas grandes y proporcionar un lienzo de juego y panel de controles aún más cómodo y espacioso.
