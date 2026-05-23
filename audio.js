@@ -181,6 +181,28 @@ const CHASE_BASS = [
   'D3', 'A3', 'A2', 'E3',  'D3', 'A3', 'E3', 'B3',  'A2', 'D3', 'A2', 'E3',  'A2', 'E3', 'A2', 'E3'
 ];
 
+// 7. INTRO: Música de bienvenida ligera, muy suave y soñadora (BPM=100, Do Mayor)
+const INTRO_MELODY = [
+  'C5', '-', 'E5', '-', 'G5', '-', 'B5', '-',  'A5', '-', 'F5', '-', 'D5', '-', 'G4', '-',
+  'E5', '-', 'G5', '-', 'C6', '-', 'B5', '-',  'A5', '-', 'D5', '-', 'G5', '-', '-', '-',
+  'C5', '-', 'E5', '-', 'G5', '-', 'B5', '-',  'A5', '-', 'F5', '-', 'D5', '-', 'G4', '-',
+  'E5', '-', 'G5', '-', 'D5', '-', 'B4', '-',  'C5', '-', '-', '-', '-', '-', '-', '-'
+];
+const INTRO_CHORDS = [
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['F3', 'A3', 'C4'], ['F3', 'A3', 'C4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['F3', 'A3', 'C4'], ['F3', 'A3', 'C4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['F3', 'A3', 'C4'], ['F3', 'A3', 'C4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['C4', 'E4', 'G4'], ['F3', 'A3', 'C4'], ['C4', 'E4', 'G4'], ['G3', 'B3', 'D4'],
+  ['C4', 'E4', 'G4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4']
+];
+const INTRO_BASS = [
+  'C3', 'G3', 'F3', 'C3',  'G3', 'D3', 'C3', 'G3',  'C3', 'F3', 'C3', 'G3',  'C3', 'G3', 'C3', 'G3',
+  'C3', 'G3', 'F3', 'C3',  'G3', 'D3', 'C3', 'G3',  'C3', 'F3', 'C3', 'G3',  'C3', 'G3', 'C3', 'G3'
+];
+
 // Cache de buffer de ruido
 let noiseBuffer = null;
 
@@ -382,7 +404,14 @@ function scheduleNextStep(step, time) {
     chordArray = CHASE_CHORDS;
     bassArray = CHASE_BASS;
     themeBPM = 155;
+  } else if (musicTheme === 'intro') {
+    melodyArray = INTRO_MELODY;
+    chordArray = INTRO_CHORDS;
+    bassArray = INTRO_BASS;
+    themeBPM = 100;
   }
+
+  const isIntro = (musicTheme === 'intro');
 
   // Escalar BPM con velocidad del juego (ligado al multiplicador de puntaje)
   currentBPM = Math.min(maxBPM, themeBPM + (gameSpeedFactor - 1.0) * 10);
@@ -402,6 +431,9 @@ function scheduleNextStep(step, time) {
     } else if (isNight) {
       // Flauta súper dulce y suave en la noche
       synthNote(freq, time, noteDur, 'triangle', 0.18);
+    } else if (isIntro) {
+      // Flauta ultra dulce, suave y soñadora para el inicio/menú
+      synthNote(freq, time, noteDur, 'triangle', 0.13);
     } else if (musicTheme === 'sunset') {
       // Onda triangular cálida con coro muy atenuado
       synthNote(freq, time, noteDur, 'triangle', 0.16);
@@ -421,8 +453,8 @@ function scheduleNextStep(step, time) {
     const bassDur = stepDuration * 1.8;
     
     if (bassFreq) {
-      // El bajo es más amortiguado y suave en la noche
-      const bassVol = isNight ? 0.16 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.32 : 0.28);
+      // El bajo es más amortiguado y suave en la noche y la intro
+      const bassVol = isIntro ? 0.08 : (isNight ? 0.16 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.32 : 0.28));
       synthNote(bassFreq, time, bassDur, 'triangle', bassVol);
     }
   }
@@ -434,7 +466,7 @@ function scheduleNextStep(step, time) {
     const chordDur = stepDuration * 0.6;
     
     if (chordNotes) {
-      const chordVol = isNight ? 0.04 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.09 : 0.08);
+      const chordVol = isIntro ? 0.022 : (isNight ? 0.04 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.09 : 0.08));
       playStaccatoChord(chordNotes, time, chordDur, chordVol);
     }
   }
@@ -442,20 +474,26 @@ function scheduleNextStep(step, time) {
   // 4. Canal 4: Percusiones 8-bit
   // Bombo analógico (Triangle Sweep)
   if (stepInMeasure === 0 || stepInMeasure === 4) {
-    // Reducir volumen del bombo en la noche
-    if (!isNight || Math.random() < 0.5) {
-      playBassDrumRetro(time);
+    // Desactivado en la intro para mantenerla ligera, bombo reducido en la noche
+    if (!isIntro) {
+      if (!isNight || Math.random() < 0.5) {
+        playBassDrumRetro(time);
+      }
     }
   }
   // Caja staccato (Snare)
   if (stepInMeasure === 2 || stepInMeasure === 6) {
-    const snareVol = isNight ? 0.015 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.06 : 0.05);
-    playNoisePercussion(time, stepDuration * 0.45, true, snareVol);
+    if (!isIntro) {
+      const snareVol = isNight ? 0.015 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.06 : 0.05);
+      playNoisePercussion(time, stepDuration * 0.45, true, snareVol);
+    }
   }
   // Hi-Hat cerrado muy corto
   if (stepInMeasure % 2 === 1) {
-    const hatVol = isNight ? 0.008 : 0.022;
-    playNoisePercussion(time, 0.015, false, hatVol);
+    if (!isIntro) {
+      const hatVol = isNight ? 0.008 : 0.022;
+      playNoisePercussion(time, 0.015, false, hatVol);
+    }
   }
 }
 
@@ -464,12 +502,34 @@ function scheduleNextStep(step, time) {
  */
 function startMusic() {
   initAudio();
-  if (isMusicPlaying || !musicEnabled) return;
+  if (!musicEnabled) return;
   
-  if (audioCtx.state === 'suspended') {
+  if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
   
+  if (isMusicPlaying) return;
+  
+  nextNoteTime = audioCtx.currentTime + 0.05;
+  currentStep = 0;
+  isMusicPlaying = true;
+  scheduler();
+}
+
+/**
+ * Inicia la música ligera de bienvenida/intro
+ */
+function startIntroMusic() {
+  initAudio();
+  if (!musicEnabled) return;
+  
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  
+  if (isMusicPlaying) return;
+  
+  musicTheme = 'intro';
   nextNoteTime = audioCtx.currentTime + 0.05;
   currentStep = 0;
   isMusicPlaying = true;
@@ -1101,7 +1161,7 @@ function playQueltehueSound() {
 }
 
 /**
- * SFX Cinemático / Fanfarria de Etapa Superada (Reencuentro con Eloísa)
+ * SFX Cinemático / Fanfarria de Etapa Superada (Reencuentro con Elo)
  * Alegre fanfarria épica y emocional retro estilo Mario Bros castillo completado.
  */
 function playStageClearSound() {
@@ -1287,6 +1347,7 @@ function playChileanAnthem() {
 window.audioEngine = {
   initAudio,
   startMusic,
+  startIntroMusic,
   stopMusic,
   toggleMusic,
   setMusicVolume,
