@@ -1,6 +1,6 @@
-# 🐶 CHOLGA: El Gran Escape de la Lluvia Sureña
+# 🐶 CHOLGA RUN: Aventuras de un Terrier Chileno
 
-> Un juego runner pixel-art de 8 bits protagonizado por un Terrier Chileno que escapa de la lluvia del sur de Chile para reencontrarse con su dueña Eloísa.
+> Un juego runner pixel-art de 8 bits protagonizado por un Terrier Chileno que escapa de la lluvia del sur de Chile para reencontrarse con su dueña Elo.
 
 🎮 **[¡Jugar ahora!](https://cholga-run.vercel.app)**
 
@@ -8,9 +8,9 @@
 
 ## 🎯 Descripción
 
-**CHOLGA** es un runner infinito por etapas con estética retro de 8 bits ambientado en los paisajes del sur de Chile. Controla a Cholga, un valiente Terrier Chileno tricolor, mientras esquiva vacas, vallas, piedras volcánicas y hoyos en el suelo. Recolecta salmones, devora kuchenes y junta rosas protectoras y huesos de vida extra en tu misión por volver a casa con Eloísa.
+**CHOLGA** es un runner infinito por etapas con estética retro de 8 bits ambientado en los paisajes del sur de Chile. Controla a Cholga, un valiente Terrier Chileno tricolor, mientras esquiva vacas, vallas, piedras volcánicas y hoyos en el suelo. Recolecta salmones, devora kuchenes y junta rosas protectoras y huesos de vida extra en tu misión por volver a casa con Elo.
 
-Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva con burbujas de diálogo estilo cómic, conversión de ítems a puntos y una fanfarria épica de etapa completada.
+Cada 10 etapas, Cholga llega a la cabaña de Elo en una cinemática emotiva con burbujas de diálogo estilo cómic, conversión de ítems a puntos y una fanfarria épica de etapa completada.
 
 ---
 
@@ -20,7 +20,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **10+ etapas** con dificultad progresiva y velocidad incremental.
 - **7 climas dinámicos**: amanecer, soleado, lluvia, atardecer, noche, neblina y tormenta.
 - **HUD Premium Integrado en Canvas**: Marcador de 8 bits ultracompacto (32px de alto) con esquinas redondeadas de 8px y fondo Slate glassmorphic con sombra sutil. Integra de forma limpia corazones pixelados para vidas, contadores compactos de salmón y kuchen (sprites de 18x18), marcador con ceros a la izquierda, etapa y clima unificados a la izquierda, y un multiplicador rosa brillante anclado a la derecha en `x = 775` con animación de wobble y pulso que erradica toda superposición con el récord.
-- **Meta Física y Ceremonia de la Etapa 10**: Al final de la etapa 10, el escenario transiciona suavemente a una pradera verde y despejada. Cholga colisiona en el suelo firme con un asta de bandera, deteniendo el movimiento y dando inicio a una síntesis procedural del Himno Nacional de Chile en 8 bits (onda cuadrada y sub-onda triangular armónica). La bandera de Chile se iza de forma fluida y sincronizada, dando paso al deslizamiento de la cabaña sureña y el emotivo abrazo con Eloísa.
+- **Meta Física y Ceremonia de la Etapa 10**: Al final de la etapa 10, el escenario transiciona suavemente a una pradera verde y despejada. Cholga colisiona en el suelo firme con un asta de bandera, deteniendo el movimiento y dando inicio a una síntesis procedural del Himno Nacional de Chile en 8 bits (onda cuadrada y sub-onda triangular armónica). La bandera de Chile se iza de forma fluida y sincronizada, dando paso al deslizamiento de la cabaña sureña y el emotivo abrazo con Elo.
 - **Variedad de Fondos y Edificaciones**: Parallax de 5 capas completamente continuo y libre de saltos de swaps, que incluye un cono nevado perfecto para el volcán Osorno y cumbres nevadas en el volcán Calbuco. Incluye araucarias, casas de colores de estilo alemán, una iglesia colonial y el nuevo **Chalet Sureño** con vigas de madera, chimenea activa que emite humo retro y bandera nacional.
 - **Erupciones volcánicas** cada 3 etapas con temblor de pantalla y partículas de lava.
 - **Sistema de vidas**: comienza con 1 vida, acumula más con huesos blancos.
@@ -28,7 +28,7 @@ Cada 10 etapas, Cholga llega a la cabaña de Eloísa en una cinemática emotiva 
 - **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego.
 - **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` y total contraste legible.
 - **Telemetría e Insights**: Integración nativa de Vercel Web Analytics para auditar el rendimiento técnico del juego y estadísticas básicas en tiempo real de forma anónima y 100% libre de cookies.
-- **Modo Dios Saiyajin Oculto**: Al escribir de manera oculta la palabra `"god"` en el teclado durante el juego, alternas el Modo Dios. Cholga se transforma visualmente en un súper saiyajin con un aura de partículas de fuego ascendentes (en colores amarillo, naranja y rojo) y un resplandor dorado vibrante (`ctx.shadowBlur = 15`). Esto le confiere invulnerabilidad completa ante todos los obstáculos y hoyos (los cuales explotan al chocar con él). Se desactiva y guarda de forma inteligente cuando Cholga abraza a Eloísa (Etapa 10) para preservar la animación limpia y se reactiva automáticamente en la Etapa 11 al reanudar la carrera.
+- **Modo Dios Saiyajin Oculto**: Al escribir de manera oculta la palabra `"god"` en el teclado durante el juego, alternas el Modo Dios. Cholga se transforma visualmente en un súper saiyajin con un aura de partículas de fuego ascendentes (en colores amarillo, naranja y rojo) y un resplandor dorado vibrante (`ctx.shadowBlur = 15`). Esto le confiere invulnerabilidad completa ante todos los obstáculos y hoyos (los cuales explotan al chocar con él). Se desactiva y guarda de forma inteligente cuando Cholga abraza a Elo (Etapa 10) para preservar la animación limpia y se reactiva automáticamente en la Etapa 11 al reanudar la carrera. En Modo Dios, si Cholga consume la Rosa Roja que otorga doble salto, ¡los saltos en el aire se vuelven infinitos! Además, obtiene munición de caca infinita para disparar con la tecla F sin consumir proyectiles (mostrando un contador "x∞" en el HUD).
 
 ### 🎮 Controles
 

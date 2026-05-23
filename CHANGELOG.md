@@ -2,6 +2,48 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-05-23
+### Added
+- **Pantalla de Inicio Dual Column con Leaderboard y Animación Blinking**: Implementamos un rediseño retro de la pantalla de inicio con dos columnas: panel de controles y menú arcade a la izquierda (con mascot interactiva `🐶` que ladra y emite divertidas burbujas de diálogo cómico como *"¡DAME KUCHEN! 🍰"* al hacerle clic) y un leaderboard TOP-10 dinámico visible permanentemente a la derecha. Añadimos leyendas blinking clásicas `★ INSERT COIN ★` y `1UP: 00000` con música ligera de intro.
+- **Sintetizador Retro de Música de Intro**: Desarrollamos una sutil melodía procedural en tiempo real utilizando un canal de onda triangular (melódica, suave, sin ritmo percusivo fuerte ni ruidos) para acompañar la pantalla de inicio con estilo arcade retro.
+- **God Mode con Saltos Infinitos e Infinitas Projectiles**:
+  - En Modo Dios (`isGodMode`), si Cholga consume la Rosa Roja protectora, ¡puede realizar saltos en el aire ilimitados! (no limitados a doble salto).
+  - Además, obtiene munición de caca infinita, la cual no decrementa el contador, mantiene visible permanentemente el botón móvil táctil de disparo y muestra un elegante indicador `"x∞"` en el HUD.
+- **Tutorial de Disparo en Modo Gato-Gato**: Al atrapar al gato en la etapa especial, se despliega una alerta parpadeante en pantalla en formato retro: `💩 ¡DISPARA CACA CON TECLA F! 💩` para guiar al jugador.
+- **Botón e Interacción ESC de Salida en Muerte**: Se añadió la tecla `Escape` y un botón físico con el icono `🏠 INICIO` para regresar al menú principal de forma limpia sin recargar la página.
+- **Favicon de Terrier Chileno de Cabeza Negra**: Rediseñamos el favicon del juego con un espectacular pixel art SVG de la cabeza de un terrier tricolor negro con mejillas café, cejas cafés brillantes y ojitos blancos.
+
+- **Logotipo de Cholga en el Encabezado**: Incorporamos un logotipo pixel-art SVG interactivo de la cabeza de un terrier tricolor en el encabezado HTML. Añadimos un efecto hover elástico premium en CSS y un sonido de ladrido de 8 bits al hacerle clic.
+- **Opt-Out de Récord**: Añadimos un botón `OMITIR` en formato de dos columnas y soporte de tecla `Escape` (`ESC`) al modal de registro de récord para cancelar y salir directamente al Game Over general.
+- **Resolución Técnica de Música de Intro**: Corregimos un bug sutil en Web Audio API por el cual el intento de autoplay al cargar la página bloqueaba la activación posterior en interacciones del usuario. Al reordenar la comprobación de suspensión del contexto (`audioCtx.resume()`) para que ocurra antes del bloqueo por estado de reproducción, garantizamos que cualquier clic o pulsación inicie la melodía de intro impecablemente en cualquier navegador.
+
+### Changed
+- **Renombre de Marca**: Reemplazamos `"CHOLGA: El Gran Escape de la Lluvia Sureña"` por `"CHOLGA RUN: Aventuras de un Terrier Chileno"` en toda la documentación, título del proyecto, README y logs.
+- **Renombre de Personaje (Eloísa -> Elo)**: Cambiamos todas las menciones a la dueña del Terrier Chileno de "Eloísa" a "Elo" en diálogos cinemáticos del abrazo final, comentarios de código y guías.
+- **HUD Canvas Optimizado**: Corregimos el overlap del multiplicador desplazando sutilmente a la izquierda los indicadores y otorgando un amplio margen de respiración al Score.
+
+## [1.17.0] - 2026-05-23
+### Changed
+- **Migración a Supabase Free (PostgreSQL)**: Reemplazamos Vercel KV por **Supabase Free** como base de datos permanente para el Leaderboard global.
+  - El backend serverless `/api/high-score.js` ahora integra la SDK `@supabase/supabase-js`.
+  - El cliente comunica de forma segura con el endpoint serverless, protegiendo las credenciales (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) de filtraciones.
+  - Mapeo automático del formato PostgreSQL `created_at` a timestamps de milisegundos de JS para una compatibilidad perfecta con el cliente del juego.
+  - Eliminamos la dependencia obsoleta `@vercel/kv` en `package.json` e incorporamos `@supabase/supabase-js`.
+
+## [1.16.0] - 2026-05-23
+### Added
+- **Leaderboard Global Permanente (Top 10)**: Integración de una base de datos serverless permanente y gratuita a través de **Vercel KV** para guardar y mostrar el Top 10 de récords de puntuación a nivel mundial.
+  - Implementación del endpoint `/api/high-score.js` para peticiones `GET` y `POST` con ordenamiento descendente por puntuación y filtros de seguridad.
+  - El récord inicial está configurado por defecto con el nombre `"PUSSY-PUSSY"` y `50,000` puntos como único registro de partida.
+  - Incorporación del modal pixel-art `#record-modal` de registro de nombre en mayúsculas sostenidas de hasta 12 caracteres.
+  - Bypass de teclas de juego durante la escritura del récord para evitar interacciones no deseadas en el fondo.
+  - Fallback local sumamente robusto utilizando `localStorage` en caso de fallas de conexión o límites de API excedidos, asegurando jugabilidad ininterrumpida.
+  - Despliegue de un layout retro glassmorphic side-by-side en la pantalla de Game Over que aprovecha el ancho de 1440px para contrastar estadísticas frente a la tabla del Top 10.
+
+### Changed
+- **HUD Canvas Centrado y Simplificado**: Rediseñamos el HUD superior del lienzo de juego eliminando por completo la columna redundante de distancia (`DST`).
+- **Puntuaciones Unidas con Slash**: Fusionamos "PTS" y "MAX" en un único elemento estilizado centrado: `[Score] / [Global Record]` donde la puntuación actual es en color blanco y el récord en amarillo dorado, ambos con comas como separadores de miles (ej. `1,250` / `50,000`).
+
 ## [1.15.10] - 2026-05-23
 ### Fixed
 - **Alineación Vertical Milimétrica con Caja de Texto en Mayúsculas**: Solucionamos definitivamente el desfase vertical de los botones de cabecera (`.btn-help`). Al cambiar el texto de los botones a mayúsculas sostenidas (`AYUDA` y `TEMA`) —lo cual coincide estéticamente con el estilo arcade y el resto del HUD—, eliminamos las discrepancias métricas causadas por las minúsculas del pixel-font `"Press Start 2P"`. Adicionalmente, calibramos los tamaños relativos a `0.85rem` para el emoji y `0.72rem` para el texto con un desfase de transformación de `-0.5px`, garantizando un centrado vertical 100% perfecto e impecable.
@@ -45,7 +87,7 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 ## [1.15.4] - 2026-05-22
 ### Fixed
-- **Corrección de Ortografía en Diálogo**: Corregimos un error ortográfico en el diálogo de Eloísa de la cinemática de reencuentro en la cabaña. Se reemplazó el texto `"HAZ VUELTO CHOLGA!"` (del verbo *hacer*) por el correcto `"HAS VUELTO CHOLGA!"` (del verbo auxiliar *haber*).
+- **Corrección de Ortografía en Diálogo**: Corregimos un error ortográfico en el diálogo de Elo de la cinemática de reencuentro en la cabaña. Se reemplazó el texto `"HAZ VUELTO CHOLGA!"` (del verbo *hacer*) por el correcto `"HAS VUELTO CHOLGA!"` (del verbo auxiliar *haber*).
 
 ## [1.15.3] - 2026-05-22
 ### Changed
@@ -124,8 +166,8 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 ## [1.13.2] - 2026-05-22
 ### Added
-- **Finales Rotativos (Eloísa, La Mamá, El Papá)**: Se crearon programáticamente tres finales secuenciales hermosos y detallados de 8 bits en `sprites.js` y `game.js`. El primer final (etapas 10, 40...) es con Eloísa; el segundo (etapas 20, 50...) introduce a "La Mamá" con pelo castaño oscuro y una blusa rosada brillante (color de camisa `'B'` para contraste perfecto con su tono de piel `'P'`); el tercero (etapas 30, 60...) introduce a "El Papá" con barba, bigote, cabello castaño corto, camisa verde y pantalones grises.
-- **Diálogos de Final Dinámicos**: Cholga responde de forma interactiva y tierna a cada uno: responde `"I ❤️ ELOÍSA"`, `"TKM ❤️  MAMÁ"` (para La Mamá) o `"JAMONCITO ❤️  PAPÁ"` (para El Papá) utilizando alineaciones de texto y corazones de pixel art con márgenes calculados milimétricamente dentro del bocadillo retro.
+- **Finales Rotativos (Elo, La Mamá, El Papá)**: Se crearon programáticamente tres finales secuenciales hermosos y detallados de 8 bits en `sprites.js` y `game.js`. El primer final (etapas 10, 40...) es con Elo; el segundo (etapas 20, 50...) introduce a "La Mamá" con pelo castaño oscuro y una blusa rosada brillante (color de camisa `'B'` para contraste perfecto con su tono de piel `'P'`); el tercero (etapas 30, 60...) introduce a "El Papá" con barba, bigote, cabello castaño corto, camisa verde y pantalones grises.
+- **Diálogos de Final Dinámicos**: Cholga responde de forma interactiva y tierna a cada uno: responde `"I ❤️ ELO"`, `"TKM ❤️  MAMÁ"` (para La Mamá) o `"JAMONCITO ❤️  PAPÁ"` (para El Papá) utilizando alineaciones de texto y corazones de pixel art con márgenes calculados milimétricamente dentro del bocadillo retro.
 
 ### Fixed
 - **Bandera e Himno Nacional en todas las Etapas de Final**: Se corrigió el problema por el cual el izamiento de la bandera chilena y la melodía procedural del Himno Nacional de Chile solo se reproducían al finalizar la Etapa 10 y se omitían en la Etapa 20. Al refactorizar el disparador de transición y las condiciones de etapa a módulos de 10 (`currentStage % 10 === 0` y `currentStage % 10 !== 0`), ahora el asta de la bandera física aparece, el himno nacional suena y la bandera se iza con orgullo al final de **cada décima etapa** (10, 20, 30, etc.) sin saltos ni evasiones basadas en distancia.
@@ -139,7 +181,7 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 ### Added
 - **Feature 16 (Saiyajin God Mode)**: Implementación de un comando secreto y oculto (`"god"`) que se puede tipear en el teclado durante el juego para alternar el "Modo Dios". En este estado, Cholga es completamente invulnerable a obstáculos y hoyos (los destruye en un espectacular estallido de fuego y muestra el texto flotante "¡DESTRUIDO!").
 - **Aura y Aspecto Saiyajin**: Cholga adquiere un aspecto visual en llamas con un aura de partículas de fuego ascendentes en colores amarillo, naranja y rojo, combinada con un hermoso y vibrante resplandor/glow dorado (`shadowBlur = 15`, `shadowColor = '#ffcc00'`) alrededor de su sprite de píxeles.
-- **Desactivación Inteligente en Cinemática**: El modo Dios se desactiva de forma automática y transparente al llegar al asta de la bandera y reencontrarse con Eloísa (Etapa 10) para asegurar que la animación del abrazo funcione perfectamente sin auras de llamas sobre los personajes. Posteriormente, al presionar una tecla para continuar la aventura en la Etapa 11, el modo Dios se reactiva automáticamente si estaba encendido de antemano, reanudando la acción con una explosión de partículas.
+- **Desactivación Inteligente en Cinemática**: El modo Dios se desactiva de forma automática y transparente al llegar al asta de la bandera y reencontrarse con Elo (Etapa 10) para asegurar que la animación del abrazo funcione perfectamente sin auras de llamas sobre los personajes. Posteriormente, al presionar una tecla para continuar la aventura en la Etapa 11, el modo Dios se reactiva automáticamente si estaba encendido de antemano, reanudando la acción con una explosión de partículas.
 
 ## [1.12.0] - 2026-05-22
 ### Added
@@ -155,13 +197,13 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 ## [1.11.1] - 2026-05-22
 ### Fixed
-- **Bug 6 (Re-colisión Infinita de Bandera en Etapa 10)**: Se corrigió un bucle infinito en el cual, al reanudar la partida presionando cualquier tecla después de la cinemática de abrazo con Eloísa, el perro colisionaba inmediatamente de nuevo con el asta de la bandera porque esta seguía en pantalla a la izquierda del perro. Ahora, al continuar a la Etapa 11, se limpian y restablecen por completo el asta de la bandera y todas las variables físicas de la cinemática en `resumeAfterCutscene()`.
+- **Bug 6 (Re-colisión Infinita de Bandera en Etapa 10)**: Se corrigió un bucle infinito en el cual, al reanudar la partida presionando cualquier tecla después de la cinemática de abrazo con Elo, el perro colisionaba inmediatamente de nuevo con el asta de la bandera porque esta seguía en pantalla a la izquierda del perro. Ahora, al continuar a la Etapa 11, se limpian y restablecen por completo el asta de la bandera y todas las variables físicas de la cinemática en `resumeAfterCutscene()`.
 - **Bug 7 (Notas Auténticas del Himno Nacional de Chile)**: Reemplazo de la melodía arpegiada provisional por los compases reales y reconocibles de la melodía de *"Puro, Chile, es tu cielo azulado"* sintetizada proceduralmente en 8 bits (onda cuadrada brillante con sub-armónicos en onda triangular). Adicionalmente, se ajustó el divisor del temporizador de `5.5` a `6.6` para sincronizar a la perfección el izamiento de la bandera con la duración extendida del himno.
 
 ## [1.11.0] - 2026-05-22
 ### Added
 - **Feature 12 (Marcador Unificado en Canvas)**: Rediseño completo del HUD para dibujarse directamente dentro del Canvas con estética premium de 8 bits, ocultando la barra superior HTML. Muestra corazones pixelados, contadores dinámicos de salmón/kuchen con sus sprites originales, puntaje con ceros a la izquierda y un multiplicador rosa brillante que oscila y pulsa con una micro-animación `Math.sin(Date.now() / 120)` cuando es superior a `x1.0`.
-- **Feature 13 (Asta de Bandera Meta-Física e Himno 8-bit en Etapa 10)**: Implementación de una meta física espectacular para la Etapa 10. Al llegar a la meta, el escenario transiciona suavemente a una pradera verde limpia. El perrito colisiona físicamente en el suelo con un asta de bandera, deteniendo el scroll y detonando una síntesis procedural en tiempo real del Himno Nacional de Chile en 8 bits (onda cuadrada brillante de trompeta y sub-onda triangular armónica). La bandera chilena se iza sincronizadamente y, al terminar, se desliza la cabaña para el abrazo final de Eloísa.
+- **Feature 13 (Asta de Bandera Meta-Física e Himno 8-bit en Etapa 10)**: Implementación de una meta física espectacular para la Etapa 10. Al llegar a la meta, el escenario transiciona suavemente a una pradera verde limpia. El perrito colisiona físicamente en el suelo con un asta de bandera, deteniendo el scroll y detonando una síntesis procedural en tiempo real del Himno Nacional de Chile en 8 bits (onda cuadrada brillante de trompeta y sub-onda triangular armónica). La bandera chilena se iza sincronizadamente y, al terminar, se desliza la cabaña para el abrazo final de Elo.
 - **Feature 14 (Chalet Sureño con Bandera)**: Cuarto tipo de edificación para el fondo del bosque/pueblo, caracterizado por vigas de madera verticales, chimenea activa que emite partículas de humo retro y una bandera de Chile permanente a su derecha.
 
 ### Fixed
@@ -217,7 +259,7 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 ## [1.0.0] - 2026-05-22
 ### Added
 - Primera versión funcional estable de Cholga Run.
-- Runner infinito de 10 etapas con climas dinámicos de Puerto Varas y cinemática de reencuentro con Eloísa.
+- Runner infinito de 10 etapas con climas dinámicos de Puerto Varas y cinemática de reencuentro con Elo.
 - Soporte táctil móvil avanzado con joystick virtual analógico y botón de salto dedicado.
 - Síntesis de sonido retro de 8 bits a través de Web Audio API para música adaptativa y SFX.
 - Sprites pixel-art personalizables para el Terrier Chileno, vacas, hoyos, volcanes y lagos.
