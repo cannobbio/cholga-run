@@ -1005,7 +1005,7 @@ body {
 }
 
 .btn-help .btn-icon {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1013,11 +1013,12 @@ body {
 
 .btn-help .btn-label {
   font-family: var(--font-pixel);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transform: translateY(-1.5px); /* Perfectly offset the pixel baseline */
+  letter-spacing: 0.5px;
+  transform: translateY(-0.5px); /* Perfectly balances capital pixel letters with standard emojis */
 }
 
 .btn-help:hover {

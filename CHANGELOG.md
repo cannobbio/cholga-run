@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.10] - 2026-05-23
+### Fixed
+- **Alineación Vertical Milimétrica con Caja de Texto en Mayúsculas**: Solucionamos definitivamente el desfase vertical de los botones de cabecera (`.btn-help`). Al cambiar el texto de los botones a mayúsculas sostenidas (`AYUDA` y `TEMA`) —lo cual coincide estéticamente con el estilo arcade y el resto del HUD—, eliminamos las discrepancias métricas causadas por las minúsculas del pixel-font `"Press Start 2P"`. Adicionalmente, calibramos los tamaños relativos a `0.85rem` para el emoji y `0.72rem` para el texto con un desfase de transformación de `-0.5px`, garantizando un centrado vertical 100% perfecto e impecable.
+
 ## [1.15.9] - 2026-05-23
 ### Changed
 - **Reducción del Ratio de Alertas Climáticas a un Flujo Equilibrado**: Redujimos drásticamente la frecuencia de las alertas climáticas volcánicas y tornados.
