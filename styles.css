@@ -64,7 +64,7 @@ body {
 /* Main Wrapper */
 .app-container {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1440px;
   padding: 24px;
   display: flex;
   flex-direction: column;

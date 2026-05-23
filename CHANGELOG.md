@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.5] - 2026-05-22
+### Changed
+- **Ampliación del Ancho de Contenedor**: Incrementamos el ancho máximo del contenedor principal de la aplicación (`.app-container`) de `1300px` a `1440px` en `styles.css` para aprovechar mejor el espacio horizontal en pantallas grandes y proporcionar un lienzo de juego y panel de controles aún más cómodo y espacioso.
+
 ## [1.15.4] - 2026-05-22
 ### Fixed
 - **Corrección de Ortografía en Diálogo**: Corregimos un error ortográfico en el diálogo de Eloísa de la cinemática de reencuentro en la cabaña. Se reemplazó el texto `"HAZ VUELTO CHOLGA!"` (del verbo *hacer*) por el correcto `"HAS VUELTO CHOLGA!"` (del verbo auxiliar *haber*).
