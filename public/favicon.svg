@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32" shape-rendering="crispEdges">
+  <!-- Fondo Blanco Circular -->
+  <circle cx="8" cy="8" r="8" fill="#ffffff"/>
+
   <!-- Orejas Negras -->
   <rect x="2" y="2" width="2" height="3" fill="#111111"/>
   <rect x="12" y="2" width="2" height="3" fill="#111111"/>

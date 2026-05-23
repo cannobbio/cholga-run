@@ -94,6 +94,7 @@ body {
 .logo-image {
   width: 42px;
   height: 42px;
+  border-radius: 50%;
   image-rendering: pixelated;
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
