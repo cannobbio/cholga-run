@@ -2833,7 +2833,11 @@ function updateSpawns() {
     
     // Configurar tiempo para el siguiente spawn aleatorio decreciente con la dificultad
     const difficultyFactor = Math.max(0.4, 1.0 - (gameSpeed - 5.0) * 0.07);
-    nextSpawnTime = minSpawnInterval + Math.random() * 1500 * difficultyFactor;
+    
+    // En las etapas especiales de colegio y playa, acortar el intervalo mínimo y el tiempo de spawn aleatorio en 40% (más densidad)
+    const currentMinSpawn = (isColegioStage || isTuristasStage) ? 700 : minSpawnInterval;
+    const stageSpawnMultiplier = (isColegioStage || isTuristasStage) ? 0.6 : 1.0;
+    nextSpawnTime = currentMinSpawn + Math.random() * 1500 * difficultyFactor * stageSpawnMultiplier;
 
     if (isGatoStage) {
       // En la etapa del gato, solo spawneamos obstáculos, sin coleccionables.
@@ -2853,59 +2857,87 @@ function updateSpawns() {
       }
     } else {
       // Decidir aleatoriamente qué spawnear
-      // Probabilidades base: 25% Obstáculo Terrestre, 15% Queltehue (ave), 35% Salmón, 15% Kuchen, 10% Especiales
-      // En etapas >= 6 ampliamos la ventana de especiales al 12% (reduciendo un 2% de salmón) para compensar la alta velocidad
-      let salmonThreshold = 0.75;
-      let kuchenThreshold = 0.90;
-      
-      const isAdvancedStage = (currentStage >= 6);
-      if (isAdvancedStage) {
-        salmonThreshold = 0.73; // Salmón del 35% al 33%
-        kuchenThreshold = 0.88; // Kuchen sigue en 15% (de 0.73 a 0.88), Especiales sube al 12% (de 0.88 a 1.00)
-      }
-      
       const rand = Math.random();
       
-      if (rand < 0.25) {
-        // Spawn Obstáculo terrestre (25%)
-        let types = ['cow', 'cow', 'fence', 'stone', 'hole'];
-        if (isColegioStage) {
-          types = ['car', 'car', 'fence', 'stone', 'hole'];
-        } else if (isTuristasStage) {
-          types = ['quitasol', 'quitasol', 'quitasol', 'stone', 'hole'];
-        }
-        
-        let typeIdx = Math.floor(Math.random() * types.length);
-        // Si la velocidad es baja, evitar vacas/autos demasiado seguidos
-        if ((types[typeIdx] === 'cow' || types[typeIdx] === 'car') && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
-          typeIdx = 3; // piedra en su lugar
-        }
-        obstacles.push(new Obstacle(types[typeIdx]));
-      } else if (rand < 0.40) {
-        // Spawn Queltehue flying obstacle (15%)
-        obstacles.push(new Obstacle('queltehue'));
-      } else if (rand < salmonThreshold) {
-        // Spawn Salmón (35% base, 33% en etapas avanzadas)
-        collectibles.push(new Collectible('salmon'));
-      } else if (rand < kuchenThreshold) {
-        // Spawn Kuchen (15%)
-        collectibles.push(new Collectible('kuchen'));
-      } else {
-        // Categoría Especiales (10% base, 12% en etapas avanzadas)
-        // La probabilidad de Rosa es del 6% al inicio (60% de 10%) y sube al 9% en etapas avanzadas (75% de 12% neta)
-        const subRand = Math.random();
-        const roseThreshold = isAdvancedStage ? 0.75 : 0.60;
-        
-        if (subRand < roseThreshold) {
-          // Spawn Rosa Roja de Puerto Varas
-          if (collectibles.filter(c => c.type === 'rose').length === 0) {
-            collectibles.push(new Collectible('rose'));
-          } else {
-            collectibles.push(new Collectible('salmon'));
+      if (isColegioStage || isTuristasStage) {
+        // En etapa de colegio o playa veraniega, priorizamos obstáculos significativamente (45% terrestres + 10% voladores = 55% de obstáculos)
+        if (rand < 0.45) {
+          // Más autos (4 de 6 en Colegio) y más quitasoles (4 de 6 en Playa)
+          let types = isColegioStage 
+            ? ['car', 'car', 'car', 'car', 'stone', 'hole'] 
+            : ['quitasol', 'quitasol', 'quitasol', 'quitasol', 'stone', 'hole'];
+          
+          let typeIdx = Math.floor(Math.random() * types.length);
+          // Evitar autos muy seguidos si la velocidad es baja
+          if (types[typeIdx] === 'car' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
+            if (Math.random() < 0.3) typeIdx = 4; // piedra
           }
+          obstacles.push(new Obstacle(types[typeIdx]));
+        } else if (rand < 0.55) {
+          // Spawn Queltehue
+          obstacles.push(new Obstacle('queltehue'));
+        } else if (rand < 0.75) {
+          // Spawn Salmón (20% neta)
+          collectibles.push(new Collectible('salmon'));
+        } else if (rand < 0.90) {
+          // Spawn Kuchen (15% neta)
+          collectibles.push(new Collectible('kuchen'));
         } else {
-          // Spawn Hueso Blanco de Vida Extra (4% base, 3% en etapas avanzadas neta)
-          collectibles.push(new Collectible('bone'));
+          // Categoría Especiales (10% neta): Rosa (7% neta) o Hueso de vida (3% neta)
+          const subRand = Math.random();
+          if (subRand < 0.70) {
+            if (collectibles.filter(c => c.type === 'rose').length === 0) {
+              collectibles.push(new Collectible('rose'));
+            } else {
+              collectibles.push(new Collectible('salmon'));
+            }
+          } else {
+            collectibles.push(new Collectible('bone'));
+          }
+        }
+      } else {
+        // Lógica de spawn normal original para otras etapas estándar
+        let salmonThreshold = 0.75;
+        let kuchenThreshold = 0.90;
+        
+        const isAdvancedStage = (currentStage >= 6);
+        if (isAdvancedStage) {
+          salmonThreshold = 0.73; // Salmón del 35% al 33%
+          kuchenThreshold = 0.88; // Kuchen sigue en 15%, Especiales sube al 12%
+        }
+        
+        if (rand < 0.25) {
+          // Spawn Obstáculo terrestre (25%)
+          let types = ['cow', 'cow', 'fence', 'stone', 'hole'];
+          let typeIdx = Math.floor(Math.random() * types.length);
+          // Si la velocidad es baja, evitar vacas demasiado seguidas
+          if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
+            typeIdx = 3; // piedra
+          }
+          obstacles.push(new Obstacle(types[typeIdx]));
+        } else if (rand < 0.40) {
+          // Spawn Queltehue flying obstacle (15%)
+          obstacles.push(new Obstacle('queltehue'));
+        } else if (rand < salmonThreshold) {
+          // Spawn Salmón
+          collectibles.push(new Collectible('salmon'));
+        } else if (rand < kuchenThreshold) {
+          // Spawn Kuchen
+          collectibles.push(new Collectible('kuchen'));
+        } else {
+          // Categoría Especiales
+          const subRand = Math.random();
+          const roseThreshold = isAdvancedStage ? 0.75 : 0.60;
+          
+          if (subRand < roseThreshold) {
+            if (collectibles.filter(c => c.type === 'rose').length === 0) {
+              collectibles.push(new Collectible('rose'));
+            } else {
+              collectibles.push(new Collectible('salmon'));
+            }
+          } else {
+            collectibles.push(new Collectible('bone'));
+          }
         }
       }
     }
@@ -3364,6 +3396,9 @@ function updateGame() {
       if (obs.type === 'cow' && window.audioEngine && window.audioEngine.playMooSound) {
         window.audioEngine.playMooSound();
       }
+      if (obs.type === 'car' && window.audioEngine && window.audioEngine.playCarSpawnSound) {
+        window.audioEngine.playCarSpawnSound();
+      }
     }
     
     if (obs.isOutOfBounds()) {
@@ -3416,8 +3451,9 @@ function updateGame() {
     }
   }
 
-  // Puntaje por distancia recorrida continua
-  distanceTraveled += gameSpeed * 0.03;
+  // Puntaje por distancia recorrida continua (las playas tienen duración extendida de 1.8x)
+  const distanceIncrement = isTuristasStage ? (gameSpeed * 0.03 / 1.8) : (gameSpeed * 0.03);
+  distanceTraveled += distanceIncrement;
   score += Math.floor(multiplier); // El puntaje avanza más rápido si tienes más kuchens
   // Verificar cambio de etapa
   const calculatedStage = Math.floor(distanceTraveled / DISTANCE_PER_STAGE) + 1;

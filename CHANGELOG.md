@@ -2,6 +2,18 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.1] - 2026-05-23
+### Added
+- **Efecto de Claxon al Saltar Autos**: Añadido soporte sonoro dinámico en el loop de actualización de obstáculos en `game.js`. Al saltar un obstáculo de tipo `car`, se dispara la bocina sintética retro de Web Audio API (`playCarSpawnSound()`) emulando la clásica reacción de la vaca al ser saltada.
+
+### Changed
+- **Sprite del Coche Rediseñado en Perfil Lateral**: Rediseñamos completamente el sprite `car` en `sprites.js` de 32x24 px. Pasó de ser un automóvil mirando al frente a un sedán deportivo pixel-art retro en **perfil lateral** orientado hacia la izquierda (dirección contraria al perro). Se incluyeron faros delanteros amarillos (`Y`) a la izquierda y luces de freno rojas (`R`) a la derecha.
+- **Extensión de Duración de la Etapa Especial de Playa**: El recorrido de las etapas especiales de playa ("Turistas") avanza ahora 1.8 veces más lento. Esto prolonga la duración y el disfrute de la playa de manera armoniosa y fluida sin alterar la física o la velocidad visual del scroll.
+- **Incremento de Densidad de Obstáculos en Playa y Colegio**:
+  - En la etapa especial de colegios se aumentó sustancialmente el spawn y la proporción de automóviles, configurando un array de 4/6 de densidad de coches.
+  - En la etapa especial de turistas se incrementó exponencialmente la frecuencia de quitasoles (sombrillas de playa), configurando una tasa similar de 4/6 de densidad.
+  - El intervalo de reaparición mínimo se redujo de 1000ms a 700ms en ambas etapas para crear una mayor sensación de reto y jugabilidad fluida.
+
 ## [1.19.0] - 2026-05-23
 ### Added
 - **Rediseño de HUD Autoadaptable Premium (v1.19.0)**:
