@@ -1565,12 +1565,18 @@ function drawParallax(weather) {
   bgOffsetVolcano -= gameSpeed * 0.08;
   const volcanoScroll = -bgOffsetVolcano;
   const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
+  
+  // Decidir qué volcán está al frente y visible según la etapa
+  // En la Etapa 3 (primera erupción), queremos que Calbuco esté visible al centro
+  const drawCalbucoFirst = (currentStage === 3 || currentStage % 6 === 3);
+
   for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
     const drawX = Math.floor(b * CANVAS_WIDTH - volcanoScroll + 80);
-    if (b % 2 === 0) {
-      drawVolcanoOsorno(drawX, b);
-    } else {
+    const isCalbuco = (b % 2 === 0) ? drawCalbucoFirst : !drawCalbucoFirst;
+    if (isCalbuco) {
       drawVolcanoCalbuco(drawX);
+    } else {
+      drawVolcanoOsorno(drawX, b);
     }
   }
 
@@ -1669,7 +1675,10 @@ function drawVolcanoOsorno(x, blockId = 0) {
   const volHeight = 125;
   const volY = 220;
   
-  ctx.fillStyle = (currentWeather === 'sunset') ? '#5c2a75' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#181d2a' : '#333b4d');
+  const eruptingCalbuco = (currentStage % 6 === 3 || currentStage === 3);
+  const isErupting = (currentStage % 3 === 0 || isEruptionStage) && !eruptingCalbuco;
+
+  ctx.fillStyle = isErupting ? '#18141c' : ((currentWeather === 'sunset') ? '#5c2a75' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#181d2a' : '#333b4d'));
   ctx.beginPath();
   ctx.moveTo(x, volY);
   ctx.lineTo(x + volBaseWidth / 2 - 20, volY - volHeight);
@@ -1678,50 +1687,96 @@ function drawVolcanoOsorno(x, blockId = 0) {
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  // Empezar en el borde inferior izquierdo de la nieve (45% de la ladera lateral)
-  ctx.moveTo(x + volBaseWidth / 2 - 69.5, volY - volHeight * 0.55);
-  ctx.lineTo(x + volBaseWidth / 2 - 20, volY - volHeight); // Ladera izquierda superior
-  ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight); // Cumbre
-  ctx.lineTo(x + volBaseWidth / 2 + 69.5, volY - volHeight * 0.55); // Ladera derecha superior
-  
-  // Lenguas de glaciar dentadas e irregulares (borde inferior pixelado)
-  ctx.lineTo(x + volBaseWidth / 2 + 50, volY - volHeight * 0.60);
-  ctx.lineTo(x + volBaseWidth / 2 + 35, volY - volHeight * 0.50); // Lengua larga derecha
-  ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight * 0.58);
-  ctx.lineTo(x + volBaseWidth / 2, volY - volHeight * 0.52); // Lengua media
-  ctx.lineTo(x + volBaseWidth / 2 - 15, volY - volHeight * 0.60);
-  ctx.lineTo(x + volBaseWidth / 2 - 30, volY - volHeight * 0.48); // Lengua larga izquierda
-  ctx.lineTo(x + volBaseWidth / 2 - 45, volY - volHeight * 0.58);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = (currentWeather === 'sunset') ? '#2e143c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0e111a' : '#1d222e');
-  ctx.fillRect(x + volBaseWidth / 2 - 20, volY - volHeight - 2, 40, 4);
-
-  const hasSombrero = (blockId % 2 === 0);
-  if (hasSombrero) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+  // Nieve del Osorno (sólo si no está eruptando, la lava y calor extremo la derriten)
+  if (!isErupting) {
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 36, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(x + volBaseWidth / 2 - 69.5, volY - volHeight * 0.55);
+    ctx.lineTo(x + volBaseWidth / 2 - 20, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth / 2 + 69.5, volY - volHeight * 0.55);
     
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 24, 4, 0, 0, Math.PI * 2);
+    ctx.lineTo(x + volBaseWidth / 2 + 50, volY - volHeight * 0.60);
+    ctx.lineTo(x + volBaseWidth / 2 + 35, volY - volHeight * 0.50);
+    ctx.lineTo(x + volBaseWidth / 2 + 20, volY - volHeight * 0.58);
+    ctx.lineTo(x + volBaseWidth / 2, volY - volHeight * 0.52);
+    ctx.lineTo(x + volBaseWidth / 2 - 15, volY - volHeight * 0.60);
+    ctx.lineTo(x + volBaseWidth / 2 - 30, volY - volHeight * 0.48);
+    ctx.lineTo(x + volBaseWidth / 2 - 45, volY - volHeight * 0.58);
+    ctx.closePath();
     ctx.fill();
   }
 
-  if (gameState === STATES.PLAYING && Math.random() < 0.015) {
-    smokeParticles.push({
-      x: x + volBaseWidth / 2 + (Math.random() * 8 - 4),
-      y: volY - volHeight - 5,
-      size: 3 + Math.random() * 4,
-      vx: -0.1 - Math.random() * 0.3,
-      vy: -0.2 - Math.random() * 0.4,
-      alpha: 0.55
-    });
+  // Cráter de Osorno (brillo de lava si está erupcionando)
+  ctx.fillStyle = isErupting ? '#ff3300' : ((currentWeather === 'sunset') ? '#2e143c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0e111a' : '#1d222e'));
+  ctx.fillRect(x + volBaseWidth / 2 - 20, volY - volHeight - 2, 40, 4);
+
+  // Sombrero lenticular (sólo si no hay erupción activa)
+  if (!isErupting) {
+    const hasSombrero = (blockId % 2 === 0);
+    if (hasSombrero) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.beginPath();
+      ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 36, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 24, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Comportamiento de humo y lava de Osorno
+  if (isErupting) {
+    // Ríos de lava brillantes oscilantes bajando por las laderas del Osorno
+    const lavaPulse = Math.sin(Date.now() / 120) * 0.15 + 0.85;
+    ctx.strokeStyle = '#ff3300';
+    ctx.lineWidth = 3 * lavaPulse;
+    ctx.beginPath();
+    
+    ctx.moveTo(x + volBaseWidth / 2 - 10, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth / 2 - 45, volY - volHeight * 0.4);
+    
+    ctx.moveTo(x + volBaseWidth / 2 + 10, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth / 2 + 45, volY - volHeight * 0.4);
+    
+    ctx.moveTo(x + volBaseWidth / 2, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth / 2 + 5, volY - volHeight * 0.6);
+    
+    ctx.stroke();
+
+    // Centro ardiente en el cráter
+    ctx.fillStyle = '#ffcc00';
+    ctx.beginPath();
+    ctx.arc(x + volBaseWidth / 2, volY - volHeight, 7 * lavaPulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ceniza/Humo denso de erupción para Osorno
+    if (gameState === STATES.PLAYING && Math.random() < 0.18) {
+      smokeParticles.push({
+        x: x + volBaseWidth / 2 + (Math.random() * 12 - 6),
+        y: volY - volHeight - 8,
+        size: 5 + Math.random() * 10,
+        vx: -0.4 - Math.random() * 0.9,
+        vy: -0.9 - Math.random() * 1.6,
+        alpha: 0.75,
+        color: Math.random() < 0.65 ? '#242424' : '#52525b'
+      });
+    }
+  } else {
+    // Humo pasivo estándar (blanco y sutil para estado normal)
+    if (gameState === STATES.PLAYING && Math.random() < 0.015) {
+      smokeParticles.push({
+        x: x + volBaseWidth / 2 + (Math.random() * 8 - 4),
+        y: volY - volHeight - 5,
+        size: 3 + Math.random() * 4,
+        vx: -0.1 - Math.random() * 0.3,
+        vy: -0.2 - Math.random() * 0.4,
+        alpha: 0.55,
+        color: 'rgba(230, 230, 230, 0.4)'
+      });
+    }
   }
 }
 
@@ -1730,7 +1785,10 @@ function drawVolcanoCalbuco(x) {
   const volHeight = 110;
   const volY = 220;
   
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#18141c' : ((currentWeather === 'sunset') ? '#461f5c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#121620' : '#282e3b'));
+  const eruptingCalbuco = (currentStage % 6 === 3 || currentStage === 3);
+  const isErupting = (currentStage % 3 === 0 || isEruptionStage) && eruptingCalbuco;
+
+  ctx.fillStyle = isErupting ? '#18141c' : ((currentWeather === 'sunset') ? '#461f5c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#121620' : '#282e3b'));
   ctx.beginPath();
   ctx.moveTo(x, volY);
   ctx.lineTo(x + volBaseWidth * 0.25, volY - volHeight * 0.65);
@@ -1742,7 +1800,7 @@ function drawVolcanoCalbuco(x) {
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#ff3300' : '#14171f';
+  ctx.fillStyle = isErupting ? '#ff3300' : '#14171f';
   ctx.beginPath();
   ctx.moveTo(x + volBaseWidth * 0.40, volY - volHeight);
   ctx.lineTo(x + volBaseWidth * 0.48, volY - volHeight * 0.85);
@@ -1751,40 +1809,70 @@ function drawVolcanoCalbuco(x) {
   ctx.closePath();
   ctx.fill();
 
-  // Dibujar nieve en el volcán Calbuco
-  ctx.fillStyle = '#ffffff';
-  
-  // Pico 1 (Pico Izquierdo/Principal)
-  ctx.beginPath();
-  ctx.moveTo(x + volBaseWidth * 0.33, volY - volHeight * 0.80);
-  ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight);
-  ctx.lineTo(x + volBaseWidth * 0.45, volY - volHeight * 0.9125);
-  ctx.lineTo(x + volBaseWidth * 0.43, volY - volHeight * 0.85);
-  ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight * 0.88);
-  ctx.lineTo(x + volBaseWidth * 0.37, volY - volHeight * 0.83);
-  ctx.closePath();
-  ctx.fill();
+  // Dibujar nieve en el volcán Calbuco (sólo si no está haciendo erupción, la lava la derrite)
+  if (!isErupting) {
+    ctx.fillStyle = '#ffffff';
+    
+    // Pico 1 (Pico Izquierdo/Principal)
+    ctx.beginPath();
+    ctx.moveTo(x + volBaseWidth * 0.33, volY - volHeight * 0.80);
+    ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight);
+    ctx.lineTo(x + volBaseWidth * 0.45, volY - volHeight * 0.9125);
+    ctx.lineTo(x + volBaseWidth * 0.43, volY - volHeight * 0.85);
+    ctx.lineTo(x + volBaseWidth * 0.40, volY - volHeight * 0.88);
+    ctx.lineTo(x + volBaseWidth * 0.37, volY - volHeight * 0.83);
+    ctx.closePath();
+    ctx.fill();
 
-  // Pico 2 (Pico Derecho)
-  ctx.beginPath();
-  ctx.moveTo(x + volBaseWidth * 0.54, volY - volHeight * 0.89);
-  ctx.lineTo(x + volBaseWidth * 0.62, volY - volHeight * 0.95);
-  ctx.lineTo(x + volBaseWidth * 0.68, volY - volHeight * 0.72);
-  ctx.lineTo(x + volBaseWidth * 0.65, volY - volHeight * 0.82);
-  ctx.lineTo(x + volBaseWidth * 0.61, volY - volHeight * 0.85);
-  ctx.lineTo(x + volBaseWidth * 0.58, volY - volHeight * 0.80);
-  ctx.closePath();
-  ctx.fill();
+    // Pico 2 (Pico Derecho)
+    ctx.beginPath();
+    ctx.moveTo(x + volBaseWidth * 0.54, volY - volHeight * 0.89);
+    ctx.lineTo(x + volBaseWidth * 0.62, volY - volHeight * 0.95);
+    ctx.lineTo(x + volBaseWidth * 0.68, volY - volHeight * 0.72);
+    ctx.lineTo(x + volBaseWidth * 0.65, volY - volHeight * 0.82);
+    ctx.lineTo(x + volBaseWidth * 0.61, volY - volHeight * 0.85);
+    ctx.lineTo(x + volBaseWidth * 0.58, volY - volHeight * 0.80);
+    ctx.closePath();
+    ctx.fill();
+  }
 
-  if (currentStage % 3 === 0) {
+  // Dibujar corrientes de lava y emisión de humo del Calbuco si está eruptando
+  if (isErupting) {
+    // Ríos de lava brillantes oscilantes
+    const lavaPulse = Math.sin(Date.now() / 120) * 0.15 + 0.85;
     ctx.strokeStyle = '#ff6600';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3 * lavaPulse;
+    
     ctx.beginPath();
     ctx.moveTo(x + volBaseWidth * 0.45, volY - volHeight * 0.9);
     ctx.lineTo(x + volBaseWidth * 0.38, volY - volHeight * 0.5);
+    
     ctx.moveTo(x + volBaseWidth * 0.55, volY - volHeight * 0.85);
     ctx.lineTo(x + volBaseWidth * 0.62, volY - volHeight * 0.45);
+    
+    ctx.moveTo(x + volBaseWidth * 0.48, volY - volHeight * 0.85);
+    ctx.lineTo(x + volBaseWidth * 0.50, volY - volHeight * 0.3);
+    
     ctx.stroke();
+
+    // Cráter brilloso caliente (Yellow core)
+    ctx.fillStyle = '#ffcc00';
+    ctx.beginPath();
+    ctx.arc(x + volBaseWidth * 0.5, volY - volHeight * 0.85, 8 * lavaPulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Generar humo negro y gris denso directamente desde el cráter del Calbuco
+    if (gameState === STATES.PLAYING && Math.random() < 0.18) {
+      smokeParticles.push({
+        x: x + volBaseWidth * 0.5 + (Math.random() * 16 - 8),
+        y: volY - volHeight * 0.9,
+        size: 5 + Math.random() * 10, // Humo denso y grande
+        vx: -0.4 - Math.random() * 0.9, // viento volcánico fuerte
+        vy: -0.9 - Math.random() * 1.6, // asciende rápido
+        alpha: 0.75,
+        color: Math.random() < 0.65 ? '#242424' : '#52525b' // Ceniza volcánica oscura
+      });
+    }
   }
 }
 
@@ -2127,16 +2215,14 @@ function drawVolcanicGround(x) {
 // ==========================================
 
 function updateWeatherEffects() {
-  // Humo del Volcán (solo si no es erupción)
-  if (currentStage % 3 !== 0) {
-    for (let i = smokeParticles.length - 1; i >= 0; i--) {
-      const p = smokeParticles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.alpha -= 0.003;
-      if (p.alpha <= 0) {
-        smokeParticles.splice(i, 1);
-      }
+  // Humo/Ceniza del Volcán (se actualiza siempre para mantener la erupción activa)
+  for (let i = smokeParticles.length - 1; i >= 0; i--) {
+    const p = smokeParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= p.alphaDecay || 0.003;
+    if (p.alpha <= 0) {
+      smokeParticles.splice(i, 1);
     }
   }
 
@@ -2151,15 +2237,19 @@ function updateWeatherEffects() {
     }
   }
 
-  // Erupción del Volcán Calbuco (Etapa de peligro)
-  if (currentStage % 3 === 0 && gameState === STATES.PLAYING) {
+  // Erupción del Volcán Activo (Calbuco o Osorno según la etapa)
+  const isEruptionActive = (currentStage % 3 === 0 || isEruptionStage);
+  if (isEruptionActive && gameState === STATES.PLAYING) {
     // Engendrar partículas de lava
     if (Math.random() < 0.25) {
       const volcanoScroll = -bgOffsetVolcano;
       const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
       let spawnX = -999;
+      const eruptingCalbuco = (currentStage % 6 === 3 || currentStage === 3);
+
       for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
-        if (b % 2 === 1) {
+        const isCalbuco = (b % 2 === 0) ? eruptingCalbuco : !eruptingCalbuco;
+        if (isCalbuco === eruptingCalbuco) {
           const drawX = b * CANVAS_WIDTH - volcanoScroll + 80;
           if (drawX > -280 && drawX < CANVAS_WIDTH + 100) {
             spawnX = drawX;
@@ -2168,19 +2258,27 @@ function updateWeatherEffects() {
         }
       }
       
-      const craterX = spawnX + 140; // Centro de la erupción de Calbuco
-      const craterY = 130;
-      
-      lavaParticles.push({
-        x: craterX,
-        y: craterY,
-        size: 2.5 + Math.random() * 4,
-        vx: Math.random() * 4 - 2.5 - 0.8, // tiende a ir al lado izquierdo por el viento
-        vy: -6 - Math.random() * 5, // fuerte impulso hacia arriba
-        gravity: 0.18,
-        color: Math.random() < 0.7 ? '#ff3300' : '#ffcc00', // Rojo lava o amarillo brillante
-        alpha: 1.0
-      });
+      if (spawnX > -999) {
+        let craterX, craterY;
+        if (eruptingCalbuco) {
+          craterX = spawnX + 140; // Centro de Calbuco
+          craterY = 130;
+        } else {
+          craterX = spawnX + 130; // Centro de Osorno
+          craterY = 100;
+        }
+        
+        lavaParticles.push({
+          x: craterX,
+          y: craterY,
+          size: 2.5 + Math.random() * 4,
+          vx: Math.random() * 4 - 2.5 - 0.8, // viento hacia la izquierda
+          vy: -6 - Math.random() * 5, // fuerte impulso vertical
+          gravity: 0.18,
+          color: Math.random() < 0.7 ? '#ff3300' : '#ffcc00', // Rojo lava o amarillo brillante
+          alpha: 1.0
+        });
+      }
     }
   }
 
@@ -2262,15 +2360,15 @@ function updateWeatherEffects() {
 }
 
 function drawWeatherEffects() {
-  // 1. Humo del Volcán (si no es erupción)
-  if (currentStage % 3 !== 0) {
-    ctx.fillStyle = 'rgba(230, 230, 230, 0.4)';
-    smokeParticles.forEach(p => {
-      ctx.globalAlpha = p.alpha;
-      ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
-    });
-    ctx.globalAlpha = 1.0;
-  }
+  // 1. Humo del Volcán (siempre visible, color de ceniza en erupción y blanco suave normalmente)
+  ctx.save();
+  smokeParticles.forEach(p => {
+    ctx.fillStyle = p.color || 'rgba(230, 230, 230, 0.4)';
+    ctx.globalAlpha = p.alpha;
+    ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
+  });
+  ctx.restore();
+  ctx.globalAlpha = 1.0;
 
   // 2. Gotas de lluvia
   ctx.strokeStyle = currentWeather === 'storm' ? 'rgba(150, 180, 255, 0.35)' : 'rgba(180, 220, 255, 0.28)';

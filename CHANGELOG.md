@@ -2,6 +2,17 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.2] - 2026-05-22
+### Added
+- **Erupción del Volcán Calbuco y Osorno Alternada**: Corregimos un detalle determinista del paralaje por el cual en la primera "Alerta Volcánica" (Etapa 3) siempre aparecía centrado el Volcán Osorno y Calbuco quedaba fuera de pantalla. Ahora, alternamos dinámicamente el orden de renderizado en el fondo en las etapas múltiplos de 3:
+  - En la **Etapa 3 (primera erupción)** y múltiplos alternados (`currentStage % 6 === 3`), el **Volcán Calbuco** se coloca en el centro del viewport y es el protagonista de la erupción.
+  - En la **Etapa 6** y múltiplos alternados (`currentStage % 6 === 0`), el **Volcán Osorno** es el volcán activo que hace erupción.
+- **Efectos Premium de Erupción (Lava y Ceniza)**:
+  - Rediseñamos ambos volcanes para reaccionar dinámicamente a las erupciones: se oscurece su silueta, se derrite su nieve/glaciar por el calor extremo y brotan tres ríos de lava brillante que pulsan de grosor e intensidad (`Math.sin(Date.now() / 120)`).
+  - Agregamos un núcleo de magma amarillo ardiente (`#ffcc00`) en el cráter de los volcanes activos.
+  - Habilitamos la generación constante de **humo de ceniza volcánica denso y oscuro** (partículas en tonalidades negro y gris carbón) que se emiten directamente de los cráteres y son empujadas rápidamente por el viento volcánico hacia la izquierda del escenario.
+  - Corregimos el spawn de las partículas de lava arrojadas al cielo para que emerjan dinámicamente de las coordenadas exactas del cráter del volcán activo correspondiente (Calbuco o Osorno).
+
 ## [1.15.1] - 2026-05-22
 ### Changed
 - **Iconos Retro de Alta Fidelidad en el HUD**: Reemplazamos los iconos emoji vectoriales por un set completo de **sprites pixel-art personalizados de 16x16 píxeles** (sol, nubes con lluvia, relámpagos, neblina, amanecer con océano, atardecer con nubes rosas, luna creciente con estrellas centelleantes, volcanes en erupción, tornados y una simpática cara de gato naranja). Esto soluciona por completo el problema del renderizado deficiente y desalineado de los emojis estándar en el canvas de baja resolución (800x400), garantizando que todos los elementos visuales del HUD luzcan perfectamente nítidos, alineados y fieles a la estética de 8 bits.
