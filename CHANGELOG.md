@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.7] - 2026-05-23
+### Changed
+- **Sombra de Título Optimizada y de Alto Contraste**: Rediseñamos el `text-shadow` del título principal del menú de inicio (`.title-pulse` / `¡CHOLGA RUN!`) en su versión oscura para lograr una estética arcade de 8 bits sumamente premium. Se implementó una sombra multi-capa tridimensional: una primera capa sólida negra de `2px` que delinea las letras dándoles un contraste impecable frente al fondo, una segunda capa de color cian sólido de `4px` para la extrusión retro en 3D, y una tercera capa de resplandor difuso cian (`rgba(0, 240, 255, 0.6)`) de `20px` para dotar al título de un brillo de neón dinámico.
+- **Soporte Adaptativo en Modo Claro**: Se configuró un override adaptativo para el título en modo claro (`:root.light-mode .title-pulse`), aplicando un color Slate 900 oscuro con un borde de contraste blanco sutil y un brillo celeste ligero para mantener la legibilidad absoluta y la simetría visual.
+
 ## [1.15.6] - 2026-05-23
 ### Added
 - **Inicialización de Tema basada en Preferencias del Sistema**: Implementamos un mecanismo de inicialización de tema inline en el `<head>` de `index.html` que detecta la preferencia de color del sistema operativo (`prefers-color-scheme`) como respaldo por defecto en caso de no existir una preferencia manual del usuario guardada (`terrier_theme` en `localStorage`). Si el sistema prefiere modo claro, se activa `.light-mode` inmediatamente antes de renderizar la página para evitar destellos visuales (FOUC).

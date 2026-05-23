@@ -390,7 +390,10 @@ body {
 .title-pulse {
   font-size: 2.2rem;
   color: #fff;
-  text-shadow: 0 0 15px rgba(255,255,255,0.1), 4px 4px 0 var(--color-cyan);
+  text-shadow: 
+    2px 2px 0 #000,
+    4px 4px 0 var(--color-cyan),
+    0 0 20px rgba(0, 240, 255, 0.6);
   animation: pulse 2s infinite ease-in-out;
 }
 
@@ -1254,6 +1257,14 @@ body {
 /* Modals & Overlays in Light Mode */
 :root.light-mode .screen-overlay {
   background: rgba(241, 245, 249, 0.85); /* Light blurred overlay */
+}
+
+:root.light-mode .title-pulse {
+  color: #0f172a; /* Slate 900 */
+  text-shadow: 
+    2px 2px 0 #fff,
+    4px 4px 0 var(--color-cyan),
+    0 0 20px rgba(2, 132, 199, 0.2);
 }
 
 :root.light-mode #help-modal .modal-content {
