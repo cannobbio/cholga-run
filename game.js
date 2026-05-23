@@ -40,8 +40,8 @@ let deathY = 0;
 let ghostY = 0;
 let barkBubble = null;
 
-// Variables de la Cinemática de Eloísa
-let cutsceneStage = 0; // 0: Desacelerando mundo, 1: Deslizando cabaña y Eloísa, 2: Perro corre solo, 3: Perro salta, 4: Abrazados/Música
+// Variables de la Cinemática de Elo
+let cutsceneStage = 0; // 0: Desacelerando mundo, 1: Deslizando cabaña y Elo, 2: Perro corre solo, 3: Perro salta, 4: Abrazados/Música
 let cutsceneTimer = 0;
 let cabinX = CANVAS_WIDTH + 100;
 let eloisaX = CANVAS_WIDTH + 240;
@@ -92,9 +92,11 @@ const terrier = {
       this.state = 'jump';
       this.jumpsLeft = hasDoubleJump ? 1 : 0;
       if (window.audioEngine) window.audioEngine.playJumpSound();
-    } else if (hasDoubleJump && this.jumpsLeft > 0) {
-      this.vy = JUMP_FORCE * 0.95; // Segundo salto aéreo
-      this.jumpsLeft--;
+    } else if (hasDoubleJump && (this.jumpsLeft > 0 || isGodMode)) {
+      this.vy = JUMP_FORCE * 0.95; // Segundo o Infinito salto aéreo (en Modo Dios)
+      if (!isGodMode) {
+        this.jumpsLeft--;
+      }
       // Crear explosión de pétalos de rosa (partículas rosa)
       for (let i = 0; i < 15; i++) {
         sparkleParticles.push({
@@ -321,6 +323,8 @@ let nextSpawnTime = 1200; // ms inicial para aparecer
 // Estadísticas de juego
 let score = 0;
 let highScore = 0;
+let highScoreName = "PUSSY-PUSSY";
+let globalLeaderboard = [{ name: "PUSSY-PUSSY", score: 50000 }];
 let multiplier = 1.0;
 let salmonsCount = 0;
 let kuchensCount = 0;
@@ -797,8 +801,12 @@ class PoopProjectile {
 }
 
 function shootPoop() {
-  if (poopAmmo <= 0 || gameState !== STATES.PLAYING) return;
-  poopAmmo--;
+  if (!isGodMode && poopAmmo <= 0) return;
+  if (gameState !== STATES.PLAYING) return;
+  
+  if (!isGodMode) {
+    poopAmmo--;
+  }
   
   poopProjectiles.push(new PoopProjectile(terrier.x + terrier.width / 2, terrier.y + 8));
   
@@ -807,7 +815,7 @@ function shootPoop() {
   }
 
   const touchShoot = document.getElementById('touch-shoot');
-  if (touchShoot && poopAmmo <= 0) {
+  if (touchShoot && poopAmmo <= 0 && !isGodMode) {
     touchShoot.classList.add('hidden');
   }
 }
@@ -1021,7 +1029,7 @@ function drawCanvasHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`ETAPA ${currentStage}`, 24, 24);
   
-  // 3. Columna 2: CLIMA (x=85)
+  // 3. Columna 2: CLIMA (x=80)
   let weatherText = 'DESPEJADO';
   let weatherSprite = HUD_SPRITES.sun;
   let weatherColor = '#ffd166';
@@ -1041,14 +1049,14 @@ function drawCanvasHUD() {
   }
   
   // Draw weather pixel sprite
-  drawPixelSprite(ctx, weatherSprite, 85, 16, 16, 16);
+  drawPixelSprite(ctx, weatherSprite, 80, 16, 16, 16);
   
   // Draw weather text label
   ctx.fillStyle = weatherColor;
   ctx.textAlign = 'left';
-  ctx.fillText(weatherText, 103, 24);
+  ctx.fillText(weatherText, 98, 24);
   
-  // 4. Columna 3: HORA (x=175)
+  // 4. Columna 3: HORA (x=155)
   let hourText = 'DÍA';
   let hourSprite = HUD_SPRITES.sun;
   let hourColor = '#ffd166';
@@ -1068,14 +1076,14 @@ function drawCanvasHUD() {
   }
   
   // Draw hour pixel sprite
-  drawPixelSprite(ctx, hourSprite, 175, 16, 16, 16);
+  drawPixelSprite(ctx, hourSprite, 155, 16, 16, 16);
   
   // Draw hour text label
   ctx.fillStyle = hourColor;
   ctx.textAlign = 'left';
-  ctx.fillText(hourText, 193, 24);
+  ctx.fillText(hourText, 173, 24);
   
-  // 5. Columna 4: EVENTO ESPECIAL (x=270)
+  // 5. Columna 4: EVENTO ESPECIAL (x=240)
   let eventText = '';
   let eventSprite = null;
   let eventColor = '';
@@ -1096,16 +1104,16 @@ function drawCanvasHUD() {
   
   if (eventText && eventSprite) {
     // Draw event pixel sprite
-    drawPixelSprite(ctx, eventSprite, 270, 16, 16, 16);
+    drawPixelSprite(ctx, eventSprite, 240, 16, 16, 16);
     
     // Draw event text label
     ctx.fillStyle = eventColor;
     ctx.textAlign = 'left';
-    ctx.fillText(eventText, 288, 24);
+    ctx.fillText(eventText, 258, 24);
   }
   
-  // 6. Columna 5: CORAZONES / VIDAS (x=333)
-  const heartXStart = 333;
+  // 6. Columna 5: CORAZONES / VIDAS (x=320)
+  const heartXStart = 320;
   const heartY = 24 - 6; // y=18
   
   if (lives <= 2) {
@@ -1120,8 +1128,8 @@ function drawCanvasHUD() {
     ctx.fillText(`x${lives}`, heartXStart + 14, 24);
   }
   
-  // 7. Columna 6: SALMONES (x=372)
-  const salmonX = 372;
+  // 7. Columna 6: SALMONES (x=360)
+  const salmonX = 360;
   const itemY = 24 - 9; // y=15 (sprite es de 18x18)
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, salmonX, itemY, 18, 18);
   ctx.fillStyle = '#ffd166';
@@ -1129,44 +1137,55 @@ function drawCanvasHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`x${salmonsCount}`, salmonX + 20, 24);
   
-  // 8. Columna 7: KUCHENS (x=423)
-  const kuchenX = 423;
+  // 8. Columna 7: KUCHENS (x=405)
+  const kuchenX = 405;
   drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, kuchenX, itemY, 18, 18);
   ctx.fillStyle = '#f472b6';
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
   ctx.fillText(`x${kuchensCount}`, kuchenX + 20, 24);
   
-  // 9. Columna 8: MUNICIÓN DE CACA (x=467, sólo si poopAmmo > 0)
-  if (poopAmmo > 0) {
-    const poopX = 467;
+  // 9. Columna 8: MUNICIÓN DE CACA (x=450, sólo si poopAmmo > 0 o en Modo Dios)
+  if (poopAmmo > 0 || isGodMode) {
+    const poopX = 450;
     drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, poopX, itemY, 18, 18);
     ctx.fillStyle = '#7c5335'; // café marrón
     ctx.font = '7px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`x${poopAmmo}`, poopX + 20, 24);
+    ctx.fillText(isGodMode ? "x∞" : `x${poopAmmo}`, poopX + 20, 24);
   }
   
-  // 10. Columna 9: DISTANCIA (x=512)
-  const distX = 512;
-  ctx.fillStyle = '#cbd5e1';
+  // 10. Columna 9-11 Combinadas: SCORE / RÉCORD GLOBAL (x=495)
+  const combinedX = 495;
   ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText(`DST:${Math.floor(distanceTraveled)}m`, distX, 24);
   
-  // 11. Columna 10: PUNTAJE (x=582)
-  const scoreX = 582;
-  ctx.fillStyle = '#00f0ff';
-  ctx.font = '7px "Press Start 2P"';
-  ctx.textAlign = 'left';
-  ctx.fillText(`PTS:${String(score).padStart(6, '0')}`, scoreX, 24);
+  const scoreStr = score.toLocaleString('en-US');
+  const highStr = highScore.toLocaleString('en-US');
   
-  // 12. Columna 11: RÉCORD (x=658)
-  const maxScoreX = 658;
+  // 1. Dibujar puntuación actual en Blanco
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(scoreStr, combinedX, 24);
+  const scoreWidth = ctx.measureText(scoreStr).width;
+  
+  // 2. Dibujar " PUNTOS" en Gris Claro / Dim
+  ctx.fillStyle = '#94a3b8'; // Slate 400
+  ctx.fillText(' PUNTOS', combinedX + scoreWidth, 24);
+  const puntosWidth = ctx.measureText(' PUNTOS').width;
+  
+  // 3. Dibujar slash '/' en Gris Oscuro
+  ctx.fillStyle = '#475569'; // Slate 600
+  ctx.fillText(' / ', combinedX + scoreWidth + puntosWidth, 24);
+  const slashWidth = ctx.measureText(' / ').width;
+  
+  // 4. Dibujar récord absoluto global en Amarillo Dorado
   ctx.fillStyle = '#ffb700';
-  ctx.font = '7px "Press Start 2P"';
-  ctx.textAlign = 'left';
-  ctx.fillText(`MAX:${String(highScore).padStart(6, '0')}`, maxScoreX, 24);
+  ctx.fillText(highStr, combinedX + scoreWidth + puntosWidth + slashWidth, 24);
+  const highWidth = ctx.measureText(highStr).width;
+  
+  // 5. Dibujar " RÉCORD" en Oro Dim
+  ctx.fillStyle = '#cca300'; // Oro oscuro
+  ctx.fillText(' RÉCORD', combinedX + scoreWidth + puntosWidth + slashWidth + highWidth, 24);
   
   // 13. Columna 12: MULTIPLICADOR (x=775, alineación derecha)
   const multX = 775;
@@ -1220,7 +1239,7 @@ function drawPixelHeart(ctx, x, y, size = 2) {
 function drawCutsceneTextBox() {
   ctx.save();
   
-  // 1. Burbuja de Eloísa
+  // 1. Burbuja de Elo
   const b1X = 540;
   const b1Y = 110;
   const b1W = 200;
@@ -1234,7 +1253,7 @@ function drawCutsceneTextBox() {
   ctx.fillRect(b1X, b1Y, b1W, b1H);
   ctx.strokeRect(b1X, b1Y, b1W, b1H);
   
-  // Dibujar flecha/tail apuntando a la cabeza de Eloísa
+  // Dibujar flecha/tail apuntando a la cabeza de Elo
   ctx.beginPath();
   ctx.moveTo(b1X + b1W - 40, b1Y + b1H);
   ctx.lineTo(b1X + b1W - 20, b1Y + b1H + 18);
@@ -1251,7 +1270,7 @@ function drawCutsceneTextBox() {
   ctx.lineWidth = 4;
   ctx.stroke();
   
-  // Texto de Eloísa
+  // Texto de Elo
   ctx.fillStyle = '#1a1a1a';
   ctx.font = '8px "Press Start 2P"';
   ctx.textAlign = 'center';
@@ -1309,12 +1328,12 @@ function drawCutsceneTextBox() {
     drawPixelHeart(ctx, textX + 80, textY - 6, 2);
     ctx.fillText("PAPÁ", textX + 102, textY);
   } else {
-    // ELOÍSA: "I ❤️ ELOÍSA"
+    // ELO: "I ❤️ ELO"
     const textX = b2X + 22;
     const textY = b2Y + b2H / 2;
     ctx.fillText("I", textX, textY);
     drawPixelHeart(ctx, textX + 16, textY - 6, 2);
-    ctx.fillText("ELOÍSA", textX + 38, textY);
+    ctx.fillText("ELO", textX + 38, textY);
   }
   
   // 3. Instrucción blinking parpadeante abajo para reanudar
@@ -1358,7 +1377,7 @@ function updateCutscene() {
       cutsceneStage = 2;     // Saltar directo al Perro corriendo solo!
     }
   } else if (cutsceneStage === 2) {
-    // Perro corre solo hacia los brazos de Eloísa
+    // Perro corre solo hacia los brazos de Elo
     terrier.state = 'run';
     terrier.frameTimer++;
     if (terrier.frameTimer >= terrier.frameInterval) {
@@ -2760,6 +2779,10 @@ function checkCollisions() {
       
       createFloatyText("¡GATO ATRAPADO!", activeCat.x, activeCat.y - 10, '#fbbf24');
       
+      // Mostrar banner en pantalla indicando cómo disparar caca con emoji
+      stageTransitionText = "💩 ¡DISPARA CACA CON TECLA F! 💩";
+      stageTransitionTimer = 180; // 3 segundos a 60fps
+      
       // Mostrar botón táctil en móviles
       const tShoot = document.getElementById('touch-shoot');
       if (tShoot) {
@@ -3008,10 +3031,14 @@ function updateGame() {
 
   // Actualizar temporizador de Doble Salto si está activo
   if (hasDoubleJump) {
-    doubleJumpTimer -= 16.67; // Aprox 60fps
-    if (doubleJumpTimer <= 0) {
-      hasDoubleJump = false;
-      doubleJumpTimer = 0;
+    if (!isGodMode) {
+      doubleJumpTimer -= 16.67; // Aprox 60fps
+      if (doubleJumpTimer <= 0) {
+        hasDoubleJump = false;
+        doubleJumpTimer = 0;
+      }
+    } else {
+      doubleJumpTimer = 15000; // Mantener al máximo en Modo Dios
     }
   }
 
@@ -3076,8 +3103,9 @@ function drawStageTransitionBanner() {
   
   const centerY = 80;
   
-  // Texto de la Etapa (50% más grande: de 11px a 16px)
-  ctx.font = '16px "Press Start 2P"';
+  // Texto de la Etapa (50% más grande: de 11px a 16px, adaptable si es largo)
+  const fontSize = stageTransitionText.length > 25 ? '11px' : '16px';
+  ctx.font = `${fontSize} "Press Start 2P"`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   
@@ -3122,12 +3150,12 @@ function drawGame() {
   // 1. Dibujar el fondo Parallax completo
   drawParallax(currentWeather);
 
-  // 1.5 Dibujar Cabaña y Eloísa si estamos en Cinemática
+  // 1.5 Dibujar Cabaña y Elo si estamos en Cinemática
   if (gameState === STATES.CUTSCENE) {
     // Cabaña: width = 128, height = 128, y = GROUND_Y - 128
     drawPixelSprite(ctx, CINEMATIC_SPRITES.cozy_house, cabinX, GROUND_Y - 128, 128, 128);
     
-    // Eloísa: width = 48, height = 72, y = GROUND_Y - 72
+    // Elo: width = 48, height = 72, y = GROUND_Y - 72
     // Seleccionar el sprite del personaje correspondiente al final actual
     const endingIndex = (Math.floor(currentStage / 10) - 1) % 3;
     let charSprite;
@@ -3309,8 +3337,8 @@ function gameLoop(timestamp) {
 // ==========================================
 
 function updateUI() {
-  document.getElementById('current-score-val').textContent = String(score).padStart(5, '0');
-  document.getElementById('high-score-val').textContent = String(highScore).padStart(5, '0');
+  document.getElementById('current-score-val').textContent = score.toLocaleString('en-US');
+  document.getElementById('high-score-val').textContent = highScore.toLocaleString('en-US');
   document.getElementById('multiplier-val').textContent = `x${multiplier.toFixed(1)}`;
   
   // Estadísticas del sidebar izquierdo (si están visibles)
@@ -3351,20 +3379,30 @@ function triggerGameOver() {
     if (window.audioEngine) window.audioEngine.playGameOverSound();
   }
 
-  // Evaluar récord máximo
+  // Evaluar récord máximo local temporalmente
   if (score > highScore) {
     highScore = score;
     localStorage.setItem('terrier_high_score', highScore);
   }
 
-  // Cargar resumen final
-  document.getElementById('final-score').textContent = score;
+  // Cargar resumen final (formateado con separador de miles)
+  document.getElementById('final-score').textContent = score.toLocaleString('en-US');
   document.getElementById('final-salmons').textContent = salmonsCount;
   document.getElementById('final-kuchens').textContent = kuchensCount;
 
-  // Mostrar capa de fin de juego
-  document.getElementById('gameover-overlay').classList.remove('hidden');
-  document.getElementById('gameover-overlay').classList.add('active');
+  // Evaluar si califica para el Top 10 global
+  const lowestScore = globalLeaderboard.length >= 10 ? globalLeaderboard[globalLeaderboard.length - 1].score : 0;
+  const qualifies = globalLeaderboard.length < 10 || score > lowestScore;
+
+  if (qualifies) {
+    // Si califica, abrimos el modal de registro de récord, el cual abrirá la pantalla de Game Over al cerrarse
+    openRecordModal();
+  } else {
+    // Si no califica, renderizamos la tabla y mostramos el Game Over normalmente
+    renderLeaderboardTable();
+    document.getElementById('gameover-overlay').classList.remove('hidden');
+    document.getElementById('gameover-overlay').classList.add('active');
+  }
   
   // Garantizar que el multiplicador siempre se resetee a 1.0 al terminar la partida
   multiplier = 1.0;
@@ -3469,6 +3507,37 @@ function startGame() {
   scheduleNextFrame();
 }
 
+function goToStartMenu() {
+  gameState = STATES.START;
+  
+  // Quitar capas
+  document.getElementById('gameover-overlay').classList.add('hidden');
+  document.getElementById('gameover-overlay').classList.remove('active');
+  
+  // Mostrar inicio
+  document.getElementById('start-overlay').classList.remove('hidden');
+  document.getElementById('start-overlay').classList.add('active');
+  
+  resetGameVariables();
+  
+  // Detener música de juego principal
+  if (window.audioEngine) {
+    window.audioEngine.stopMusic();
+    window.audioEngine.startIntroMusic();
+  }
+  
+  // Redibujar pantalla estática inicial
+  drawParallax('sunny');
+  terrier.vy = 0;
+  terrier.isGrounded = true;
+  terrier.state = 'run';
+  terrier.draw();
+  updateUI();
+  
+  // Renderizar la tabla de clasificaciones al inicio
+  renderLeaderboardTable();
+}
+
 function openHelpModal() {
   if (gameState === STATES.PLAYING) {
     gameState = STATES.PAUSED;
@@ -3542,6 +3611,26 @@ function setupEventListeners() {
   
   // Teclas físicas
   window.addEventListener('keydown', (e) => {
+    // Si el modal de registro de récord o el modal de leaderboard del TOP 10 están activos, no interceptar teclas del juego
+    const isRecordOpen = !document.getElementById('record-modal').classList.contains('hidden');
+    const isLeaderboardOpen = document.getElementById('leaderboard-modal') && !document.getElementById('leaderboard-modal').classList.contains('hidden');
+    if (isRecordOpen || isLeaderboardOpen) {
+      if (isRecordOpen && e.code === 'Enter') {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submit-record-btn');
+        if (submitBtn) submitBtn.click();
+      }
+      if (isRecordOpen && e.code === 'Escape') {
+        e.preventDefault();
+        closeRecordModal();
+      }
+      if (isLeaderboardOpen && (e.code === 'Escape' || e.code === 'Space' || e.code === 'Enter')) {
+        e.preventDefault();
+        closeLeaderboardModal();
+      }
+      return;
+    }
+
     // Capturar la secuencia "god" de teclado de manera oculta
     if (e.key) {
       typedKeys += e.key.toLowerCase();
@@ -3566,6 +3655,13 @@ function setupEventListeners() {
     // Si Cholga está en animación de muerte, bloquear todos los inputs
     if (gameState === STATES.DYING) {
       e.preventDefault();
+      return;
+    }
+
+    // Volver a inicio/menú principal con Escape desde la pantalla de Game Over
+    if (gameState === STATES.GAMEOVER && e.code === 'Escape') {
+      e.preventDefault();
+      goToStartMenu();
       return;
     }
 
@@ -3666,6 +3762,45 @@ function setupEventListeners() {
     }
   });
 
+  const submitRecordBtn = document.getElementById('submit-record-btn');
+  if (submitRecordBtn) {
+    submitRecordBtn.addEventListener('click', submitRecord);
+  }
+  const cancelRecordBtn = document.getElementById('cancel-record-btn');
+  if (cancelRecordBtn) {
+    cancelRecordBtn.addEventListener('click', closeRecordModal);
+  }
+  const headerLogoImage = document.getElementById('header-logo-image');
+  if (headerLogoImage) {
+    headerLogoImage.addEventListener('click', () => {
+      if (window.audioEngine) {
+        window.audioEngine.playBarkSound();
+      }
+    });
+  }
+
+  // Botón Ver TOP-10
+  const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+  if (viewLeaderboardBtn) {
+    viewLeaderboardBtn.addEventListener('click', openLeaderboardModal);
+  }
+  const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+  if (closeLeaderboardBtn) {
+    closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
+  }
+  const closeLeaderboardBtnOk = document.getElementById('close-leaderboard-btn-ok');
+  if (closeLeaderboardBtnOk) {
+    closeLeaderboardBtnOk.addEventListener('click', closeLeaderboardModal);
+  }
+  const leaderboardModal = document.getElementById('leaderboard-modal');
+  if (leaderboardModal) {
+    leaderboardModal.addEventListener('click', (e) => {
+      if (e.target === leaderboardModal) {
+        closeLeaderboardModal();
+      }
+    });
+  }
+
   // Clic en el canvas (Mobile y Desktop click)
   canvas.addEventListener('mousedown', (e) => {
     if (gameState === STATES.DYING) return;
@@ -3756,6 +3891,59 @@ function setupEventListeners() {
   // Inicializar Pantalla Completa y Controles Táctiles
   setupFullscreen();
   setupTouchControls();
+
+  // Botón Volver al Menú desde Game Over
+  const gameoverMenuBtn = document.getElementById('gameover-menu-btn');
+  if (gameoverMenuBtn) {
+    gameoverMenuBtn.addEventListener('click', goToStartMenu);
+  }
+
+  // Interacción Divertida con la mascota de Cholga en la Pantalla de Inicio
+  const mascotBadge = document.querySelector('.mascot-badge');
+  if (mascotBadge) {
+    mascotBadge.style.cursor = 'pointer';
+    mascotBadge.addEventListener('click', () => {
+      if (window.audioEngine) {
+        window.audioEngine.playBarkSound();
+      }
+      // Mostrar una burbuja de diálogo flotante divertida que desaparece después de 1.8s
+      let bubble = document.getElementById('mascot-speech-bubble');
+      if (!bubble) {
+        bubble = document.createElement('div');
+        bubble.id = 'mascot-speech-bubble';
+        bubble.className = 'pixel-text mascot-bubble';
+        mascotBadge.appendChild(bubble);
+      }
+      const phrases = [
+        "¡GUAU! 🐶",
+        "¡DAME KUCHEN! 🍰",
+        "¡ODIO LA LLUVIA! 🌧️",
+        "¿INSERT COIN? 🪙",
+        "¡VAMOS A CORRER! 🐾",
+        "¡CUIDADO CON LA VACA! 🐄",
+        "¡SOY CHOLGA! 🐕"
+      ];
+      bubble.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+      bubble.classList.add('active');
+      setTimeout(() => {
+        bubble.classList.remove('active');
+      }, 1800);
+    });
+  }
+
+  // Iniciar la música de intro en cuanto el usuario interactúe con la página por primera vez
+  const startIntroOnInteraction = () => {
+    if (gameState === STATES.START && window.audioEngine) {
+      window.audioEngine.startIntroMusic();
+    }
+    // Remover los listeners para que sólo se gatille una vez
+    window.removeEventListener('click', startIntroOnInteraction);
+    window.removeEventListener('keydown', startIntroOnInteraction);
+    window.removeEventListener('touchstart', startIntroOnInteraction);
+  };
+  window.addEventListener('click', startIntroOnInteraction);
+  window.addEventListener('keydown', startIntroOnInteraction);
+  window.addEventListener('touchstart', startIntroOnInteraction);
 }
 
 // ==========================================
@@ -3989,6 +4177,276 @@ function setupTouchControls() {
   }
 }
 
+// ==========================================
+// --- SERVICIOS DE LEADERBOARD (VERCEL KV / SUPABASE) ---
+// ==========================================
+
+function sanitizeLeaderboard(list) {
+  if (!Array.isArray(list)) return [];
+  return list.map(entry => {
+    if (!entry) return null;
+    let cleanVal = entry.score;
+    if (typeof cleanVal === 'string') {
+      cleanVal = parseInt(cleanVal.replace(/[^0-9]/g, ''), 10);
+    } else if (typeof cleanVal === 'number') {
+      cleanVal = Math.floor(cleanVal);
+    }
+    return {
+      name: (entry.name || 'ANON').toString().toUpperCase().trim().slice(0, 12),
+      score: isNaN(cleanVal) ? 0 : cleanVal,
+      date: entry.date ? parseInt(entry.date, 10) : Date.now()
+    };
+  }).filter(Boolean);
+}
+
+async function fetchLeaderboard() {
+  try {
+    const res = await fetch('/api/high-score');
+    if (!res.ok) throw new Error('Error al cargar la tabla de clasificación');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      globalLeaderboard = sanitizeLeaderboard(data);
+      // Actualizar el récord absoluto global a partir del primer puesto
+      highScore = globalLeaderboard[0].score;
+      highScoreName = globalLeaderboard[0].name;
+      
+      // Guardar localmente
+      localStorage.setItem('terrier_high_score', highScore);
+      localStorage.setItem('terrier_high_score_name', highScoreName);
+    }
+  } catch (err) {
+    console.error('Error cargando leaderboard global:', err);
+    // Cargar fallback local
+    const savedHighScore = localStorage.getItem('terrier_high_score');
+    const savedName = localStorage.getItem('terrier_high_score_name') || 'PUSSY-PUSSY';
+    if (savedHighScore) {
+      highScore = parseInt(savedHighScore.toString().replace(/[^0-9]/g, ''), 10);
+      if (isNaN(highScore)) highScore = 50000;
+      highScoreName = savedName;
+    } else {
+      highScore = 50000;
+      highScoreName = 'PUSSY-PUSSY';
+    }
+    
+    // Poblar leaderboard con el local de fallback
+    globalLeaderboard = [{ name: highScoreName, score: highScore }];
+    try {
+      const storedLocalList = localStorage.getItem('terrier_local_leaderboard');
+      if (storedLocalList) {
+        globalLeaderboard = sanitizeLeaderboard(JSON.parse(storedLocalList));
+      } else {
+        localStorage.setItem('terrier_local_leaderboard', JSON.stringify(globalLeaderboard));
+      }
+    } catch (e) {
+      // Ignorar fallos de parsing
+    }
+  }
+  updateUI();
+  renderLeaderboardTable();
+}
+
+function renderLeaderboardTable() {
+  const containers = [
+    document.getElementById('leaderboard-rows'),
+    document.getElementById('leaderboard-modal-rows'),
+    document.getElementById('start-leaderboard-rows')
+  ];
+  
+  containers.forEach(container => {
+    if (!container) return;
+    container.innerHTML = '';
+    
+    // Rellenar hasta tener exactamente 10 elementos en la lista
+    const displayList = [...globalLeaderboard];
+    while (displayList.length < 10) {
+      displayList.push({ name: '---', score: 0 });
+    }
+    const top10 = displayList.slice(0, 10);
+    
+    top10.forEach((entry, idx) => {
+      const row = document.createElement('div');
+      row.className = `leaderboard-row rank-${idx + 1}`;
+      
+      // Resaltar si coincide con el récord actual de esta partida (y es mayor a 0)
+      if (score > 0 && score === entry.score && highScoreName === entry.name) {
+        row.classList.add('highlighted');
+      }
+      
+      const rankNameSpan = document.createElement('span');
+      rankNameSpan.className = 'rank-name';
+      rankNameSpan.innerHTML = `<span class="rank-number">${idx + 1}.</span> ${entry.name}`;
+      
+      const scoreValSpan = document.createElement('span');
+      scoreValSpan.className = 'score-val pixel-text';
+      scoreValSpan.textContent = entry.score > 0 ? entry.score.toLocaleString('en-US') : '0';
+      
+      row.appendChild(rankNameSpan);
+      row.appendChild(scoreValSpan);
+      container.appendChild(row);
+    });
+  });
+}
+
+function openRecordModal() {
+  const modal = document.getElementById('record-modal');
+  if (!modal) return;
+  
+  modal.classList.remove('hidden');
+  modal.classList.add('active');
+  
+  const input = document.getElementById('player-name-input');
+  if (input) {
+    input.value = '';
+    // Intentar pre-llenar con el último nombre guardado si existe
+    const lastSavedName = localStorage.getItem('terrier_player_name');
+    if (lastSavedName) {
+      input.value = lastSavedName;
+    }
+    // Forzar mayúsculas en tiempo real en la UI
+    input.addEventListener('input', () => {
+      input.value = input.value.toUpperCase();
+    });
+    // Poner el foco en el input
+    setTimeout(() => {
+      input.focus();
+    }, 100);
+  }
+  
+  const errorMsg = document.getElementById('record-error-msg');
+  if (errorMsg) {
+    errorMsg.classList.add('hidden');
+  }
+}
+
+async function submitRecord() {
+  const input = document.getElementById('player-name-input');
+  const errorMsg = document.getElementById('record-error-msg');
+  if (!input) return;
+  
+  const rawName = input.value.trim();
+  if (!rawName || rawName.length === 0 || rawName.length > 12) {
+    if (errorMsg) {
+      errorMsg.textContent = 'Escribe entre 1 y 12 letras.';
+      errorMsg.classList.remove('hidden');
+    }
+    return;
+  }
+  
+  const formattedName = rawName.toUpperCase();
+  localStorage.setItem('terrier_player_name', formattedName);
+  
+  const submitBtn = document.getElementById('submit-record-btn');
+  const cancelBtn = document.getElementById('cancel-record-btn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'ENVIANDO...';
+  }
+  if (cancelBtn) {
+    cancelBtn.disabled = true;
+  }
+  
+  try {
+    const response = await fetch('/api/high-score', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: formattedName, score: score })
+    });
+    
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || 'Fallo al registrar récord');
+    }
+    
+    const result = await response.json();
+    if (result.success && Array.isArray(result.leaderboard)) {
+      globalLeaderboard = sanitizeLeaderboard(result.leaderboard);
+      // Actualizar récord local si corresponde
+      highScore = globalLeaderboard[0].score;
+      highScoreName = globalLeaderboard[0].name;
+      localStorage.setItem('terrier_high_score', highScore);
+      localStorage.setItem('terrier_high_score_name', highScoreName);
+    }
+  } catch (error) {
+    console.error('Error registrando récord en servidor. Usando fallback local:', error);
+    // Registrar localmente (fallback)
+    const newEntry = {
+      name: formattedName,
+      score: score,
+      date: Date.now()
+    };
+    
+    globalLeaderboard.push(newEntry);
+    globalLeaderboard = sanitizeLeaderboard(globalLeaderboard);
+    globalLeaderboard.sort((a, b) => b.score - a.score || a.date - b.date);
+    globalLeaderboard = globalLeaderboard.slice(0, 10);
+    
+    localStorage.setItem('terrier_local_leaderboard', JSON.stringify(globalLeaderboard));
+    
+    // Actualizar récords máximos
+    if (globalLeaderboard[0]) {
+      highScore = globalLeaderboard[0].score;
+      highScoreName = globalLeaderboard[0].name;
+      localStorage.setItem('terrier_high_score', highScore);
+      localStorage.setItem('terrier_high_score_name', highScoreName);
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'REGISTRAR';
+    }
+    const cancelBtn = document.getElementById('cancel-record-btn');
+    if (cancelBtn) {
+      cancelBtn.disabled = false;
+    }
+    closeRecordModal();
+    renderLeaderboardTable();
+    updateUI();
+  }
+}
+
+function closeRecordModal() {
+  const modal = document.getElementById('record-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('active');
+  }
+  
+  // Restablecer estados de botones del modal de registro
+  const submitBtn = document.getElementById('submit-record-btn');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'REGISTRAR';
+  }
+  const cancelBtn = document.getElementById('cancel-record-btn');
+  if (cancelBtn) {
+    cancelBtn.disabled = false;
+  }
+  
+  // Mostrar ahora sí el overlay normal de Game Over
+  document.getElementById('gameover-overlay').classList.remove('hidden');
+  document.getElementById('gameover-overlay').classList.add('active');
+}
+
+function openLeaderboardModal() {
+  const modal = document.getElementById('leaderboard-modal');
+  if (!modal) return;
+  
+  // Renderizar la tabla para asegurar datos frescos
+  renderLeaderboardTable();
+  
+  modal.classList.remove('hidden');
+  modal.classList.add('active');
+}
+
+function closeLeaderboardModal() {
+  const modal = document.getElementById('leaderboard-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('active');
+  }
+}
 
 // ==========================================
 // --- INICIALIZACIÓN AL CARGAR ---
@@ -4004,11 +4462,19 @@ window.addEventListener('load', () => {
   ctx.webkitImageSmoothingEnabled = false;
   ctx.msImageSmoothingEnabled = false;
 
-  // Cargar récord máximo guardado
+  // Cargar récord máximo guardado (sanitizando comas o anomalías de formato de cadena)
   const savedHighScore = localStorage.getItem('terrier_high_score');
   if (savedHighScore) {
-    highScore = parseInt(savedHighScore, 10);
+    highScore = parseInt(savedHighScore.toString().replace(/[^0-9]/g, ''), 10);
+    if (isNaN(highScore)) highScore = 50000;
   }
+  const savedHighScoreName = localStorage.getItem('terrier_high_score_name');
+  if (savedHighScoreName) {
+    highScoreName = savedHighScoreName;
+  }
+
+  // Cargar la tabla de posiciones desde el servidor
+  fetchLeaderboard();
 
   // Registrar listeners de eventos de entrada y configuración
   setupEventListeners();
@@ -4017,4 +4483,9 @@ window.addEventListener('load', () => {
   drawParallax('sunny');
   terrier.draw();
   updateUI();
+
+  // Iniciar la música de intro al cargar la página si el navegador lo permite
+  if (window.audioEngine) {
+    window.audioEngine.startIntroMusic();
+  }
 });
