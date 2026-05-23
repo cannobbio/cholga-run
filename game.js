@@ -2499,7 +2499,17 @@ function updateSpawns() {
       }
     } else {
       // Decidir aleatoriamente qué spawnear
-      // Probabilidades actualizadas: 25% Obstáculo Terrestre, 15% Queltehue (ave), 35% Salmón, 15% Kuchen, 10% Especiales
+      // Probabilidades base: 25% Obstáculo Terrestre, 15% Queltehue (ave), 35% Salmón, 15% Kuchen, 10% Especiales
+      // En etapas >= 6 ampliamos la ventana de especiales al 12% (reduciendo un 2% de salmón) para compensar la alta velocidad
+      let salmonThreshold = 0.75;
+      let kuchenThreshold = 0.90;
+      
+      const isAdvancedStage = (currentStage >= 6);
+      if (isAdvancedStage) {
+        salmonThreshold = 0.73; // Salmón del 35% al 33%
+        kuchenThreshold = 0.88; // Kuchen sigue en 15% (de 0.73 a 0.88), Especiales sube al 12% (de 0.88 a 1.00)
+      }
+      
       const rand = Math.random();
       
       if (rand < 0.25) {
@@ -2508,31 +2518,34 @@ function updateSpawns() {
         const types = ['cow', 'cow', 'fence', 'stone', 'hole'];
         // Si la velocidad es baja, evitar vacas demasiado seguidas
         let typeIdx = Math.floor(Math.random() * types.length);
-        if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'cow').length > 0) {
+        if (types[typeIdx] === 'cow' && gameSpeed < 5.5 && obstacles.filter(o => o.type === 'stone').length > 0) {
           typeIdx = 3; // piedra en su lugar
         }
         obstacles.push(new Obstacle(types[typeIdx]));
       } else if (rand < 0.40) {
         // Spawn Queltehue flying obstacle (15%)
         obstacles.push(new Obstacle('queltehue'));
-      } else if (rand < 0.75) {
-        // Spawn Salmón (35%)
+      } else if (rand < salmonThreshold) {
+        // Spawn Salmón (35% base, 33% en etapas avanzadas)
         collectibles.push(new Collectible('salmon'));
-      } else if (rand < 0.90) {
+      } else if (rand < kuchenThreshold) {
         // Spawn Kuchen (15%)
         collectibles.push(new Collectible('kuchen'));
       } else {
-        // El 10% restante se reparte en: 6% para Rosa y 4% para Hueso de vida extra
+        // Categoría Especiales (10% base, 12% en etapas avanzadas)
+        // La probabilidad de Rosa es del 6% al inicio (60% de 10%) y sube al 9% en etapas avanzadas (75% de 12% neta)
         const subRand = Math.random();
-        if (subRand < 0.6) {
-          // Spawn Rosa Roja de Puerto Varas (6%)
+        const roseThreshold = isAdvancedStage ? 0.75 : 0.60;
+        
+        if (subRand < roseThreshold) {
+          // Spawn Rosa Roja de Puerto Varas
           if (collectibles.filter(c => c.type === 'rose').length === 0) {
             collectibles.push(new Collectible('rose'));
           } else {
             collectibles.push(new Collectible('salmon'));
           }
         } else {
-          // Spawn Hueso Blanco de Vida Extra (4%)
+          // Spawn Hueso Blanco de Vida Extra (4% base, 3% en etapas avanzadas neta)
           collectibles.push(new Collectible('bone'));
         }
       }
@@ -2593,7 +2606,8 @@ function checkCollisions() {
 
       // Si tiene el escudo activo (hasDoubleJump)
       if (hasDoubleJump) {
-        doubleJumpTimer -= 15000;
+        const cost = (currentStage >= 6) ? 20000 : 15000;
+        doubleJumpTimer -= cost;
         if (doubleJumpTimer <= 0) {
           doubleJumpTimer = 0;
           hasDoubleJump = false;
@@ -2713,7 +2727,8 @@ function checkCollisions() {
         if (window.audioEngine) window.audioEngine.playCatchKuchenSound();
       } else if (col.type === 'rose') {
         hasDoubleJump = true;
-        doubleJumpTimer = (doubleJumpTimer || 0) + 15000; // 15 segundos acumulativos
+        const roseDuration = (currentStage >= 6) ? 20000 : 15000; // 20s en etapas avanzadas, 15s al inicio
+        doubleJumpTimer = (doubleJumpTimer || 0) + roseDuration;
         if (window.audioEngine) window.audioEngine.playPowerUpSound();
       } else if (col.type === 'bone') {
         lives++;
