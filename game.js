@@ -1007,11 +1007,11 @@ function drawCanvasHUD() {
   ctx.shadowBlur = 4;
   
   const hudBgGrad = ctx.createLinearGradient(15, 8, 15, 40);
-  hudBgGrad.addColorStop(0, 'rgba(15, 23, 42, 0.85)'); // Slate 900
-  hudBgGrad.addColorStop(1, 'rgba(30, 41, 59, 0.85)'); // Slate 800
+  hudBgGrad.addColorStop(0, 'rgba(15, 23, 42, 0.88)'); // Slate 900
+  hudBgGrad.addColorStop(1, 'rgba(30, 41, 59, 0.88)'); // Slate 800
   ctx.fillStyle = hudBgGrad;
   
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'; // Borde sutil premium
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)'; // Borde sutil premium
   ctx.lineWidth = 1.5;
   
   ctx.beginPath();
@@ -1024,12 +1024,40 @@ function drawCanvasHUD() {
   ctx.font = '7px "Press Start 2P"';
   ctx.textBaseline = 'middle';
   
-  // 2. Columna 1: ETAPA (x=24)
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'left';
-  ctx.fillText(`ETAPA ${currentStage}`, 24, 24);
+  // Helper para dibujar divisores visuales retro premium
+  function drawHUDDivider(x) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, 15);
+    ctx.lineTo(x, 33);
+    ctx.stroke();
+  }
   
-  // 3. Columna 2: CLIMA (x=80)
+  // --- PRE-CÁLCULO DE ANCHO Y MODO COMPACTO ---
+  // Calculamos el espacio ocupado por el bloque de Score & Récord a la derecha
+  const rightBoundary = 730;
+  
+  const recordLabel = ' RÉCORD';
+  const recordLabelWidth = ctx.measureText(recordLabel).width;
+  
+  const highStr = highScore.toLocaleString('en-US');
+  const highStrWidth = ctx.measureText(highStr).width;
+  
+  const slash = ' / ';
+  const slashWidth = ctx.measureText(slash).width;
+  
+  const puntosLabel = ' PUNTOS';
+  const puntosLabelWidth = ctx.measureText(puntosLabel).width;
+  
+  const scoreStr = score.toLocaleString('en-US');
+  const scoreStrWidth = ctx.measureText(scoreStr).width;
+  
+  const totalScoreWidth = recordLabelWidth + highStrWidth + slashWidth + puntosLabelWidth + scoreStrWidth;
+  const scoreStartX = rightBoundary - totalScoreWidth;
+  const maxLeftX = scoreStartX - 15; // Límite de seguridad para evitar colisiones
+  
+  // Configuración dinámica de secciones del Clima
   let weatherText = 'DESPEJADO';
   let weatherSprite = HUD_SPRITES.sun;
   let weatherColor = '#ffd166';
@@ -1048,15 +1076,7 @@ function drawCanvasHUD() {
     weatherColor = '#cbd5e1';
   }
   
-  // Draw weather pixel sprite
-  drawPixelSprite(ctx, weatherSprite, 80, 16, 16, 16);
-  
-  // Draw weather text label
-  ctx.fillStyle = weatherColor;
-  ctx.textAlign = 'left';
-  ctx.fillText(weatherText, 98, 24);
-  
-  // 4. Columna 3: HORA (x=155)
+  // Configuración de Hora
   let hourText = 'DÍA';
   let hourSprite = HUD_SPRITES.sun;
   let hourColor = '#ffd166';
@@ -1075,15 +1095,7 @@ function drawCanvasHUD() {
     hourColor = '#818cf8';
   }
   
-  // Draw hour pixel sprite
-  drawPixelSprite(ctx, hourSprite, 155, 16, 16, 16);
-  
-  // Draw hour text label
-  ctx.fillStyle = hourColor;
-  ctx.textAlign = 'left';
-  ctx.fillText(hourText, 173, 24);
-  
-  // 5. Columna 4: EVENTO ESPECIAL (x=240)
+  // Configuración de Evento Especial
   let eventText = '';
   let eventSprite = null;
   let eventColor = '';
@@ -1102,94 +1114,198 @@ function drawCanvasHUD() {
     eventColor = '#fbbf24';
   }
   
+  // Medir ancho en modo normal
+  const stageStr = `ETAPA ${currentStage}`;
+  const stageWidth = ctx.measureText(stageStr).width;
+  
+  let climaWidth = 16 + 2 + ctx.measureText(weatherText).width;
+  let horaWidth = 16 + 2 + ctx.measureText(hourText).width;
+  let eventWidth = eventText ? (16 + 2 + ctx.measureText(eventText).width) : 0;
+  
+  let livesWidth = 0;
+  if (lives <= 2) {
+    livesWidth = lives * 14;
+  } else {
+    livesWidth = 14 + 2 + ctx.measureText(`x${lives}`).width;
+  }
+  
+  let itemGroupWidth = 18 + 2 + ctx.measureText(`x${salmonsCount}`).width; // Salmón
+  itemGroupWidth += 8 + 18 + 2 + ctx.measureText(`x${kuchensCount}`).width; // Kuchen
+  if (poopAmmo > 0 || isGodMode) {
+    const poopLabel = isGodMode ? "x∞" : `x${poopAmmo}`;
+    itemGroupWidth += 8 + 18 + 2 + ctx.measureText(poopLabel).width; // Poop
+  }
+  
+  let dividerCount = 4;
+  if (eventText) dividerCount = 5;
+  const dividerTotalWidth = dividerCount * 12;
+  
+  const normalTotalWidth = 24 + stageWidth + dividerTotalWidth + climaWidth + horaWidth + eventWidth + livesWidth + itemGroupWidth;
+  
+  // Activamos compactación inteligente si excede el límite
+  const isCompact = normalTotalWidth > maxLeftX;
+  
+  // --- DIBUJO FLUIDO DE IZQUIERDA A DERECHA ---
+  let currentX = 24;
+  
+  // 2. Bloque 1: ETAPA
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText(stageStr, currentX, 24);
+  currentX += stageWidth;
+  
+  // Separador
+  drawHUDDivider(currentX + 6);
+  currentX += 12;
+  
+  // 3. Bloque 2: CLIMA (con soporte de colapso)
+  drawPixelSprite(ctx, weatherSprite, currentX, 16, 16, 16);
+  if (!isCompact) {
+    ctx.fillStyle = weatherColor;
+    ctx.textAlign = 'left';
+    ctx.fillText(weatherText, currentX + 18, 24);
+    currentX += 18 + ctx.measureText(weatherText).width;
+  } else {
+    currentX += 16;
+  }
+  
+  // Separador
+  drawHUDDivider(currentX + 6);
+  currentX += 12;
+  
+  // 4. Bloque 3: HORA (con soporte de colapso)
+  drawPixelSprite(ctx, hourSprite, currentX, 16, 16, 16);
+  if (!isCompact) {
+    ctx.fillStyle = hourColor;
+    ctx.textAlign = 'left';
+    ctx.fillText(hourText, currentX + 18, 24);
+    currentX += 18 + ctx.measureText(hourText).width;
+  } else {
+    currentX += 16;
+  }
+  
+  // 5. Bloque 4: EVENTO ESPECIAL (Solo si está activo)
   if (eventText && eventSprite) {
-    // Draw event pixel sprite
-    drawPixelSprite(ctx, eventSprite, 240, 16, 16, 16);
+    // Separador
+    drawHUDDivider(currentX + 6);
+    currentX += 12;
     
-    // Draw event text label
+    // Ancho de la etiqueta de evento
+    const labelW = ctx.measureText(eventText).width;
+    const badgeW = 16 + 4 + labelW + 8; // icono + gap + texto + padding
+    const badgeH = 20;
+    const badgeX = currentX - 4;
+    const badgeY = 24 - 10;
+    
+    // Dibujamos un badge redondeado con pulsación luminosa premium
+    ctx.save();
+    const badgeAlpha = 0.15 + Math.sin(Date.now() / 150) * 0.05;
+    if (eventText === 'ERUPCIÓN') {
+      ctx.fillStyle = `rgba(239, 68, 68, ${badgeAlpha})`;
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+    } else if (eventText === 'TORNADO') {
+      ctx.fillStyle = `rgba(56, 189, 248, ${badgeAlpha})`;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+    } else { // GATO!
+      ctx.fillStyle = `rgba(251, 191, 36, ${badgeAlpha})`;
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+    }
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+    
+    // Dibujar icono de evento
+    drawPixelSprite(ctx, eventSprite, currentX, 16, 16, 16);
+    
+    // Dibujar texto de evento
     ctx.fillStyle = eventColor;
     ctx.textAlign = 'left';
-    ctx.fillText(eventText, 258, 24);
+    ctx.fillText(eventText, currentX + 18, 24);
+    
+    currentX += badgeW - 8;
   }
   
-  // 6. Columna 5: CORAZONES / VIDAS (x=320)
-  const heartXStart = 320;
-  const heartY = 24 - 6; // y=18
+  // Separador antes de VIDAS
+  drawHUDDivider(currentX + 6);
+  currentX += 12;
   
+  // 6. Bloque 5: CORAZONES / VIDAS
   if (lives <= 2) {
     for (let i = 0; i < lives; i++) {
-      drawPixelHeart(ctx, heartXStart + i * 14, heartY, 2);
+      drawPixelHeart(ctx, currentX + i * 14, 24 - 6, 2);
     }
+    currentX += lives * 14;
   } else {
-    drawPixelHeart(ctx, heartXStart, heartY, 2);
+    drawPixelHeart(ctx, currentX, 24 - 6, 2);
     ctx.fillStyle = '#ffffff';
-    ctx.font = '7px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`x${lives}`, heartXStart + 14, 24);
+    ctx.fillText(`x${lives}`, currentX + 16, 24);
+    currentX += 16 + ctx.measureText(`x${lives}`).width;
   }
   
-  // 7. Columna 6: SALMONES (x=360)
-  const salmonX = 360;
-  const itemY = 24 - 9; // y=15 (sprite es de 18x18)
-  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, salmonX, itemY, 18, 18);
+  // Separador antes de ITEMS
+  drawHUDDivider(currentX + 6);
+  currentX += 12;
+  
+  // 7. Bloque 6: ITEMS (Salmon, Kuchen, Poop)
+  const itemY = 24 - 9; // y=15 para centrar sprites de 18x18
+  
+  // Salmón
+  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.salmon, currentX, itemY, 18, 18);
   ctx.fillStyle = '#ffd166';
-  ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText(`x${salmonsCount}`, salmonX + 20, 24);
+  ctx.fillText(`x${salmonsCount}`, currentX + 20, 24);
+  currentX += 20 + ctx.measureText(`x${salmonsCount}`).width;
   
-  // 8. Columna 7: KUCHENS (x=405)
-  const kuchenX = 405;
-  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, kuchenX, itemY, 18, 18);
+  // Kuchen
+  currentX += 8;
+  drawPixelSprite(ctx, COLLECTIBLE_SPRITES.kuchen, currentX, itemY, 18, 18);
   ctx.fillStyle = '#f472b6';
-  ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText(`x${kuchensCount}`, kuchenX + 20, 24);
+  ctx.fillText(`x${kuchensCount}`, currentX + 20, 24);
+  currentX += 20 + ctx.measureText(`x${kuchensCount}`).width;
   
-  // 9. Columna 8: MUNICIÓN DE CACA (x=450, sólo si poopAmmo > 0 o en Modo Dios)
+  // Poop (Solo si tiene munición o en Modo Dios)
   if (poopAmmo > 0 || isGodMode) {
-    const poopX = 450;
-    drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, poopX, itemY, 18, 18);
-    ctx.fillStyle = '#7c5335'; // café marrón
-    ctx.font = '7px "Press Start 2P"';
+    currentX += 8;
+    drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, currentX, itemY, 18, 18);
+    ctx.fillStyle = '#7c5335';
     ctx.textAlign = 'left';
-    ctx.fillText(isGodMode ? "x∞" : `x${poopAmmo}`, poopX + 20, 24);
+    const poopLabel = isGodMode ? "x∞" : `x${poopAmmo}`;
+    ctx.fillText(poopLabel, currentX + 20, 24);
+    currentX += 20 + ctx.measureText(poopLabel).width;
   }
   
-  // 10. Columna 9-11 Combinadas: SCORE / RÉCORD GLOBAL (x=495)
-  const combinedX = 495;
-  ctx.font = '7px "Press Start 2P"';
+  // --- ANCLAJE INTELIGENTE DE SCORE & RECORD A LA DERECHA ---
+  // Dibujamos un divisor antes del score
+  drawHUDDivider(scoreStartX - 10);
+  
   ctx.textAlign = 'left';
-  
-  const scoreStr = score.toLocaleString('en-US');
-  const highStr = highScore.toLocaleString('en-US');
-  
-  // 1. Dibujar puntuación actual en Blanco
+  // Dibujar puntuación actual (Blanco)
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(scoreStr, combinedX, 24);
-  const scoreWidth = ctx.measureText(scoreStr).width;
+  ctx.fillText(scoreStr, scoreStartX, 24);
   
-  // 2. Dibujar " PUNTOS" en Gris Claro / Dim
-  ctx.fillStyle = '#94a3b8'; // Slate 400
-  ctx.fillText(' PUNTOS', combinedX + scoreWidth, 24);
-  const puntosWidth = ctx.measureText(' PUNTOS').width;
+  // Dibujar " PUNTOS" (Slate 400)
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillText(puntosLabel, scoreStartX + scoreStrWidth, 24);
   
-  // 3. Dibujar slash '/' en Gris Oscuro
-  ctx.fillStyle = '#475569'; // Slate 600
-  ctx.fillText(' / ', combinedX + scoreWidth + puntosWidth, 24);
-  const slashWidth = ctx.measureText(' / ').width;
+  // Dibujar slash (Slate 600)
+  ctx.fillStyle = '#475569';
+  ctx.fillText(slash, scoreStartX + scoreStrWidth + puntosLabelWidth, 24);
   
-  // 4. Dibujar récord absoluto global en Amarillo Dorado
+  // Dibujar récord global (Amarillo)
   ctx.fillStyle = '#ffb700';
-  ctx.fillText(highStr, combinedX + scoreWidth + puntosWidth + slashWidth, 24);
-  const highWidth = ctx.measureText(highStr).width;
+  ctx.fillText(highStr, scoreStartX + scoreStrWidth + puntosLabelWidth + slashWidth, 24);
   
-  // 5. Dibujar " RÉCORD" en Oro Dim
-  ctx.fillStyle = '#cca300'; // Oro oscuro
-  ctx.fillText(' RÉCORD', combinedX + scoreWidth + puntosWidth + slashWidth + highWidth, 24);
+  // Dibujar " RÉCORD" (Oro)
+  ctx.fillStyle = '#cca300';
+  ctx.fillText(recordLabel, scoreStartX + scoreStrWidth + puntosLabelWidth + slashWidth + highStrWidth, 24);
   
-  // 13. Columna 12: MULTIPLICADOR (x=775, alineación derecha)
+  // --- MULTIPLICADOR (x=775, alineado a la derecha) ---
   const multX = 775;
-  ctx.font = '7px "Press Start 2P"';
   ctx.textAlign = 'right';
   
   if (multiplier > 1.0) {
