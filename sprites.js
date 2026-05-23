@@ -22,7 +22,11 @@ const COLOR_MAP = {
   'V': '#143825',     // Verde pino oscuro (Hojas de árbol)
   'O': '#2e7d32',     // Verde bosque brillante (Puntos de árbol)
   'E': '#38b000',     // Verde tallo (Rosa)
-  'X': '#800f2f'      // Rojo oscuro sombra (Rosa)
+  'X': '#800f2f',      // Rojo oscuro sombra (Rosa)
+  'N': '#f97316',     // Naranja vibrante (Amanecer, lava, sol)
+  'M': '#1e1b4b',     // Índigo oscuro (Noche)
+  'F': '#60a5fa',     // Azul suave (Gota de lluvia)
+  'Z': '#f59e0b'      // Ámbar/Rayo (Tormenta, fuego)
 };
 
 // --- SPRITES DEL TERRIER CHILENO MEJORADO (24x24 px) ---
@@ -777,6 +781,208 @@ const CINEMATIC_SPRITES = {
   ]
 };
 
+const HUD_SPRITES = {
+  // Clima Despejado / Sol (`sun`)
+  sun: [
+    "......NN........",
+    "....N.YY.N......",
+    ".....YYYY.......",
+    "..N.YYYYYY.N....",
+    "...YYYYYYYY.....",
+    "N.YYYYYYYYYY.N..",
+    "YYYYYYYYYYYYYY..",
+    "YYYYYYYYYYYYYY..",
+    "N.YYYYYYYYYY.N..",
+    "...YYYYYYYY.....",
+    "..N.YYYYYY.N....",
+    ".....YYYY.......",
+    "....N.YY.N......",
+    "......NN........",
+    "................",
+    "................"
+  ],
+
+  // Clima Lluvia (`rain`)
+  rain: [
+    "................",
+    "......HHHH......",
+    "....HHHHHHHH....",
+    "...HHHHHHHHHH...",
+    "..GGGGGGGGGGGG..",
+    ".GGGGGGGGGGGGGG.",
+    ".GGGGGGGGGGGGGG.",
+    "..GGGGGGGGGGGG..",
+    "................",
+    "....F....F....F.",
+    "...F....F....F..",
+    "................",
+    "......F....F....",
+    ".....F....F.....",
+    "................",
+    "................"
+  ],
+
+  // Clima Tormenta (`storm`)
+  storm: [
+    "................",
+    "......GGGG......",
+    "....GGGGGGGG....",
+    "...GGGGGGGGGG...",
+    "..KKKKKKKKKKKK..",
+    ".KKKKKKKKKKKKKK.",
+    ".KKKKKKKKKKKKKK.",
+    "..KKKKKKKKKKKK..",
+    "......ZZZZ......",
+    ".....ZZZZ.......",
+    "....ZZZZZZ......",
+    "......ZZZZ......",
+    ".....ZZZZ.......",
+    "....ZZZZ........",
+    "....ZZ..........",
+    "................"
+  ],
+
+  // Clima Neblina (`fog`)
+  fog: [
+    "................",
+    "................",
+    "..HHHHHHHHHH....",
+    "....HHHHHHHHHH..",
+    "................",
+    "....GGGGGGGGGG..",
+    "..GGGGGGGGGG....",
+    "................",
+    "......HHHHHHHH..",
+    "..HHHHHHHH......",
+    "................",
+    "....GGGGGGGG....",
+    "......GGGGGGGG..",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // Amanecer (`sunrise`)
+  sunrise: [
+    "................",
+    "......NN........",
+    "....N.YY.N......",
+    ".....YYYY.......",
+    "..N.YYYYYY.N....",
+    "YYYYYYYYYYYYYY..",
+    "AAAAAAAAAAAAAAAA",
+    "................",
+    ".AAAAAAAAAAAAAA.",
+    "................",
+    "..AAAAAAAAAAAA..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // Atardecer (`sunset`)
+  sunset: [
+    "................",
+    "......RR........",
+    "....RRNNRR......",
+    "...RNNNNNNR.....",
+    "..RNNNNNNNNR....",
+    "PPPPPPPPPPPPPPPP",
+    "................",
+    "AAAAAAAAAAAAAAAA",
+    "................",
+    ".AAAAAAAAAAAAAA.",
+    "................",
+    "..AAAAAAAAAAAA..",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // Noche / Luna (`night`)
+  night: [
+    "................",
+    "......W.........",
+    ".........YYYY...",
+    ".......YYYYYY...",
+    "......YYYYY.....",
+    ".....YYYY.......",
+    "....YYYY........",
+    "....YYYY........",
+    ".....YYYY.......",
+    "......YYYYY.....",
+    ".......YYYYYY...",
+    ".........YYYY...",
+    "....W...........",
+    "................",
+    ".........W......",
+    "................"
+  ],
+
+  // Erupción (`eruption`)
+  eruption: [
+    "....GGGGGGGG....",
+    "...GGGGGGGGGG...",
+    "....GGGGGGGG....",
+    ".....RR..RR.....",
+    "....RNNNNR......",
+    "....RUUUUR......",
+    "...RUUUUUUR.....",
+    "...UUUNUUUU.....",
+    "..UUUUNRUUUU....",
+    "..UUUUR.RUUU....",
+    ".UUUUU...UUUU...",
+    ".UUUU.....UUU...",
+    "UUUU.......UUU..",
+    "UU..........UU..",
+    "................",
+    "................"
+  ],
+
+  // Tornado (`tornado`)
+  tornado: [
+    "................",
+    "HHHHHHHHHHHHHHHH",
+    ".GGGGGGGGGGGGGG.",
+    "..HHHHHHHHHHHH..",
+    "...GGGGGGGGGG...",
+    "....HHHHHHHH....",
+    ".....GGGGGG.....",
+    "......HHHH......",
+    "......GGG.......",
+    ".......HH.......",
+    ".......GG.......",
+    "......HH........",
+    "......G.........",
+    ".....H..........",
+    "................",
+    "................"
+  ],
+
+  // Gato (`cat_face`)
+  cat_face: [
+    "................",
+    "..T..........T..",
+    "..TT........TT..",
+    "..TPT......TPT..",
+    "..TTTTTTTTTTTT..",
+    ".TTTTTTTTTTTTTT.",
+    ".TTKTKTTTTKTKTT.",
+    "TTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTT",
+    "TTTTTTTPPTTTTTTT",
+    ".TTTTTTWWTTTTTT.",
+    "..TTTTTWWTTTTT..",
+    "...TTTTTTTTTT...",
+    ".....TTTTTT.....",
+    "................",
+    "................"
+  ]
+};
+
 /**
  * Dibuja un sprite 8-bit programático en el canvas.
  * @param {CanvasRenderingContext2D} ctx - Contexto 2D del Canvas
@@ -832,4 +1038,5 @@ window.TERRIER_SPRITES = TERRIER_SPRITES;
 window.OBSTACLE_SPRITES = OBSTACLE_SPRITES;
 window.COLLECTIBLE_SPRITES = COLLECTIBLE_SPRITES;
 window.CINEMATIC_SPRITES = CINEMATIC_SPRITES;
+window.HUD_SPRITES = HUD_SPRITES;
 window.drawPixelSprite = drawPixelSprite;

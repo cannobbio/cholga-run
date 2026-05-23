@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-05-22
+### Changed
+- **Iconos Retro de Alta Fidelidad en el HUD**: Reemplazamos los iconos emoji vectoriales por un set completo de **sprites pixel-art personalizados de 16x16 píxeles** (sol, nubes con lluvia, relámpagos, neblina, amanecer con océano, atardecer con nubes rosas, luna creciente con estrellas centelleantes, volcanes en erupción, tornados y una simpática cara de gato naranja). Esto soluciona por completo el problema del renderizado deficiente y desalineado de los emojis estándar en el canvas de baja resolución (800x400), garantizando que todos los elementos visuales del HUD luzcan perfectamente nítidos, alineados y fieles a la estética de 8 bits.
+
 ## [1.15.0] - 2026-05-22
 ### Changed
 - **Eliminación de Barra Lateral Izquierda**: Se eliminó por completo la sección de estadísticas redundantes del sidebar izquierdo (`.left-sidebar`). El viewport del juego ahora ocupa el ancho completo del contenedor principal, brindando una experiencia de juego mucho más inmersiva y aprovechando el espacio disponible de la pantalla.
