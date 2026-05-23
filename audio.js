@@ -203,6 +203,46 @@ const INTRO_BASS = [
   'C3', 'G3', 'F3', 'C3',  'G3', 'D3', 'C3', 'G3',  'C3', 'F3', 'C3', 'G3',  'C3', 'G3', 'C3', 'G3'
 ];
 
+// 8. COLEGIO: Música infantil, alegre y juguetona (BPM=115, Do Mayor)
+const COLEGIO_MELODY = [
+  'E5', 'E5', 'F5', 'G5',  'G5', 'F5', 'E5', 'D5',  'C5', 'C5', 'D5', 'E5',  'E5', '-', 'D5', 'D5',
+  'E5', 'E5', 'F5', 'G5',  'G5', 'F5', 'E5', 'D5',  'C5', 'C5', 'D5', 'E5',  'D5', '-', 'C5', 'C5'
+];
+const COLEGIO_CHORDS = [
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['G3', 'B3', 'D4'], ['G3', 'B3', 'D4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4']
+];
+const COLEGIO_BASS = [
+  'C3', 'G3', 'C3', 'G3',  'G3', 'D3', 'G3', 'D3',  'C3', 'G3', 'C3', 'G3',  'G3', 'D3', 'C3', 'G3',
+  'C3', 'G3', 'C3', 'G3',  'G3', 'D3', 'G3', 'D3',  'C3', 'G3', 'C3', 'G3',  'G3', 'D3', 'C3', 'G3'
+];
+
+// 9. CUMBIA: Cumbia tropical sabrosa sureña (BPM=96, La Menor)
+const CUMBIA_MELODY = [
+  'A4', 'C5', 'E5', 'A5',  'G5', '-', 'E5', '-',  'F5', 'A5', 'C6', 'F5',  'E5', '-', 'C5', '-',
+  'D5', 'F5', 'A5', 'D5',  'C5', '-', 'A4', '-',  'B4', 'D5', 'G5', 'B4',  'A4', '-', '-', '-'
+];
+const CUMBIA_CHORDS = [
+  ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'],
+  ['E3', 'G#3', 'B3'], ['E3', 'G#3', 'B3'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'],
+  ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4'],
+  ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'],
+  ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'], ['D3', 'F3', 'A3'],
+  ['E3', 'G#3', 'B3'], ['E3', 'G#3', 'B3'], ['A3', 'C4', 'E4'], ['A3', 'C4', 'E4']
+];
+const CUMBIA_BASS = [
+  'A2', '-', 'E3', 'A2',  'C3', '-', 'G3', 'C3',  'D2', '-', 'A2', 'D2',  'E2', '-', 'B2', 'E2',
+  'A2', '-', 'E3', 'A2',  'C3', '-', 'G3', 'C3',  'D2', '-', 'A2', 'D2',  'E2', '-', 'B2', 'E2'
+];
+
 // Cache de buffer de ruido
 let noiseBuffer = null;
 
@@ -409,6 +449,16 @@ function scheduleNextStep(step, time) {
     chordArray = INTRO_CHORDS;
     bassArray = INTRO_BASS;
     themeBPM = 100;
+  } else if (musicTheme === 'colegio') {
+    melodyArray = COLEGIO_MELODY;
+    chordArray = COLEGIO_CHORDS;
+    bassArray = COLEGIO_BASS;
+    themeBPM = 115;
+  } else if (musicTheme === 'cumbia') {
+    melodyArray = CUMBIA_MELODY;
+    chordArray = CUMBIA_CHORDS;
+    bassArray = CUMBIA_BASS;
+    themeBPM = 96;
   }
 
   const isIntro = (musicTheme === 'intro');
@@ -438,6 +488,26 @@ function scheduleNextStep(step, time) {
       // Onda triangular cálida con coro muy atenuado
       synthNote(freq, time, noteDur, 'triangle', 0.16);
       synthNote(freq * 1.004, time, noteDur, 'square', 0.03);
+    } else if (musicTheme === 'colegio') {
+      // Flauta alegre y juguetona escolar
+      synthNote(freq, time, noteDur, 'triangle', 0.17);
+      synthNote(freq * 1.004, time, noteDur, 'square', 0.04);
+      
+      // Síntesis de timbre/campana de colegio en los compases principales
+      if (step === 0 || step === 8 || step === 16 || step === 24) {
+        synthNote(987.77, time, 0.4, 'sine', 0.06); // Si5
+        synthNote(1318.51, time, 0.45, 'sine', 0.04); // Mi6
+        synthNote(1046.50, time + 0.05, 0.35, 'square', 0.02); // Do6
+      }
+      
+      // Bocina de auto sutil integrada en la melodía
+      if (step === 12 || step === 28) {
+        synthNote(680, time, 0.08, 'square', 0.035);
+      }
+    } else if (musicTheme === 'cumbia') {
+      // Acordeón cumbiero tropical retro
+      synthNote(freq, time, noteDur, 'square', 0.14);
+      synthNote(freq * 1.006, time, noteDur, 'triangle', 0.08);
     } else {
       // Acordeón Alegre Tradicional: Triángulo + Onda de Pulso Desafinada (* 1.008)
       synthNote(freq, time, noteDur, 'triangle', 0.18);
@@ -445,16 +515,22 @@ function scheduleNextStep(step, time) {
     }
   }
 
-  // 2. Canal 2: Bajo "Oom" en los tiempos fuertes (Triangle Bass)
-  if (stepInMeasure === 0 || stepInMeasure === 4) {
-    const bassIdx = (Math.floor(step / 4)) % 32;
+  // 2. Canal 2: Bajo "Oom" / Cumbia Tumbao (Triangle Bass)
+  let isBassStep = (stepInMeasure === 0 || stepInMeasure === 4);
+  if (musicTheme === 'cumbia') {
+    // En la cumbia el bajo es sincopado y corre en múltiples pasos
+    isBassStep = (step % 2 === 0 || step % 4 === 3); 
+  }
+
+  if (isBassStep) {
+    // Para la cumbia, el bassIdx es directamente el paso actual (step)
+    const bassIdx = (musicTheme === 'cumbia') ? step : (Math.floor(step / 4)) % 32;
     const bassNoteName = bassArray[bassIdx];
     const bassFreq = NOTE_FREQS[bassNoteName];
-    const bassDur = stepDuration * 1.8;
+    const bassDur = (musicTheme === 'cumbia') ? stepDuration * 0.9 : stepDuration * 1.8;
     
-    if (bassFreq) {
-      // El bajo es más amortiguado y suave en la noche y la intro
-      const bassVol = isIntro ? 0.08 : (isNight ? 0.16 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.32 : 0.28));
+    if (bassFreq && bassNoteName !== '-') {
+      const bassVol = isIntro ? 0.08 : (isNight ? 0.16 : ((musicTheme === 'danger' || musicTheme === 'chase' || musicTheme === 'cumbia') ? 0.32 : 0.28));
       synthNote(bassFreq, time, bassDur, 'triangle', bassVol);
     }
   }
@@ -466,7 +542,7 @@ function scheduleNextStep(step, time) {
     const chordDur = stepDuration * 0.6;
     
     if (chordNotes) {
-      const chordVol = isIntro ? 0.022 : (isNight ? 0.04 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.09 : 0.08));
+      const chordVol = isIntro ? 0.022 : (isNight ? 0.04 : ((musicTheme === 'danger' || musicTheme === 'chase' || musicTheme === 'cumbia') ? 0.09 : 0.08));
       playStaccatoChord(chordNotes, time, chordDur, chordVol);
     }
   }
@@ -484,12 +560,22 @@ function scheduleNextStep(step, time) {
   // Caja staccato (Snare)
   if (stepInMeasure === 2 || stepInMeasure === 6) {
     if (!isIntro) {
-      const snareVol = isNight ? 0.015 : ((musicTheme === 'danger' || musicTheme === 'chase') ? 0.06 : 0.05);
+      const snareVol = isNight ? 0.015 : ((musicTheme === 'danger' || musicTheme === 'chase' || musicTheme === 'cumbia') ? 0.06 : 0.05);
       playNoisePercussion(time, stepDuration * 0.45, true, snareVol);
     }
   }
-  // Hi-Hat cerrado muy corto
-  if (stepInMeasure % 2 === 1) {
+  
+  // Hi-Hat / Güiro (Shuffled para la cumbia)
+  if (musicTheme === 'cumbia') {
+    const cumbiaStep = step % 4;
+    if (cumbiaStep === 1) {
+      playNoisePercussion(time, 0.015, false, 0.022); // güiro corto
+    } else if (cumbiaStep === 2) {
+      playNoisePercussion(time, 0.035, false, 0.035); // güiro acentuado
+    } else if (cumbiaStep === 3) {
+      playNoisePercussion(time, 0.015, false, 0.022); // güiro corto
+    }
+  } else if (stepInMeasure % 2 === 1) {
     if (!isIntro) {
       const hatVol = isNight ? 0.008 : 0.022;
       playNoisePercussion(time, 0.015, false, hatVol);
@@ -1288,6 +1374,40 @@ function playGameOverSound() {
 }
 
 /**
+ * SFX Bocina Retro de Automóvil (Bip-bip agudo de apoderados en congestión)
+ */
+function playCarSpawnSound() {
+  if (!sfxEnabled) return;
+  initAudio();
+  
+  const now = audioCtx.currentTime;
+  
+  // Tono 1
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  osc1.type = 'square';
+  osc1.frequency.setValueAtTime(680, now);
+  gain1.gain.setValueAtTime(0.15, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  osc1.connect(gain1);
+  gain1.connect(masterSFXGain);
+  osc1.start(now);
+  osc1.stop(now + 0.09);
+  
+  // Tono 2 (90ms después)
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'square';
+  osc2.frequency.setValueAtTime(680, now + 0.09);
+  gain2.gain.setValueAtTime(0.15, now + 0.09);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+  osc2.connect(gain2);
+  gain2.connect(masterSFXGain);
+  osc2.start(now + 0.09);
+  osc2.stop(now + 0.18);
+}
+
+/**
  * Himno Nacional Chileno en 8-bits Procedural
  * Sintetiza la melodía del himno usando un oscilador square brillante y un sub-oscilador triangle.
  */
@@ -1359,6 +1479,7 @@ window.audioEngine = {
   
   playJumpSound,
   playDoubleJumpSound,
+  playCarSpawnSound,
   playCatchSalmonSound,
   playCatchKuchenSound,
   playBarkSound,

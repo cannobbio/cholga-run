@@ -17,14 +17,19 @@ Cada 10 etapas, Cholga llega a la cabaña de Elo en una cinemática emotiva con 
 ## ✨ Características
 
 ### 🕹️ Jugabilidad
-- **10+ etapas** con dificultad progresiva y velocidad incremental.
+- **20 etapas** con dificultad progresiva y velocidad incremental para llegar a casa.
 - **7 climas dinámicos**: amanecer, soleado, lluvia, atardecer, noche, neblina y tormenta.
-- **HUD Premium Integrado en Canvas**: Marcador de 8 bits ultracompacto (32px de alto) con esquinas redondeadas de 8px y fondo Slate glassmorphic con sombra sutil. Integra de forma limpia corazones pixelados para vidas, contadores compactos de salmón y kuchen (sprites de 18x18), marcador con ceros a la izquierda, etapa y clima unificados a la izquierda, y un multiplicador rosa brillante anclado a la derecha en `x = 775` con animación de wobble y pulso que erradica toda superposición con el récord.
-- **Meta Física y Ceremonia de la Etapa 10**: Al final de la etapa 10, el escenario transiciona suavemente a una pradera verde y despejada. Cholga colisiona en el suelo firme con un asta de bandera, deteniendo el movimiento y dando inicio a una síntesis procedural del Himno Nacional de Chile en 8 bits (onda cuadrada y sub-onda triangular armónica). La bandera de Chile se iza de forma fluida y sincronizada, dando paso al deslizamiento de la cabaña sureña y el emotivo abrazo con Elo.
-- **Variedad de Fondos y Edificaciones**: Parallax de 5 capas completamente continuo y libre de saltos de swaps, que incluye un cono nevado perfecto para el volcán Osorno y cumbres nevadas en el volcán Calbuco. Incluye araucarias, casas de colores de estilo alemán, una iglesia colonial y el nuevo **Chalet Sureño** con vigas de madera, chimenea activa que emite humo retro y bandera nacional.
-- **Erupciones volcánicas** cada 3 etapas con temblor de pantalla y partículas de lava.
+- **HUD Premium Autoadaptable Integrado en Canvas**: Marcador de 8 bits con layout dinámico de flujo, divisores verticales retro, tarjetas (badges) parpadeantes de evento y compactación inteligente (colapso de textos en caso de espacio reducido) que erradica por completo overlaps y colisiones. Puntuación anclada de derecha a izquierda partiendo de `x=730` y multiplicador rosa con wobble/pulse a la derecha.
+- **Meta Física y Ceremonia de la Etapa 20**: Al final de la etapa 20, el escenario transiciona suavemente a una pradera verde y despejada. Cholga colisiona en el suelo firme con un asta de bandera, deteniendo el movimiento y dando inicio a una síntesis procedural del Himno Nacional de Chile en 8 bits. La bandera de Chile se iza de forma fluida y sincronizada, dando paso a la cabaña sureña y el abrazo con Elo/Padres (con soporte de finales alternativos según el ciclo).
+- **Variedad de Fondos y Edificaciones**: Parallax de 5 capas completamente continuo que incluye volcanes nevados, araucarias, casas de estilo alemán, chalet sureño con chimenea activa, pabellones de aulas, el Colegio Alemán de Puerto Varas con gran bandera alemana dinámica y la hermosa playa dorada de veraneantes.
+- **5 Eventos y Etapas Especiales**:
+  - Etapa 3: Erupción Volcánica (temblor de pantalla, partículas de lava, música de peligro).
+  - Etapa 6: Salida de Colegios (edificio Colegio Alemán, obstáculos de automóviles, bocinas y timbre procedural).
+  - Etapa 10: Tornado (viento y vacas voladoras).
+  - Etapa 13: Turistas en la Playa (suelo de arena de playa dorada, toallas, veraneantes, sombrillas y cumbia retro).
+  - Etapa 17: ¡Alerta de Gato! (persecución para munición de caca).
 - **Sistema de vidas**: comienza con 1 vida, acumula más con huesos blancos.
-- **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos) que te salva incluso de caer en hoyos.
+- **Escudo temporal** de la Rosa Roja con doble salto aéreo (15 segundos, 20 segundos en etapas >= 6) que te salva incluso de caer en hoyos.
 - **Modal de Ayuda Glassmorphic** interactivo para revisar las reglas, controles y secretos en cualquier momento con pausa automática del juego.
 - **Selector de Tema Claro-Oscuro Premium** (`🌓 Tema`) en el encabezado con persistencia automática en `localStorage` y total contraste legible.
 - **Telemetría e Insights**: Integración nativa de Vercel Web Analytics para auditar el rendimiento técnico del juego y estadísticas básicas en tiempo real de forma anónima y 100% libre de cookies.
