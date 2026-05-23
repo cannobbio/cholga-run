@@ -2,6 +2,15 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.3] - 2026-05-22
+### Changed
+- **Calbuco como Volcán Activo Único y Osorno Pacífico**:
+  - **Eliminación del Glitch Visual de Transformación**: Corregimos un "pop" visual por el cual, al cambiar de orden dinámicamente, el volcán Osorno visible en pantalla se transformaba instantáneamente en el Calbuco al comenzar la erupción de la Etapa 3.
+  - **Secuencia Estática Perfecta**: Fijamos la secuencia de volcanes en el paralaje para que comience con el **Volcán Calbuco** (`b % 2 === 0`) seguido por el **Volcán Osorno** (`b % 2 !== 0`). De este modo, en el inicio de la Etapa 3 el Calbuco aparece de forma totalmente fluida y natural en el centro del viewport listo para hacer erupción, sin ninguna transición abrupta ni transformaciones.
+  - **Exclusividad Eruptiva del Calbuco**: Conforme a la geografía real chilena, el **Volcán Calbuco** (irregular) es ahora el **único volcán activo que hace erupción** en el juego durante todas las alertas volcánicas.
+  - **Dormancia del Osorno**: El **Volcán Osorno** permanece siempre hermoso, cubierto con sus glaciares blancos y su nube lenticular ("sombrero") de forma totalmente pacífica (solo emitiendo un hilo de humo blanco decorativo ocasional), sin derretirse ni expulsar lava en ningún nivel.
+  - **Lava de Calbuco Simplificada**: Simplificamos el spawn de partículas de lava y cenizas para que emerjan estrictamente del cráter de Calbuco, logrando un código más limpio y modular.
+
 ## [1.15.2] - 2026-05-22
 ### Added
 - **Erupción del Volcán Calbuco y Osorno Alternada**: Corregimos un detalle determinista del paralaje por el cual en la primera "Alerta Volcánica" (Etapa 3) siempre aparecía centrado el Volcán Osorno y Calbuco quedaba fuera de pantalla. Ahora, alternamos dinámicamente el orden de renderizado en el fondo en las etapas múltiplos de 3:
