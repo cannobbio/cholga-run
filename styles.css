@@ -991,7 +991,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 8px 12px;
-  font-size: 0.8rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1000,7 +999,25 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.btn-help .btn-icon {
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-help .btn-label {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-1.5px); /* Perfectly offset the pixel baseline */
 }
 
 .btn-help:hover {

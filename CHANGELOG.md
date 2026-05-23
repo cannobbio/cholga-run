@@ -2,6 +2,15 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.8] - 2026-05-23
+### Fixed
+- **Alineación Vertical Perfecta de Botones**: Solucionamos la desalineación visual de los emojis y el texto `"Ayuda"` y `"Tema"` en los botones de cabecera (`.btn-help`). Se envolvieron los iconos en una clase `.btn-icon` y los textos en `.btn-label`, y se reestructuró su estilo flex a `inline-flex` con una corrección de transformación de `1.5px` en el eje Y para la tipografía pixel-art de 8 bits. Esto alinea milimétricamente las líneas base de los emojis del sistema con la tipografía `"Press Start 2P"`.
+
+### Changed
+- **SFX de Destrucción Explosiva**: Rediseñamos completamente la síntesis de audio procedural en `playGodDestroySound()` en `audio.js` para los obstáculos destruidos en Modo Dios o disparando caca. Reemplazamos el sweep de filtro bandpass plano por una explosión multi-capa premium:
+  1. Un crash metálico de **ruido blanco** con filtro pasa-bajos de alta resonancia (`Q = 8.0`) que barre desde `1800Hz` hasta `30Hz` para el impacto crujiente inicial.
+  2. Un **sub-oscilador sawtooth** que desciende de forma exponencial desde `160Hz` hasta `10Hz` para generar un golpe de graves profundo y vibrante que simula una verdadera detonación retro de 8 bits.
+
 ## [1.15.7] - 2026-05-23
 ### Changed
 - **Sombra de Título Optimizada y de Alto Contraste**: Rediseñamos el `text-shadow` del título principal del menú de inicio (`.title-pulse` / `¡CHOLGA RUN!`) en su versión oscura para lograr una estética arcade de 8 bits sumamente premium. Se implementó una sombra multi-capa tridimensional: una primera capa sólida negra de `2px` que delinea las letras dándoles un contraste impecable frente al fondo, una segunda capa de color cian sólido de `4px` para la extrusión retro en 3D, y una tercera capa de resplandor difuso cian (`rgba(0, 240, 255, 0.6)`) de `20px` para dotar al título de un brillo de neón dinámico.

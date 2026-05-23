@@ -866,25 +866,43 @@ function playGodDestroySound() {
   const now = audioCtx.currentTime;
   if (!audioCtx || !noiseBuffer) return;
 
+  // 1. Ruido blanco crujiente con barrido de filtro pasa-bajos y alta resonancia
   const noise = audioCtx.createBufferSource();
   noise.buffer = noiseBuffer;
 
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(1000, now);
-  filter.frequency.exponentialRampToValueAtTime(300, now + 0.45);
-  filter.Q.setValueAtTime(4.0, now);
+  const noiseFilter = audioCtx.createBiquadFilter();
+  noiseFilter.type = 'lowpass';
+  noiseFilter.frequency.setValueAtTime(1800, now);
+  noiseFilter.frequency.exponentialRampToValueAtTime(30, now + 0.55);
+  noiseFilter.Q.setValueAtTime(8.0, now); // Alta resonancia para un crujido retro metálico
 
-  const gainNode = audioCtx.createGain();
-  gainNode.gain.setValueAtTime(0.25, now);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.setValueAtTime(0.7, now); // Volumen inicial potente
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
 
-  noise.connect(filter);
-  filter.connect(gainNode);
-  gainNode.connect(masterSFXGain);
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(masterSFXGain);
 
+  // 2. Sub-oscilador sawtooth ("sawtooth") para dar cuerpo y vibración de impacto
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(160, now); // Frecuencia media-baja
+  osc.frequency.exponentialRampToValueAtTime(10, now + 0.45); // Caída rápida a sub-bajo
+
+  const oscGain = audioCtx.createGain();
+  oscGain.gain.setValueAtTime(0.45, now); // Aporte potente pero equilibrado
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+  osc.connect(oscGain);
+  oscGain.connect(masterSFXGain);
+
+  // Disparar fuentes
   noise.start(now);
-  noise.stop(now + 0.45);
+  noise.stop(now + 0.55);
+
+  osc.start(now);
+  osc.stop(now + 0.55);
 }
 
 /**
