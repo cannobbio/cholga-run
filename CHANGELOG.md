@@ -2,6 +2,20 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.9] - 2026-05-23
+### Changed
+- **Reducción del Ratio de Alertas Climáticas a un Flujo Equilibrado**: Redujimos drásticamente la frecuencia de las alertas climáticas volcánicas y tornados.
+  - La **Alerta Volcánica** ya no ocurre cada 3 etapas, ahora sucede exactamente **una vez cada 10 etapas** (en los niveles que terminan en 3: 3, 13, 23...).
+  - El **Tornado** ya no ocurre cada 4 etapas, ahora sucede exactamente **una vez cada 10 etapas** (en los niveles que terminan en 7: 7, 17, 27...).
+  - Esto se estructuró acoplando todas las referencias de colores de fondo, lagos y edificaciones de erupción directamente a la variable global `isEruptionStage`, independientemente de cálculos modulares rígidos.
+- **Físicas de Resistencia de Viento al Correr**: Implementamos mecánicas de resistencia contra el viento en el Terrier durante la etapa de Tornado:
+  - Correr hacia la derecha (en contra del viento huracanado) es ahora **62.5% más difícil**, reduciendo la velocidad lateral del perro a `1.5` píxeles por frame.
+  - Correr hacia la izquierda (asistido por el viento a favor) es **25% más veloz**, aumentando la velocidad a `5.0`.
+  - Se aplicó una **fuerza de empuje / deriva constante** de `0.85` píxeles por frame que empuja suavemente al perro hacia atrás si no se está desplazando activamente a la derecha, logrando un *gameplay* increíblemente táctil y desafiante.
+- **Atmósfera Densa de Tornado con Múltiples Partículas Voladoras**: Rediseñamos la generación de partículas de viento en la etapa de tornado para llenar completamente el aire con detritos del ambiente:
+  - Se incrementó sustancialmente la densidad de spawn a 1-3 partículas aleatorias por frame.
+  - Agregamos **múltiples tipos de partículas**: hojas verdes y oliva del bosque con giro rotacional (`p.spin`), ramitas/trozos de madera marrón (`debris`) que rotan a gran velocidad, y salpicaduras de espuma/agua translúcidas (`water`) sopladas del lago Llanquihue, complementando los vectores de viento originales.
+
 ## [1.15.8] - 2026-05-23
 ### Fixed
 - **Alineación Vertical Perfecta de Botones**: Solucionamos la desalineación visual de los emojis y el texto `"Ayuda"` y `"Tema"` en los botones de cabecera (`.btn-help`). Se envolvieron los iconos en una clase `.btn-icon` y los textos en `.btn-label`, y se reestructuró su estilo flex a `inline-flex` con una corrección de transformación de `1.5px` en el eje Y para la tipografía pixel-art de 8 bits. Esto alinea milimétricamente las líneas base de los emojis del sistema con la tipografía `"Press Start 2P"`.

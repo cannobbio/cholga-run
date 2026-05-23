@@ -131,13 +131,27 @@ const terrier = {
   update() {
     // Movimiento horizontal en X
     if (gameState === STATES.PLAYING) {
-      const moveSpeed = 4.0;
+      let speedLeft = 4.0;
+      let speedRight = 4.0;
+      
+      // Si estamos en la etapa del tornado, el viento empuja fuertemente hacia la izquierda
+      if (isTornadoStage) {
+        speedLeft = 5.0;  // El viento ayuda a correr hacia la izquierda (+25% velocidad)
+        speedRight = 1.5; // El viento ofrece gran resistencia hacia la derecha (-62.5% velocidad)
+      }
+
       if (keys.ArrowLeft) {
-        this.x -= moveSpeed;
+        this.x -= speedLeft;
       }
       if (keys.ArrowRight) {
-        this.x += moveSpeed;
+        this.x += speedRight;
       }
+      
+      // Empuje constante del viento hacia la izquierda si no está yendo activamente a la derecha
+      if (isTornadoStage && !keys.ArrowRight) {
+        this.x -= 0.85; // Deriva / empuje constante de viento hacia atrás
+      }
+
       // Límites laterales seguros (evitar salirse del canvas)
       const minX = 10;
       const maxX = CANVAS_WIDTH - this.width - 10;
@@ -859,8 +873,8 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 1. Etapa Especial GATO: múltiplos de 5 pero no de 10 (ej. 5, 15, 25...)
-  if (stage % 5 === 0 && stage % 10 !== 0) {
+  // 1. Etapa Especial GATO: una vez por tramo de 10 etapas (ej. 5, 15, 25...)
+  if (stage % 10 === 5) {
     isGatoStage = true;
     currentWeather = 'gato';
     currentHour = 'dia'; // Forzamos día/despejado para la persecución del gato
@@ -872,8 +886,8 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 2. Las etapas múltiplos de 3 son SIEMPRE de Erupción Volcánica
-  if (stage % 3 === 0) {
+  // 2. Etapa de Erupción Volcánica: exactamente una vez por tramo de 10 etapas (ej. 3, 13, 23...)
+  if (stage % 10 === 3) {
     isEruptionStage = true;
     currentWeather = 'eruption';
     currentHour = 'noche'; // La erupción se ve espectacular de noche
@@ -884,8 +898,8 @@ function applyStageEnvironment(stage) {
     return;
   }
 
-  // 3. Etapa de Tornado: múltiplos de 4 pero que no sean Gato, Erupción ni Bandera
-  if (stage % 4 === 0) {
+  // 3. Etapa de Tornado: exactamente una vez por tramo de 10 etapas (ej. 7, 17, 27...)
+  if (stage % 10 === 7) {
     isTornadoStage = true;
     currentWeather = 'tornado';
     currentHour = 'atardecer'; // El tornado se ve genial con cielo de atardecer
@@ -1066,7 +1080,7 @@ function drawCanvasHUD() {
   let eventSprite = null;
   let eventColor = '';
   
-  if (isEruptionStage || currentStage % 3 === 0) {
+  if (isEruptionStage) {
     eventText = 'ERUPCIÓN';
     eventSprite = HUD_SPRITES.eruption;
     eventColor = '#ef4444';
@@ -1500,7 +1514,7 @@ function drawParallax(weather) {
   // 1. Capa 1: Cielo (Gradiente dinámico según hora del día o erupción volcánica)
   let skyGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
   
-  if (currentStage % 3 === 0 || isEruptionStage) {
+  if (isEruptionStage) {
     skyGrad.addColorStop(0, '#4a0815'); // Rojo apocalíptico muy oscuro
     skyGrad.addColorStop(0.5, '#8b0c22'); // Carmesí volcánico
     skyGrad.addColorStop(1, '#d83a15'); // Naranja lava
@@ -1527,7 +1541,7 @@ function drawParallax(weather) {
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   // Procedural Mixture: Aplicar tintes translúcidos de clima sobre el gradiente base de la hora del día
-  if (currentStage % 3 !== 0 && !isEruptionStage) {
+  if (!isEruptionStage) {
     if (currentAtmosphere === 'lluvia') {
       ctx.fillStyle = 'rgba(70, 80, 95, 0.38)'; // Tintado desaturado grisáceo de lluvia
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -1732,7 +1746,7 @@ function drawVolcanoCalbuco(x) {
   const volHeight = 110;
   const volY = 220;
   
-  const isErupting = (currentStage % 3 === 0 || isEruptionStage);
+  const isErupting = isEruptionStage;
 
   ctx.fillStyle = isErupting ? '#18141c' : ((currentWeather === 'sunset') ? '#461f5c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#121620' : '#282e3b'));
   ctx.beginPath();
@@ -1827,7 +1841,7 @@ function drawLakeLlanquihue(x) {
   const lakeHeight = GROUND_Y - lakeY;
   
   let waterGrad = ctx.createLinearGradient(0, lakeY, 0, lakeY + lakeHeight);
-  if (currentStage % 3 === 0) {
+  if (isEruptionStage) {
     waterGrad.addColorStop(0, '#3a0815');
     waterGrad.addColorStop(0.5, '#7a1122');
     waterGrad.addColorStop(1, '#ab1822');
@@ -1848,12 +1862,12 @@ function drawLakeLlanquihue(x) {
   ctx.fillStyle = waterGrad;
   ctx.fillRect(x, lakeY, CANVAS_WIDTH + 2, lakeHeight);
 
-  if (currentStage % 3 !== 0) {
+  if (!isEruptionStage) {
     drawRetroBoat(x + 180, lakeY + 25);
     drawRetroBoat(x + 550, lakeY + 65);
   }
 
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#ffcc00' : (currentWeather === 'sunset' ? '#ffd166' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#2c5370' : '#90e0ef'));
+  ctx.fillStyle = isEruptionStage ? '#ffcc00' : (currentWeather === 'sunset' ? '#ffd166' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#2c5370' : '#90e0ef'));
   ctx.globalAlpha = 0.35;
   for (let i = 0; i < 6; i++) {
     const waveX = x + (i * 130) + 15;
@@ -1868,7 +1882,7 @@ function drawForestBackground(x, blockId = 0) {
   const forestY = GROUND_Y - 30;
   
   // 1. Color de fondo del bosque (follaje lejano)
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#1f040a' : 
+  ctx.fillStyle = isEruptionStage ? '#1f040a' : 
                   (currentWeather === 'sunset' ? '#3d1c3c' : 
                   ((currentWeather === 'night' || currentWeather === 'fog') ? '#081d0f' : '#1b5e20'));
   ctx.fillRect(x, forestY - 5, CANVAS_WIDTH + 2, GROUND_Y - (forestY - 5));
@@ -1885,10 +1899,10 @@ function drawForestForeground(x, blockId = 0) {
   }
   
   // 2. Colores para los árboles del primer plano
-  const trunkColor = (currentStage % 3 === 0) ? '#120205' : 
+  const trunkColor = isEruptionStage ? '#120205' : 
                       (currentWeather === 'sunset' ? '#2c142c' : 
                       ((currentWeather === 'night' || currentWeather === 'fog') ? '#041008' : '#3e2723')); // café tronco
-  const leafColor = (currentStage % 3 === 0) ? '#120205' : 
+  const leafColor = isEruptionStage ? '#120205' : 
                      (currentWeather === 'sunset' ? '#250d24' : 
                      ((currentWeather === 'night' || currentWeather === 'fog') ? '#04150a' : '#143825'));
 
@@ -1937,13 +1951,13 @@ function drawForestForeground(x, blockId = 0) {
   }
 
   // 3. Colores para edificaciones
-  const houseColor = (currentStage % 3 === 0) ? '#170307' : 
+  const houseColor = isEruptionStage ? '#170307' : 
                      (currentWeather === 'sunset' ? '#4d1c42' : 
                      ((currentWeather === 'night' || currentWeather === 'fog') ? '#22252c' : '#8d6e63'));
-  const roofColor = (currentStage % 3 === 0) ? '#38060f' : 
+  const roofColor = isEruptionStage ? '#38060f' : 
                     (currentWeather === 'sunset' ? '#681c3c' : 
                     ((currentWeather === 'night' || currentWeather === 'fog') ? '#4d1919' : '#c62828'));
-  const windowColor = (currentStage % 3 === 0) ? '#ff5500' : '#ffe082';
+  const windowColor = isEruptionStage ? '#ff5500' : '#ffe082';
 
   // Renderizar 3 edificios con variedad alemana
   for (let i = 0; i < 3; i++) {
@@ -1974,7 +1988,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 8, houseY + 6, 8, 8);
       ctx.fillRect(houseX + 24, houseY + 6, 8, 8);
       
-      if (hasFlag && currentStage % 3 !== 0) {
+      if (hasFlag && !isEruptionStage) {
         drawChileanFlag(houseX + 32, houseY + 2);
       }
     } else if (buildingType === 1) {
@@ -1999,7 +2013,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 8, mansionY + 20, 8, 8);
       ctx.fillRect(houseX + 28, mansionY + 20, 8, 8);
       
-      if (hasFlag && currentStage % 3 !== 0) {
+      if (hasFlag && !isEruptionStage) {
         drawChileanFlag(houseX + 36, mansionY + 2);
       }
     } else if (buildingType === 2) {
@@ -2031,7 +2045,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fill();
 
       // Cruz arriba de la aguja
-      ctx.fillStyle = (currentStage % 3 === 0) ? '#ff5500' : '#d61c4e';
+      ctx.fillStyle = isEruptionStage ? '#ff5500' : '#d61c4e';
       ctx.fillRect(towerX + 8, towerY - 34, 2, 8);
       ctx.fillRect(towerX + 5, towerY - 31, 8, 2);
 
@@ -2043,7 +2057,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 24, churchY + 6, 6, 12);
       ctx.fillRect(houseX + 38, churchY + 6, 6, 12);
       
-      if (hasFlag && currentStage % 3 !== 0) {
+      if (hasFlag && !isEruptionStage) {
         drawChileanFlag(houseX + 44, churchY + 2);
       }
     } else {
@@ -2052,7 +2066,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX, houseY + 4, 40, 21); // Base de madera
       
       // Detalles de vigas verticales de madera
-      ctx.fillStyle = (currentStage % 3 === 0) ? '#120205' : '#5d4037';
+      ctx.fillStyle = isEruptionStage ? '#120205' : '#5d4037';
       ctx.fillRect(houseX + 8, houseY + 4, 3, 21);
       ctx.fillRect(houseX + 20, houseY + 4, 3, 21);
       ctx.fillRect(houseX + 32, houseY + 4, 3, 21);
@@ -2066,7 +2080,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fill();
 
       // Chimenea
-      ctx.fillStyle = (currentStage % 3 === 0) ? '#120205' : '#4e342e';
+      ctx.fillStyle = isEruptionStage ? '#120205' : '#4e342e';
       ctx.fillRect(houseX + 6, houseY - 10, 6, 12);
       ctx.fillStyle = '#1c1c1c';
       ctx.fillRect(houseX + 5, houseY - 12, 8, 2);
@@ -2083,7 +2097,7 @@ function drawForestForeground(x, blockId = 0) {
       ctx.fillRect(houseX + 25, houseY + 10, 6, 8);
 
       // Bandera permanente a la derecha
-      if (currentStage % 3 !== 0) {
+      if (!isEruptionStage) {
         drawChileanFlag(houseX + 38, houseY - 4);
       }
     }
@@ -2143,7 +2157,7 @@ function drawVolcanicGround(x) {
   ctx.fillStyle = '#1c1c1c';
   ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, CANVAS_HEIGHT - GROUND_Y);
   
-  ctx.fillStyle = (currentStage % 3 === 0) ? '#4a0815' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0c3516' : '#2e7d32');
+  ctx.fillStyle = isEruptionStage ? '#4a0815' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0c3516' : '#2e7d32');
   ctx.fillRect(x, GROUND_Y, CANVAS_WIDTH + 2, 6);
 
   ctx.fillStyle = '#121212';
@@ -2184,14 +2198,14 @@ function updateWeatherEffects() {
   }
 
   // Erupción del Volcán Activo (Calbuco o Osorno según la etapa)
-  const isEruptionActive = (currentStage % 3 === 0 || isEruptionStage);
+  const isEruptionActive = isEruptionStage;
   if (isEruptionActive && gameState === STATES.PLAYING) {
     // Engendrar partículas de lava
     if (Math.random() < 0.25) {
       const volcanoScroll = -bgOffsetVolcano;
       const startVolcanoBlock = Math.floor(volcanoScroll / CANVAS_WIDTH);
       let spawnX = -999;
-      const eruptingCalbuco = (currentStage % 6 === 3 || currentStage === 3);
+      const eruptingCalbuco = true;
 
       for (let b = startVolcanoBlock; b <= startVolcanoBlock + 2; b++) {
         const isCalbuco = (b % 2 === 0) ? eruptingCalbuco : !eruptingCalbuco;
@@ -2282,14 +2296,42 @@ function updateWeatherEffects() {
 
   // Generación y actualización de Partículas de Viento (Tornado)
   if (currentWeather === 'tornado') {
-    if (Math.random() < 0.5) {
+    // Generar ráfagas constantes de partículas para llenar el aire (1 a 3 por frame)
+    const count = 1 + Math.floor(Math.random() * 3);
+    for (let c = 0; c < count; c++) {
+      const typeRand = Math.random();
+      let type = 'line';
+      let color = '';
+      let size = 0;
+      
+      if (typeRand < 0.35) {
+        type = 'line'; // Las líneas de viento originales
+      } else if (typeRand < 0.65) {
+        type = 'leaf'; // Hojas volando del bosque
+        color = Math.random() < 0.5 ? '#1b5e20' : '#33691e'; // Tonos verdes de bosque sureño
+        size = 2 + Math.random() * 4;
+      } else if (typeRand < 0.85) {
+        type = 'debris'; // Ramitas o detritos del suelo
+        color = Math.random() < 0.6 ? '#5d4037' : '#3e2723'; // Café/marrón
+        size = 1.5 + Math.random() * 2.5;
+      } else {
+        type = 'water'; // Gotitas de agua suspendidas sopladas del lago Llanquihue
+        color = 'rgba(224, 242, 254, 0.7)'; // Celeste/blanco translúcido
+        size = 2 + Math.random() * 2;
+      }
+
       windParticles.push({
-        x: CANVAS_WIDTH + 50,
-        y: Math.random() * (CANVAS_HEIGHT - 60) + 10,
-        length: 40 + Math.random() * 70,
-        speed: 12 + Math.random() * 8,
-        opacity: 0.12 + Math.random() * 0.22,
-        angle: Math.random() * 0.1 - 0.05
+        type: type,
+        x: CANVAS_WIDTH + 20 + Math.random() * 60,
+        y: Math.random() * (CANVAS_HEIGHT - 50) + 10,
+        length: type === 'line' ? (40 + Math.random() * 70) : (4 + Math.random() * 8),
+        speed: 13 + Math.random() * 9, // Vientos muy feroces
+        opacity: 0.25 + Math.random() * 0.45,
+        angle: Math.random() * 0.14 - 0.07,
+        color: color,
+        size: size,
+        spin: Math.random() * Math.PI * 2,
+        spinSpeed: (Math.random() * 0.3 - 0.15)
       });
     }
   }
@@ -2298,8 +2340,11 @@ function updateWeatherEffects() {
     const p = windParticles[i];
     p.x -= p.speed;
     // Sutil oscilación vertical para simular torbellino
-    p.y += Math.sin(p.x * 0.02) * 2.5;
-    if (p.x < -p.length) {
+    p.y += Math.sin(p.x * 0.02) * 2.5 + (p.angle * p.speed);
+    if (p.spin !== undefined) {
+      p.spin += p.spinSpeed;
+    }
+    if (p.x < -p.length - 20) {
       windParticles.splice(i, 1);
     }
   }
@@ -2337,7 +2382,7 @@ function drawWeatherEffects() {
   ctx.globalAlpha = 1.0;
 
   // 4. Partículas de Lava del Volcán en erupción
-  if (currentStage % 3 === 0) {
+  if (isEruptionStage) {
     lavaParticles.forEach(p => {
       ctx.fillStyle = p.color;
       ctx.globalAlpha = p.alpha;
@@ -2349,13 +2394,41 @@ function drawWeatherEffects() {
   // 5. Partículas de Viento (Tornado)
   if (currentWeather === 'tornado') {
     windParticles.forEach(p => {
-      ctx.strokeStyle = `rgba(220, 230, 250, ${p.opacity})`;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      const endX = p.x + p.length;
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(endX, p.y + Math.sin(p.x * 0.02) * 2);
-      ctx.stroke();
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      
+      if (!p.type || p.type === 'line') {
+        // Línea de viento estilizada
+        ctx.strokeStyle = 'rgba(220, 230, 250, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        const endX = p.x + p.length;
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(endX, p.y + Math.sin(p.x * 0.02) * 2);
+        ctx.stroke();
+      } else if (p.type === 'leaf') {
+        // Hojas voladoras pixel-art
+        ctx.fillStyle = p.color;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.spin);
+        ctx.fillRect(-2, -3, 3, 5); // Rectángulo de hoja
+        ctx.fillStyle = '#0f3a14';  // Tallo / sombra oscura interna
+        ctx.fillRect(-0.5, -2, 1, 3);
+      } else if (p.type === 'debris') {
+        // Ramitas voladoras
+        ctx.fillStyle = p.color;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.spin);
+        ctx.fillRect(-0.75, -p.length / 2, 1.5, p.length);
+      } else if (p.type === 'water') {
+        // Gotitas de agua
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      ctx.restore();
     });
   }
 }
@@ -3011,7 +3084,7 @@ function drawStageTransitionBanner() {
   // Decidir color del texto basándose en parpadeo sutil de animación
   let textColor = '#ffffff';
   if (Math.floor(stageTransitionTimer / 10) % 2 !== 0) {
-    textColor = (currentStage % 3 === 0) ? '#ff7096' : '#ffe066';
+    textColor = isEruptionStage ? '#ff7096' : '#ffe066';
   }
   
   // Dibujar contorno negro robusto (stroke) detrás del texto para máxima legibilidad sin tapar
@@ -3031,7 +3104,7 @@ function drawGame() {
   ctx.save();
   
   // Si estamos en etapa roja de volcán, aplicar temblor (terremoto)
-  if (currentStage % 3 === 0 && gameState === STATES.PLAYING) {
+  if (isEruptionStage && gameState === STATES.PLAYING) {
     let shakeX = Math.random() * 2.5 - 1.25;
     let shakeY = Math.random() * 2.5 - 1.25;
     
