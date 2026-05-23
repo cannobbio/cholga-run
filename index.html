@@ -29,9 +29,18 @@
   
   <link rel="stylesheet" href="styles.css">
   <script>
-    // Inicializar tema antes del renderizado para evitar destellos
-    if (localStorage.getItem('terrier_theme') === 'light') {
+    // Inicializar tema respetando la preferencia del sistema por defecto para evitar destellos
+    const savedTheme = localStorage.getItem('terrier_theme');
+    if (savedTheme === 'light') {
       document.documentElement.classList.add('light-mode');
+    } else if (savedTheme === 'dark') {
+      document.documentElement.classList.remove('light-mode');
+    } else {
+      // Si no hay preferencia guardada, respetamos el sistema (modo oscuro por defecto, claro si el sistema lo prefiere)
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (!prefersDark) {
+        document.documentElement.classList.add('light-mode');
+      }
     }
   </script>
 </head>
