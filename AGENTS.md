@@ -32,6 +32,7 @@ The game is vanilla JavaScript + HTML5 Canvas with zero runtime frameworks. Vite
 | `index.html` | Canvas element, all overlays (start screen, game over, help modal, leaderboard), touch controls |
 | `styles.css` | Glassmorphism UI, responsive layout, virtual joystick, dark/light theme |
 | `api/high-score.js` | Vercel serverless function — GET/POST for the global leaderboard via Supabase |
+| `vite.config.js` | Vite bundler settings: dynamic Open Graph absolute URL injection |
 
 ### Game state machine (`game.js`)
 
