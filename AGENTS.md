@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides architecture, conventions, and workflow guidance to AI Coding Agents (such as Gemini Antigravity, Claude Code, Cursor, etc.) when working with code in this repository.
 
 ## Commands
 
@@ -10,7 +10,8 @@ npm run build     # Production build → dist/
 npm run preview   # Serve the production build locally
 ```
 
-There are no tests. Verification is done by running the game in the browser.
+There are no automated unit tests. Verification is strictly manual by running the game in a browser environment.
+
 
 Deploy to production:
 ```bash
@@ -73,12 +74,23 @@ Treat any change under `api/` as a production backend change even though the res
 - New music theme: add `MELODY`, `CHORDS`, and `BASS` arrays to `audio.js` using note names from `NOTE_FREQS`, then wire it in `selectMusicTheme()`.
 - Mobile controls are handled via the virtual analog joystick tracked by `touch.identifier` — avoid breaking multi-touch behavior when touching input handling.
 
-### Pre-PR checklist
+### Pre-Commit & Verification Workflow
 
-Run `npm run build` and manually verify in `npm run dev` or `npm run preview`:
-- Keyboard controls, mobile/touch UI, audio start/resume
-- Stage progression and special event stages
-- Leaderboard GET/POST **with and without** `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` set (fallback path must still work)
+AI Agents **MUST** test and verify all changes locally before generating any commits or pushing code. Follow this protocol strictly:
+
+1. **Serve Development Local**: Run `npm run dev` to start the local Vite server at `http://localhost:5173`. Ask the user to manually verify:
+   - Specific stage mechanics (e.g. Colegios or Turistas), visual layout alignment, and Web Audio API synthesizers.
+   - Mobile responsive portrait orientation: open DevTools and toggle simulated portrait screen view to check that the full-screen orientation alert displays on top of everything without any clipping.
+2. **Build and Check Bundler**: Run `npm run build` to verify the code compiles successfully without any minification or bundling errors.
+3. **Serve Production Preview**: Run `npm run preview` to preview the production bundle locally at `http://localhost:4173` to guarantee the compiled assets load cleanly.
+4. **Stage & Commit**: Only commit when the build compiles flawlessly and local manual testing is fully verified by the user.
+
+### Pre-PR Checklist
+
+Before proposing a Pull Request, verify:
+- Keyboard controls, mobile/touch UI, audio start/resume.
+- Stage progression and special event stages.
+- Leaderboard GET/POST **with and without** `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` set (fallback path must still work).
 
 ### Commit format
 
