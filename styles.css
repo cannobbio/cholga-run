@@ -121,7 +121,7 @@ body {
   font-size: 0.95rem;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
   color: var(--color-cyan);
   text-shadow: 0 0 5px rgba(0, 240, 255, 0.4);
 }
@@ -438,7 +438,12 @@ body {
 }
 
 .mascot-badge .badge-icon {
-  font-size: 1.2rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  image-rendering: pixelated;
+  flex: 0 0 28px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.16));
 }
 
 .mascot-bubble {
@@ -595,20 +600,60 @@ body {
 /* Game Footer */
 .game-footer {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
   color: var(--color-text-dim);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 7px;
   font-weight: 300;
 }
 
-.footer-links {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.25);
-  letter-spacing: 2px;
+.footer-credit {
+  color: var(--color-text-dim);
+}
+
+.footer-breed {
+  max-width: 720px;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.footer-location {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+}
+
+.footer-github {
+  margin-top: 2px;
+}
+
+.footer-github a {
+  color: rgba(226, 232, 240, 0.7);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease, opacity 0.2s ease, text-shadow 0.2s ease;
+}
+
+.footer-github a:hover {
+  color: var(--color-cyan);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.35);
+}
+
+.footer-github-mark {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 /* Animations */
@@ -1173,10 +1218,14 @@ body {
   .header-actions {
     gap: 8px;
     padding-top: 0;
+    flex-wrap: nowrap;
   }
 
   .btn-help {
     padding: 7px 9px;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
   }
 
   .btn-help .btn-label {
@@ -1219,10 +1268,6 @@ body {
     gap: 12px !important;
     align-items: center !important;
     text-align: center !important;
-  }
-
-  .header-actions {
-    justify-content: center;
   }
 
   .logo-title {
@@ -1268,13 +1313,17 @@ body {
   align-items: center;
   gap: 12px;
   padding-top: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .btn-help {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
-  padding: 8px 12px;
+  min-width: 150px;
+  height: 54px;
+  padding: 0 18px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1284,25 +1333,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   line-height: 1;
 }
 
 .btn-help .btn-icon {
-  font-size: 0.85rem;
+  width: 24px;
+  height: 24px;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 24px;
 }
 
 .btn-help .btn-label {
   font-family: var(--font-pixel);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   letter-spacing: 0.5px;
-  transform: translateY(-0.5px); /* Perfectly balances capital pixel letters with standard emojis */
+  min-width: 74px;
+  transform: translateY(1px); /* Visually centers pixel letters against icon glyphs. */
 }
 
 .btn-help:hover {
@@ -1314,6 +1367,143 @@ body {
 
 .btn-help:active {
   transform: translateY(0);
+}
+
+.btn-github {
+  text-decoration: none;
+}
+
+.btn-icon-badge {
+  border-radius: 50%;
+  color: #05070a;
+  background: #fff;
+  font-family: var(--font-pixel);
+  font-size: 0.72rem !important;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.theme-icon {
+  position: relative;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.theme-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  background: #182033;
+}
+
+.theme-icon::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f8fafc;
+}
+
+.github-mark {
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .header-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .btn-help {
+    min-width: 0;
+    width: auto;
+    height: 38px;
+    padding: 0 9px;
+    gap: 5px;
+    border-radius: 8px;
+  }
+
+  .btn-help .btn-icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+    font-size: 0.78rem;
+  }
+
+  .btn-help .btn-label {
+    min-width: 0;
+    font-size: 0.48rem;
+    letter-spacing: 0;
+    transform: translateY(1px);
+  }
+
+  .github-mark {
+    width: 18px;
+    height: 18px;
+  }
+
+  .theme-icon::after {
+    right: 3px;
+    top: 3px;
+    width: 5px;
+    height: 5px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .header-actions {
+    justify-content: flex-end;
+    width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-actions {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .header-actions {
+    gap: 6px;
+  }
+
+  .btn-help {
+    height: 34px;
+    padding: 0 7px;
+    gap: 4px;
+  }
+
+  .btn-help .btn-icon {
+    width: 16px;
+    height: 16px;
+    flex-basis: 16px;
+    font-size: 0.7rem;
+  }
+
+  .btn-help .btn-label {
+    font-size: 0.42rem;
+  }
+
+  .github-mark {
+    width: 16px;
+    height: 16px;
+  }
+
+  .theme-icon::after {
+    right: 2px;
+    top: 2px;
+    width: 4px;
+    height: 4px;
+  }
 }
 
 /* --- MODAL DE AYUDA RETRO GLASSMORPHISM --- */
@@ -1390,6 +1580,53 @@ body {
   text-align: center;
   margin-top: 5px;
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  color: var(--color-cyan);
+}
+
+.modal-title-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  background: var(--color-cyan);
+  color: #05070a;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 0 0 4px rgba(0, 240, 255, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.modal-title-icon::before {
+  content: '?';
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  line-height: 1;
+  transform: translate(1px, -1px);
+}
+
+@media (max-width: 600px) {
+  .modal-title {
+    gap: 10px;
+    font-size: 0.92rem;
+  }
+
+  .modal-title-icon {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .modal-title-icon::before {
+    font-size: 0.72rem;
+    transform: translate(1px, -1px);
+  }
 }
 
 .modal-body {
@@ -1541,6 +1778,26 @@ body {
   box-shadow: 0 0 10px rgba(2, 132, 199, 0.25);
 }
 
+:root.light-mode .github-mark {
+  color: #000;
+}
+
+:root.light-mode .footer-location {
+  color: rgba(15, 23, 42, 0.72);
+}
+
+:root.light-mode .footer-breed {
+  color: rgba(15, 23, 42, 0.72);
+}
+
+:root.light-mode .footer-github a {
+  color: rgba(15, 23, 42, 0.68);
+}
+
+:root.light-mode .footer-github a:hover {
+  color: var(--color-cyan);
+}
+
 :root.light-mode .logo-subtitle {
   color: var(--color-cyan);
   text-shadow: 0 0 5px rgba(2, 132, 199, 0.25);
@@ -1614,6 +1871,15 @@ body {
   text-shadow: 0 0 8px rgba(2, 132, 199, 0.2);
 }
 
+:root.light-mode .modal-title-icon {
+  background: var(--color-text);
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #fff;
+  box-shadow:
+    0 0 0 4px rgba(15, 23, 42, 0.06),
+    0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
 :root.light-mode #help-modal .modal-content::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.05);
 }
@@ -1636,8 +1902,32 @@ body {
   color: var(--color-text);
 }
 
+.light-mode .volume-slider {
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.light-mode .volume-slider::-webkit-slider-thumb {
+  background: var(--color-text);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
 .light-mode .control-item {
   color: var(--color-text);
+}
+
+.light-mode .control-item .desc {
+  color: var(--color-text-dim);
+}
+
+.light-mode .note-item {
+  background: rgba(219, 39, 119, 0.08);
+  border-color: rgba(219, 39, 119, 0.22);
+  color: var(--color-text);
+}
+
+.light-mode .note-item:last-child {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.2);
 }
 
 .light-mode #help-modal {
