@@ -1037,9 +1037,9 @@ body {
   }
 }
 
-@media (pointer: coarse) and (orientation: portrait) {
+@media (orientation: portrait) and (max-width: 1024px), (pointer: coarse) and (orientation: portrait) {
   .orientation-overlay {
-    display: flex !important; /* Show rotation screen strictly in vertical orientation on mobile */
+    display: flex !important; /* Show rotation screen strictly in vertical orientation on mobile/tablet */
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
