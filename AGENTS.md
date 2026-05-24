@@ -79,6 +79,11 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Scoped environment variables (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`) are managed securely within the Vercel Project Dashboard.
   * Local development variables can be set in an ignored `.env.local` file pointing to the Staging database.
   * The database schema is fully replicated and version-controlled under `docs/database-schema.sql` to initialize new staging/dev instances easily.
+* **Release Flow via GitHub CLI (`gh`)**:
+  * Create a Pull Request from `staging` to `main`:
+    `gh pr create --base main --head staging --title "release: merge staging to main" --body "Release staging features to production."`
+  * Merge the Pull Request:
+    `gh pr merge --merge`
 
 ### Coding conventions
 
