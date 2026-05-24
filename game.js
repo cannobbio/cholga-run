@@ -4300,6 +4300,7 @@ function setupEventListeners() {
 
   // Inicializar Pantalla Completa y Controles Táctiles
   setupFullscreen();
+  setupMobileViewportAssist();
   setupTouchControls();
 
   // Botón Volver al Menú desde Game Over
@@ -4363,11 +4364,13 @@ function setupEventListeners() {
 function setupFullscreen() {
   const fullscreenBtn = document.getElementById('fullscreen-btn');
   const wrapper = document.querySelector('.game-screen-wrapper');
+  const fullscreenHint = document.getElementById('fullscreen-hint');
 
   if (!fullscreenBtn || !wrapper) return;
 
   fullscreenBtn.addEventListener('click', async (e) => {
     e.preventDefault();
+    fullscreenHint?.classList.remove('visible');
     try {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         // Entrar a pantalla completa
@@ -4403,11 +4406,78 @@ function setupFullscreen() {
   // Escuchar cambios de fullscreen para actualizar el icono del botón
   const onFullscreenChange = () => {
     const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    fullscreenBtn.textContent = isFullscreen ? '📴' : '🖥️';
+    fullscreenBtn.classList.toggle('is-fullscreen', isFullscreen);
+    fullscreenBtn.title = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
+    fullscreenBtn.setAttribute(
+      'aria-label',
+      isFullscreen ? 'Salir de pantalla completa' : 'Entrar a pantalla completa'
+    );
   };
 
   document.addEventListener('fullscreenchange', onFullscreenChange);
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+  onFullscreenChange();
+}
+
+function setupMobileViewportAssist() {
+  const wrapper = document.querySelector('.game-screen-wrapper');
+  const fullscreenHint = document.getElementById('fullscreen-hint');
+
+  if (!wrapper || !fullscreenHint) return;
+
+  const isTouchLandscape = () => {
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    return isCoarsePointer && isLandscape;
+  };
+
+  let hintTimerId = null;
+  let scrollTimerId = null;
+  let hintShown = false;
+
+  const hideHint = () => {
+    if (hintTimerId) {
+      clearTimeout(hintTimerId);
+      hintTimerId = null;
+    }
+    fullscreenHint.classList.remove('visible');
+  };
+
+  const showFullscreenHint = () => {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+    if (hintShown || isFullscreen || !isTouchLandscape()) {
+      return;
+    }
+
+    hintShown = true;
+    fullscreenHint.classList.add('visible');
+    hintTimerId = setTimeout(hideHint, 4500);
+  };
+
+  const focusCanvasViewport = () => {
+    if (scrollTimerId) {
+      clearTimeout(scrollTimerId);
+      scrollTimerId = null;
+    }
+
+    if (!isTouchLandscape()) {
+      hideHint();
+      return;
+    }
+
+    scrollTimerId = window.setTimeout(() => {
+      wrapper.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      showFullscreenHint();
+      scrollTimerId = null;
+    }, 180);
+  };
+
+  window.addEventListener('orientationchange', focusCanvasViewport);
+  window.addEventListener('resize', focusCanvasViewport);
+  document.addEventListener('fullscreenchange', hideHint);
+  document.addEventListener('webkitfullscreenchange', hideHint);
+  focusCanvasViewport();
 }
 
 // ==========================================

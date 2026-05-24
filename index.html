@@ -45,15 +45,6 @@
   </script>
 </head>
 <body>
-  <!-- Orientation Alert Overlay for iOS/Mobile in Portrait (Fixed-screen viewport level) -->
-  <div id="orientation-overlay" class="orientation-overlay">
-    <div class="orientation-content">
-      <div class="orientation-icon">🔄</div>
-      <h2 class="pixel-text">¡GIRA TU PANTALLA!</h2>
-      <p>Por favor, coloca tu celular en horizontal (Landscape) para poder jugar a Cholga Run.</p>
-    </div>
-  </div>
-
   <div class="app-container">
     
     <!-- Background Ambient Glow (changes with weather) -->
@@ -123,9 +114,23 @@
         <!-- Game Viewport -->
         <div class="game-screen-wrapper glass-panel">
           <canvas id="game-canvas" width="800" height="400"></canvas>
+
+          <!-- Orientation Alert Overlay for mobile portrait mode, scoped to the canvas container -->
+          <div id="orientation-overlay" class="orientation-overlay">
+            <div class="orientation-content">
+              <div class="orientation-icon">🔄</div>
+              <h2 class="pixel-text">¡GIRA TU PANTALLA!</h2>
+              <p>Coloca tu celular en horizontal para jugar a Cholga Run.</p>
+            </div>
+          </div>
           
           <!-- Fullscreen Toggle Button -->
-          <button id="fullscreen-btn" class="fullscreen-toggle-btn" title="Pantalla Completa">🖥️</button>
+          <button id="fullscreen-btn" class="fullscreen-toggle-btn" title="Pantalla completa" aria-label="Entrar a pantalla completa">
+            <span class="fullscreen-icon" aria-hidden="true"></span>
+          </button>
+          <div id="fullscreen-hint" class="fullscreen-hint pixel-text" aria-live="polite">
+            Mejor en pantalla completa
+          </div>
 
           <!-- Mobile Controls (Minecraft Mobile style) -->
           <div id="mobile-controls" class="mobile-controls">
