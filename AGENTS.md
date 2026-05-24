@@ -65,6 +65,21 @@ Required environment variables (Vercel project settings or local `.env`):
 
 Treat any change under `api/` as a production backend change even though the rest of the app is static — credentials never get committed, only set via env.
 
+### DevOps & Environment Strategy (Staging vs. Production)
+
+To prevent development/test sessions from polluting the global leaderboard, this project enforces strict environment isolation:
+
+* **Git Branches**:
+  * `main` is production-ready. Direct commits are restricted. All feature branches merge into `staging` first.
+  * `staging` is the integration/QA branch. All preview deployments are built from here.
+* **Database Isolation (Supabase)**:
+  * **Production Database**: Linked strictly to Vercel's **Production** environment. Contains official high scores.
+  * **Staging Database**: Linked to Vercel's **Preview** and **Development** environments. Used for development, local execution (`npm run dev`), and branch previews.
+* **Environment Configuration**:
+  * Scoped environment variables (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`) are managed securely within the Vercel Project Dashboard.
+  * Local development variables can be set in an ignored `.env.local` file pointing to the Staging database.
+  * The database schema is fully replicated and version-controlled under `docs/database-schema.sql` to initialize new staging/dev instances easily.
+
 ### Coding conventions
 
 - Vanilla JS only — no frameworks, no external runtime dependencies beyond `@supabase/supabase-js` and Vercel analytics.
