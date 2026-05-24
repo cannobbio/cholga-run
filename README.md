@@ -74,14 +74,26 @@ El juego está construido enteramente en **vanilla JavaScript** sin frameworks n
 
 ```
 cholga-run/
-├── index.html      # Estructura HTML + HUD + overlays + controles touch
-├── styles.css      # Estilos responsivos, glassmorphism, joystick y animaciones
-├── game.js         # Motor del juego: física, colisiones, spawns, cinemáticas
-├── sprites.js      # Sprites pixel-art como matrices de caracteres (ASCII art)
-├── audio.js        # Motor de audio: síntesis procedural de música y SFX
-├── package.json    # Configuración de Vite para bundling
-└── vercel.json     # Configuración de deploy en Vercel
+├── index.html          # Estructura HTML + HUD + overlays + controles touch
+├── styles.css          # Estilos responsivos, glassmorphism, joystick y animaciones
+├── game.js             # Motor del juego: física, colisiones, spawns, cinemáticas
+├── sprites.js          # Sprites pixel-art como matrices de caracteres (ASCII art)
+├── audio.js            # Motor de audio: síntesis procedural de música y SFX
+├── vite.config.js      # Configuración de Vite e inyección de Open Graph dinámico
+├── package.json        # Configuración de Vite para bundling
+├── vercel.json         # Configuración de deploy en Vercel
+└── docs/
+    └── database-schema.sql  # Script DDL para inicialización de base de datos
 ```
+
+### ⚙️ Flujo DevOps Profesional (Staging vs. Producción)
+
+Para garantizar que las pruebas de desarrollo no alteren las puntuaciones oficiales del Leaderboard global, el proyecto implementa un flujo de CI/CD robusto con aislamiento completo:
+
+* **Entorno de Producción**: Rama `main` desplegada en Vercel, conectada estrictamente a la base de datos de producción de Supabase (`supabase-cholga-run`).
+* **Entorno de Staging (Pruebas)**: Rama `staging` desplegada en previsualizaciones de Vercel y ejecuciones locales (`npm run dev`), enlazada de forma segura a una base de datos aislada de pruebas en Supabase (`supabase-cholga-run-staging`).
+* **Metadata SEO Dinámica**: Integración a tiempo de compilación con Vite para inyectar URLs absolutas dinámicas en las etiquetas Open Graph y Twitter (`og:url`, `og:image`) según la procedencia del despliegue.
+* **Protección Anti-Indexación**: Todas las previsualizaciones de Vercel cuentan con la inyección automática de la cabecera HTTP `X-Robots-Tag: noindex` para evitar que los entornos de staging compitan en SEO o indexen contenido duplicado en motores de búsqueda.
 
 ### Decisiones de Diseño
 
