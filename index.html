@@ -62,12 +62,20 @@
         </div>
       </div>
       <div class="header-actions">
+        <a class="btn-help pixel-text btn-github" href="https://github.com/cannobbio/cholga-run" target="_blank" rel="noopener noreferrer" title="Ver repositorio en GitHub">
+          <span class="btn-icon" aria-hidden="true">
+            <svg class="github-mark" viewBox="0 0 98 96" role="img" focusable="false">
+              <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M48.85 0C21.9 0 0 21.9 0 48.85c0 21.55 13.98 39.82 33.38 46.27 2.44.45 3.34-1.06 3.34-2.35 0-1.16-.04-5-.07-9.07-13.58 2.95-16.45-5.76-16.45-5.76-2.22-5.64-5.42-7.14-5.42-7.14-4.43-3.03.33-2.97.33-2.97 4.9.34 7.48 5.03 7.48 5.03 4.35 7.45 11.4 5.3 14.18 4.05.44-3.15 1.7-5.3 3.1-6.52-10.84-1.23-22.24-5.42-22.24-24.13 0-5.33 1.9-9.69 5.02-13.1-.5-1.23-2.18-6.2.48-12.92 0 0 4.1-1.31 13.43 5.01A46.75 46.75 0 0 1 48.85 23.6c4.15.02 8.34.56 12.25 1.65 9.32-6.32 13.4-5.01 13.4-5.01 2.67 6.72.99 11.69.49 12.92 3.13 3.41 5.02 7.77 5.02 13.1 0 18.76-11.42 22.88-22.3 24.09 1.75 1.52 3.31 4.49 3.31 9.05 0 6.53-.06 11.8-.06 13.4 0 1.3.88 2.82 3.36 2.34A48.86 48.86 0 0 0 97.7 48.85C97.7 21.9 75.8 0 48.85 0Z"/>
+            </svg>
+          </span>
+          <span class="btn-label">GITHUB</span>
+        </a>
         <button class="btn-help pixel-text" id="help-btn" title="Ayuda y Controles">
-          <span class="btn-icon">❓</span>
+          <span class="btn-icon btn-icon-badge" aria-hidden="true">?</span>
           <span class="btn-label">AYUDA</span>
         </button>
         <button class="btn-help pixel-text btn-theme" id="theme-btn" title="Cambiar Tema">
-          <span class="btn-icon">🌓</span>
+          <span class="btn-icon btn-icon-badge theme-icon" aria-hidden="true"></span>
           <span class="btn-label">TEMA</span>
         </button>
       </div>
@@ -160,8 +168,8 @@
                   
                   <!-- Mascot Preview with a fun speech bubble -->
                   <div class="mascot-badge">
-                    <span class="badge-icon">🐶</span>
-                    <p>Protagonizado por un <strong>Terrier Chileno</strong> tricolor</p>
+                    <img src="/favicon.svg" alt="" class="badge-icon" aria-hidden="true">
+                    <p>Protagonizado por un <strong>Terrier Chileno</strong></p>
                     <div id="mascot-speech-bubble" class="pixel-text mascot-bubble">¿INSERT COIN? 🪙</div>
                   </div>
 
@@ -358,8 +366,17 @@
 
     <!-- Footer with Southern Chilean Info -->
     <footer class="game-footer">
-      <p>🐶 Hecho con 💚 e inspiración sureña. ¡El Terrier Chileno es la primera raza canina de Chile reconocida internacionalmente!</p>
-      <p class="footer-links">Puerto Varas • Lago Llanquihue • Región de Los Lagos • 🇨🇱</p>
+      <p class="footer-breed">El Terrier Chileno es la primera raza canina de Chile reconocida internacionalmente.</p>
+      <p class="footer-credit">❤️ Hecho con amor en</p>
+      <p class="footer-location">Puerto Varas - Los Lagos - Chile 🇨🇱</p>
+      <p class="footer-github">
+        <a href="https://github.com/cannobbio/cholga-run" target="_blank" rel="noopener noreferrer" aria-label="Repositorio de Cholga Run en GitHub">
+          <svg class="footer-github-mark" viewBox="0 0 98 96" aria-hidden="true" focusable="false">
+            <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M48.85 0C21.9 0 0 21.9 0 48.85c0 21.55 13.98 39.82 33.38 46.27 2.44.45 3.34-1.06 3.34-2.35 0-1.16-.04-5-.07-9.07-13.58 2.95-16.45-5.76-16.45-5.76-2.22-5.64-5.42-7.14-5.42-7.14-4.43-3.03.33-2.97.33-2.97 4.9.34 7.48 5.03 7.48 5.03 4.35 7.45 11.4 5.3 14.18 4.05.44-3.15 1.7-5.3 3.1-6.52-10.84-1.23-22.24-5.42-22.24-24.13 0-5.33 1.9-9.69 5.02-13.1-.5-1.23-2.18-6.2.48-12.92 0 0 4.1-1.31 13.43 5.01A46.75 46.75 0 0 1 48.85 23.6c4.15.02 8.34.56 12.25 1.65 9.32-6.32 13.4-5.01 13.4-5.01 2.67 6.72.99 11.69.49 12.92 3.13 3.41 5.02 7.77 5.02 13.1 0 18.76-11.42 22.88-22.3 24.09 1.75 1.52 3.31 4.49 3.31 9.05 0 6.53-.06 11.8-.06 13.4 0 1.3.88 2.82 3.36 2.34A48.86 48.86 0 0 0 97.7 48.85C97.7 21.9 75.8 0 48.85 0Z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </p>
     </footer>
   </div>
 
@@ -367,7 +384,10 @@
   <div id="help-modal" class="screen-overlay hidden">
     <div class="modal-content glass-panel">
       <button class="modal-close-btn" id="close-help-btn" aria-label="Cerrar">&times;</button>
-      <h2 class="pixel-text text-cyan modal-title">❓ AYUDA & CONTROLES</h2>
+      <h2 class="pixel-text text-cyan modal-title">
+        <span class="btn-icon btn-icon-badge modal-title-icon" aria-hidden="true"></span>
+        <span>AYUDA & CONTROLES</span>
+      </h2>
       
       <div class="modal-body">
         <section class="help-section">
