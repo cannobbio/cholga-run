@@ -2,6 +2,20 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-05-24
+### Added
+- **Resolución Dinámica de Open Graph a Tiempo de Compilación**: Incorporamos `vite.config.js` al proyecto. Al compilar con Vite, el hook `transformIndexHtml` lee dinámicamente las variables de entorno de Vercel (`process.env.VERCEL_URL` en previsualizaciones/staging o `VERCEL_PROJECT_PRODUCTION_URL` en producción) e inyecta la URL base absoluta exacta en `index.html`.
+- **Metadata Open Graph con Placeholders**: Modificamos `index.html` reemplazando los enlaces estáticos y relativos por el marcador `%VITE_PUBLIC_URL%` para las etiquetas `og:url`, `og:image`, `twitter:url` y `twitter:image`. Esto garantiza que los scrapers de redes sociales (Facebook, Discord, Twitter) carguen perfectamente las tarjetas y previsualizaciones del juego.
+- **Protección de Indexación (SEO)**: Auditamos y verificamos que todas las ramas que no son de producción (ej. previsualizaciones y staging) inyectan automáticamente la cabecera HTTP `X-Robots-Tag: noindex` en Vercel, impidiendo la indexación no deseada y protegiendo el SEO de producción.
+
+## [1.20.0] - 2026-05-24
+### Added
+- **Entorno de Staging e Integración Continua**: Configuración de un entorno aislado de pruebas profesional en Vercel y Supabase.
+- **Aislamiento de Bases de Datos en Vercel**: Dividimos las variables de entorno `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en el proyecto de Vercel. Las claves de producción reales se limitaron estrictamente a la casilla `Production`, y las de pruebas locales y staging se añadieron con exclusividad para `Preview` y `Development`.
+- **Esquema de Replicación de Base de Datos**: Añadimos el script SQL autocontenido en `docs/database-schema.sql` para instanciar la base de datos de Staging en Supabase con un solo clic (tabla `cholga_leaderboard`, índices de rendimiento y políticas RLS).
+- **Flujo de Integración por Línea de Comandos**: Enlazamos y documentamos en `AGENTS.md` el uso del flujo Git con la CLI de GitHub (`gh`) y la CLI de Vercel (`vercel env`), formalizando el uso de la rama `staging` como entorno candidato de lanzamiento intermedio.
+- **Limpieza del Repositorio**: Excluimos los archivos `.env` de Git agregando `.env*` de forma segura a `.gitignore`.
+
 ## [1.19.1] - 2026-05-23
 ### Added
 - **Efecto de Claxon al Saltar Autos**: Añadido soporte sonoro dinámico en el loop de actualización de obstáculos en `game.js`. Al saltar un obstáculo de tipo `car`, se dispara la bocina sintética retro de Web Audio API (`playCarSpawnSound()`) emulando la clásica reacción de la vaca al ser saltada.

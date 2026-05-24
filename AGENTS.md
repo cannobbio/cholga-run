@@ -84,7 +84,8 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Create a Pull Request from `staging` to `main`:
     `gh pr create --base main --head staging --title "release: merge staging to main" --body "Release staging features to production."`
   * Merge the Pull Request:
-    `gh pr merge --merge`
+    `gh pr merge --rebase`
+    *(Note: Using `--rebase` is the highly recommended strategy for this project. It preserves a clean, linear git history on `main` and avoids creating redundant Merge Commits, keeping `main` and `staging` perfectly in sync).*
 
 ### Coding conventions
 
