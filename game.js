@@ -780,9 +780,9 @@ class PoopProjectile {
     this.height = 24;
     this.x = x;
     this.y = y;
-    this.vx = 7.0; // Sale disparada hacia la derecha
-    this.vy = -6.5; // Impulso parabólico inicial hacia arriba
-    this.gravity = 0.32; // Gravedad del proyectil
+    this.vx = 8.4; // Trayectoria más horizontal para apuntar mejor a obstáculos.
+    this.vy = -2.4; // Impulso vertical reducido: menos parábola, más control.
+    this.gravity = 0.12; // Caída suave para que el disparo no se hunda tan rápido.
     this.angle = 0;
     this.rotationSpeed = 0.12;
   }
@@ -1075,6 +1075,35 @@ function drawCanvasHUD() {
     ctx.lineTo(x, 33);
     ctx.stroke();
   }
+
+  function measurePoopLabel() {
+    if (!isGodMode) {
+      return ctx.measureText(`x${poopAmmo}`).width;
+    }
+
+    const xWidth = ctx.measureText('x').width;
+    ctx.save();
+    ctx.font = 'bold 15px Outfit, sans-serif';
+    const infinityWidth = ctx.measureText('∞').width;
+    ctx.restore();
+    return xWidth + infinityWidth + 1;
+  }
+
+  function drawPoopLabel(x, y) {
+    if (!isGodMode) {
+      ctx.fillText(`x${poopAmmo}`, x, y);
+      return;
+    }
+
+    ctx.fillText('x', x, y);
+    const infinityX = x + ctx.measureText('x').width + 1;
+
+    ctx.save();
+    ctx.font = 'bold 15px Outfit, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('∞', infinityX, y + 1);
+    ctx.restore();
+  }
   
   // --- PRE-CÁLCULO DE ANCHO Y MODO COMPACTO ---
   // Calculamos el espacio ocupado por el bloque de Score & Récord a la derecha
@@ -1174,8 +1203,7 @@ function drawCanvasHUD() {
   let itemGroupWidth = 18 + 2 + ctx.measureText(`x${salmonsCount}`).width; // Salmón
   itemGroupWidth += 8 + 18 + 2 + ctx.measureText(`x${kuchensCount}`).width; // Kuchen
   if (poopAmmo > 0 || isGodMode) {
-    const poopLabel = isGodMode ? "x∞" : `x${poopAmmo}`;
-    itemGroupWidth += 8 + 18 + 2 + ctx.measureText(poopLabel).width; // Poop
+    itemGroupWidth += 8 + 18 + 2 + measurePoopLabel(); // Poop
   }
   
   let dividerCount = 4;
@@ -1316,9 +1344,8 @@ function drawCanvasHUD() {
     drawPixelSprite(ctx, COLLECTIBLE_SPRITES.poop, currentX, itemY, 18, 18);
     ctx.fillStyle = '#7c5335';
     ctx.textAlign = 'left';
-    const poopLabel = isGodMode ? "x∞" : `x${poopAmmo}`;
-    ctx.fillText(poopLabel, currentX + 20, 24);
-    currentX += 20 + ctx.measureText(poopLabel).width;
+    drawPoopLabel(currentX + 20, 24);
+    currentX += 20 + measurePoopLabel();
   }
   
   // --- ANCLAJE INTELIGENTE DE SCORE & RECORD A LA DERECHA ---
@@ -3177,7 +3204,7 @@ function checkCollisions() {
         tBox.y < cBox.y + cBox.height &&
         tBox.y + tBox.height > cBox.y) {
       
-      poopAmmo = 12;
+      poopAmmo = 30;
       
       // Sonar maullido de gato procedural
       if (window.audioEngine && window.audioEngine.playCatMeowSound) {
