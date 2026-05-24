@@ -1811,6 +1811,27 @@ function drawRetroCloud(x, y, w, h) {
   ctx.fill();
 }
 
+function drawOsornoSombreroCloud(x, y) {
+  ctx.save();
+  ctx.globalAlpha = 0.88;
+
+  // Nube lenticular estilo "sombrero", pixelada y levemente estratificada.
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+  ctx.fillRect(x - 54, y - 3, 108, 8);
+  ctx.fillRect(x - 42, y - 9, 84, 8);
+  ctx.fillRect(x - 25, y - 15, 50, 8);
+
+  ctx.fillStyle = 'rgba(226, 242, 255, 0.72)';
+  ctx.fillRect(x - 44, y + 5, 88, 5);
+  ctx.fillRect(x - 28, y + 10, 56, 4);
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
+  ctx.fillRect(x - 34, y - 18, 68, 4);
+  ctx.fillRect(x - 62, y + 1, 124, 3);
+
+  ctx.restore();
+}
+
 function drawRetroBoat(x, y) {
   ctx.save();
   ctx.fillStyle = '#ffffff';
@@ -1932,17 +1953,10 @@ function drawVolcanoOsorno(x, blockId = 0) {
   ctx.fillStyle = (currentWeather === 'sunset') ? '#2e143c' : ((currentWeather === 'night' || currentWeather === 'fog') ? '#0e111a' : '#1d222e');
   ctx.fillRect(x + volBaseWidth / 2 - 20, volY - volHeight - 2, 40, 4);
 
-  const hasSombrero = (blockId % 2 === 0);
+  const hasSombrero = !isEruptionStage && currentWeather === 'sunny' && currentHour === 'dia';
   if (hasSombrero) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-    ctx.beginPath();
-    ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 36, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(x + volBaseWidth / 2, volY - volHeight - 12, 24, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
+    const cloudBob = Math.sin(Date.now() / 1800 + blockId) * 1.5;
+    drawOsornoSombreroCloud(x + volBaseWidth / 2, volY - volHeight - 24 + cloudBob);
   }
 
   // Humo pasivo estándar (blanco y sutil para estado normal)
