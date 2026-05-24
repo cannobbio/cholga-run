@@ -760,7 +760,6 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   color: #fff;
-  font-size: 1.25rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -780,6 +779,88 @@ body {
 
 .fullscreen-toggle-btn:active {
   transform: scale(0.92);
+}
+
+.fullscreen-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.fullscreen-icon::before,
+.fullscreen-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(currentColor, currentColor) left top / 8px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) left top / 3px 8px no-repeat,
+    linear-gradient(currentColor, currentColor) right top / 8px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) right top / 3px 8px no-repeat,
+    linear-gradient(currentColor, currentColor) left bottom / 8px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) left bottom / 3px 8px no-repeat,
+    linear-gradient(currentColor, currentColor) right bottom / 8px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) right bottom / 3px 8px no-repeat;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.fullscreen-icon::after {
+  opacity: 0;
+  background:
+    linear-gradient(currentColor, currentColor) 5px 5px / 7px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 5px 5px / 3px 7px no-repeat,
+    linear-gradient(currentColor, currentColor) right 5px top 5px / 7px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) right 5px top 5px / 3px 7px no-repeat,
+    linear-gradient(currentColor, currentColor) left 5px bottom 5px / 7px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) left 5px bottom 5px / 3px 7px no-repeat,
+    linear-gradient(currentColor, currentColor) right 5px bottom 5px / 7px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) right 5px bottom 5px / 3px 7px no-repeat;
+  transform: scale(1.35);
+}
+
+.fullscreen-toggle-btn.is-fullscreen .fullscreen-icon::before {
+  opacity: 0;
+  transform: scale(1.35);
+}
+
+.fullscreen-toggle-btn.is-fullscreen .fullscreen-icon::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fullscreen-toggle-btn.is-fullscreen {
+  border-color: rgba(255, 183, 0, 0.45);
+  color: var(--color-gold);
+}
+
+.fullscreen-hint {
+  position: absolute;
+  top: 16px;
+  right: 68px;
+  max-width: 210px;
+  padding: 10px 12px;
+  background: rgba(4, 5, 8, 0.78);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.58rem;
+  line-height: 1.45;
+  text-align: right;
+  text-shadow: 1px 1px 0 #000;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateX(8px);
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 14;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+.fullscreen-hint.visible {
+  opacity: 1;
+  transform: translateX(0);
+  visibility: visible;
 }
 
 /* Mobile Controls HUD */
@@ -928,43 +1009,54 @@ body {
 /* Orientation Lock Overlay */
 .orientation-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background: #05070a;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.18), transparent 42%),
+    rgba(5, 7, 10, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
+  z-index: 30;
   text-align: center;
-  padding: 30px;
+  padding: clamp(14px, 5vw, 30px);
   box-sizing: border-box;
   color: #fff;
+  border-radius: inherit;
 }
 
 .orientation-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  max-width: 400px;
+  gap: clamp(8px, 2.5vw, 18px);
+  width: min(84%, 360px);
+  padding: clamp(14px, 4vw, 24px);
+  background: rgba(12, 16, 26, 0.82);
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  border-radius: 14px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .orientation-icon {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 10vw, 3.5rem);
   animation: rotatePhone 2.2s infinite ease-in-out;
 }
 
 .orientation-overlay h2 {
-  font-size: 1.1rem;
+  font-size: clamp(0.58rem, 2.7vw, 1.1rem);
   color: var(--color-cyan);
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
   margin: 0;
 }
 
 .orientation-overlay p {
-  font-size: 0.82rem;
+  font-size: clamp(0.72rem, 3.2vw, 0.9rem);
   line-height: 1.5;
   color: var(--color-text-dim);
   margin: 0;
@@ -1040,13 +1132,83 @@ body {
 @media (orientation: portrait) and (max-width: 1024px), (pointer: coarse) and (orientation: portrait) {
   .orientation-overlay {
     display: flex !important; /* Show rotation screen strictly in vertical orientation on mobile/tablet */
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 999999 !important;
-    background: #05070a !important;
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) {
+  body {
+    align-items: flex-start;
+  }
+
+  .app-container {
+    min-height: 100dvh;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .game-header {
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-height: 46px;
+  }
+
+  .header-logo {
+    gap: 8px;
+  }
+
+  .logo-image {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .logo-title {
+    font-size: 0.98rem !important;
+    margin-bottom: 0;
+  }
+
+  .logo-subtitle {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .btn-help {
+    padding: 7px 9px;
+  }
+
+  .btn-help .btn-label {
+    display: none;
+  }
+
+  .game-layout,
+  .game-viewport-container {
+    flex: 1;
+    min-height: 0;
+    gap: 6px;
+  }
+
+  .game-screen-wrapper {
+    width: min(100%, calc((100dvh - 58px) * 2));
+    max-height: calc(100dvh - 58px);
+    margin: 0 auto;
+    border-radius: 12px;
+  }
+
+  .fullscreen-toggle-btn {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .fullscreen-hint {
+    top: 10px;
+    right: 58px;
+    max-width: 180px;
+    font-size: 0.5rem;
   }
 }
 
@@ -1074,6 +1236,24 @@ body {
   .logo-image {
     width: 48px !important;
     height: 48px !important;
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 768px) {
+  .game-header {
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    gap: 8px !important;
+  }
+
+  .logo-title {
+    font-size: 0.98rem !important;
+  }
+
+  .logo-image {
+    width: 38px !important;
+    height: 38px !important;
   }
 }
 
@@ -1877,6 +2057,3 @@ body {
     gap: 10px;
   }
 }
-
-
-
