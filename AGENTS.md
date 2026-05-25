@@ -99,6 +99,23 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * If a temporary backup branch is created before an exceptional history rewrite or force-push, delete it from both local and remote after verifying that `main` and `staging` point to the intended signed commit:
     `git branch -D <backup-branch>`
     `git push origin --delete <backup-branch>`
+* **Dependabot Security PR Flow**:
+  * Dependabot security PRs normally target the default branch (`main`) directly, so they are the exception to the usual feature-branch-to-`staging` flow.
+  * If a Dependabot PR shows many unrelated commits, deleted branches, or conflicts after a history rewrite, do not resolve it manually first. Comment `@dependabot rebase`. If Dependabot closes it as superseded, use the replacement PR it opens.
+  * Before merging a Dependabot PR, verify that it is clean/mergeable, changes only dependency files unless clearly expected, has passing Vercel checks, and that the Dependabot commit is verified:
+    `gh pr view <number> --json mergeStateStatus,mergeable,files,statusCheckRollup`
+    `gh api repos/cannobbio/cholga-run/commits/<sha> --jq .commit.verification`
+  * Test locally before merging:
+    `gh pr checkout <number>`
+    `npm install`
+    `npm run build`
+  * Merge Dependabot PRs with a rebase merge only. GitHub UI is acceptable if it shows "Rebase and merge"; CLI equivalent:
+    `gh pr merge <number> --rebase --delete-branch`
+  * After a Dependabot PR is merged into `main`, fast-forward `staging` to match `main` so both protected branches stay identical:
+    `git fetch origin`
+    `git switch staging`
+    `git merge --ff-only origin/main`
+    `git push origin staging`
 
 ### Coding conventions
 

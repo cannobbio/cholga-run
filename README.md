@@ -104,6 +104,7 @@ El repositorio público mantiene protecciones activas en GitHub:
 - Los merges por commit y squash están desactivados; el flujo aceptado es rebase.
 - Auto-merge, update branch y delete branch on merge están habilitados para mantener ramas de PR limpias.
 - Secret scanning, secret scanning push protection, Dependabot alerts y Dependabot security updates están habilitados.
+- Los PRs de Dependabot se revisan como excepción directa sobre `main`, se fusionan solo con rebase y luego `staging` se avanza por fast-forward para mantener ambas ramas idénticas.
 - La configuración local recomendada para contribuidores es `git config --global commit.gpgsign true` y `git config --global rebase.gpgsign true`.
 
 ### Decisiones de Diseño
