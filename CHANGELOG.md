@@ -2,6 +2,30 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.1] - 2026-05-25
+### Security
+- **Endurecimiento de GitHub**: Activamos `secret scanning`, `secret scanning push protection`, Dependabot alerts y Dependabot security updates para el repositorio público.
+- **Protección de Ramas Principales**: Protegimos `main` y `staging` contra borrado, exigimos commits firmados y mantuvimos controles de fuerza adecuados al flujo documentado.
+- **Historial con Firmas Verificadas**: Reescribimos el tramo histórico problemático para reemplazar commits sin firma/verificación y dejamos `main` y `staging` alineadas con commits verificados.
+
+### Changed
+- **Flujo GitHub más Compatible con Automatización**: Deshabilitamos squash merges, mantenemos rebase como preferencia para trabajo humano y permitimos merge commits verificados para PRs automatizados como Dependabot, evitando bloqueos cuando GitHub no puede firmar rebase merges.
+- **Limpieza de Backups de Reescritura**: Documentamos que las ramas temporales de respaldo creadas durante una reescritura de historial deben eliminarse tras validar que `main`, `staging`, Vercel y GitHub quedan correctos.
+- **Dependabot Documentado**: Añadimos un flujo predecible para revisar PRs de Dependabot, verificar la firma del commit del bot, ejecutar build local y fusionar con merge commit verificado cuando aplique.
+
+### Fixed
+- **Dependencia de Desarrollo Vite**: Actualizamos `vite` de `5.4.21` a `6.4.2` mediante Dependabot para resolver la alerta de seguridad reportada por GitHub.
+
+## [1.22.0] - 2026-05-24
+### Added
+- **Nube Sombrero del Volcán Osorno**: Añadimos una nube lenticular decorativa sobre el Osorno para reforzar la identidad visual del fondo sureño.
+- **Mejora de Experiencia Móvil Horizontal**: Ajustamos la experiencia de canvas en landscape para que el juego sea más cómodo y legible en pantallas móviles.
+
+### Changed
+- **Disparo de Caca Ajustado**: Afinamos la mecánica de disparo para mejorar la sensación de respuesta durante el gameplay.
+- **Pulido de Interfaz Arcade**: Mejoramos header, footer, modal de ayuda y alineación de iconos del botón de inicio para una presentación más consistente.
+- **Ignorados Locales**: Añadimos archivos de estado de tooling local a `.gitignore` para evitar ruido en el repositorio.
+
 ## [1.21.0] - 2026-05-24
 ### Added
 - **Resolución Dinámica de Open Graph a Tiempo de Compilación**: Incorporamos `vite.config.js` al proyecto. Al compilar con Vite, el hook `transformIndexHtml` lee dinámicamente las variables de entorno de Vercel (`process.env.VERCEL_URL` en previsualizaciones/staging o `VERCEL_PROJECT_PRODUCTION_URL` en producción) e inyecta la URL base absoluta exacta en `index.html`.
