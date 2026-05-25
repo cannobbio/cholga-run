@@ -357,6 +357,7 @@ let floatyTexts = [];
 // --- SISTEMA MODO DIOS (GOD MODE) ---
 let isGodMode = false;
 let wasGodModeActive = false;
+let godModeUsedThisRun = false;
 let saiyajinParticles = [];
 let typedKeys = '';
 
@@ -401,9 +402,10 @@ function createFloatyText(text, x, y, color) {
 
 function toggleGodMode() {
   isGodMode = !isGodMode;
-  
+
   if (window.audioEngine) {
     if (isGodMode) {
+      godModeUsedThisRun = true;
       if (typeof window.audioEngine.playOneUpSound === 'function') {
         window.audioEngine.playOneUpSound();
       }
@@ -3845,7 +3847,7 @@ function triggerGameOver() {
   const lowestScore = globalLeaderboard.length >= 10 ? globalLeaderboard[globalLeaderboard.length - 1].score : 0;
   const qualifies = globalLeaderboard.length < 10 || score > lowestScore;
 
-  if (qualifies) {
+  if (qualifies && !godModeUsedThisRun) {
     // Si califica, abrimos el modal de registro de récord, el cual abrirá la pantalla de Game Over al cerrarse
     openRecordModal();
   } else {
@@ -3895,6 +3897,7 @@ function resetGameVariables() {
   floatyTexts = [];
   isGodMode = false;
   wasGodModeActive = false;
+  godModeUsedThisRun = false;
   saiyajinParticles = [];
   typedKeys = '';
   hasDoubleJump = false;
