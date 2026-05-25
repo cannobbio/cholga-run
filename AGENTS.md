@@ -96,6 +96,9 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Because `gh pr merge --rebase` can recreate commits, verify that release commits remain signed before merging. If GitHub rejects unsigned commits, rebase locally with signing enabled, push the signed branch, then merge.
   * Merge commits and squash merges are disabled. Use rebase merges only. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
   * Secret scanning, secret scanning push protection, Dependabot alerts, and Dependabot security updates are enabled for the repository.
+  * If a temporary backup branch is created before an exceptional history rewrite or force-push, delete it from both local and remote after verifying that `main` and `staging` point to the intended signed commit:
+    `git branch -D <backup-branch>`
+    `git push origin --delete <backup-branch>`
 
 ### Coding conventions
 
