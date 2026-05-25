@@ -86,6 +86,14 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Merge the Pull Request:
     `gh pr merge --rebase`
     *(Note: Using `--rebase` is the highly recommended strategy for this project. It preserves a clean, linear git history on `main` and avoids creating redundant Merge Commits, keeping `main` and `staging` perfectly in sync).*
+* **Repository Protection & Signed Commits**:
+  * `main` is protected on GitHub: pull requests are required, linear history is required, force-pushes and branch deletion are blocked, and protections apply to admins.
+  * Signed commits are required on `main`. Local development must keep Git signing enabled, including commits recreated during rebase:
+    `git config --global commit.gpgsign true`
+    `git config --global rebase.gpgsign true`
+  * Because `gh pr merge --rebase` can recreate commits, verify that release commits remain signed before merging. If GitHub rejects unsigned commits, rebase locally with signing enabled, push the signed branch, then merge.
+  * Merge commits are disabled. Use rebase or squash merges only. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
+  * Secret scanning, secret scanning push protection, Dependabot alerts, and Dependabot security updates are enabled for the repository.
 
 ### Coding conventions
 

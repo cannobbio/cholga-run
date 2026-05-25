@@ -95,6 +95,16 @@ Para garantizar que las pruebas de desarrollo no alteren las puntuaciones oficia
 * **Metadata SEO Dinámica**: Integración a tiempo de compilación con Vite para inyectar URLs absolutas dinámicas en las etiquetas Open Graph y Twitter (`og:url`, `og:image`) según la procedencia del despliegue.
 * **Protección Anti-Indexación**: Todas las previsualizaciones de Vercel cuentan con la inyección automática de la cabecera HTTP `X-Robots-Tag: noindex` para evitar que los entornos de staging compitan en SEO o indexen contenido duplicado en motores de búsqueda.
 
+### Seguridad del Repositorio
+
+El repositorio público mantiene protecciones activas en GitHub:
+
+- `main` requiere Pull Request, historial lineal y commits firmados; no permite force-push ni eliminación de la rama.
+- Los merges por commit están desactivados; el flujo aceptado es rebase o squash.
+- Auto-merge, update branch y delete branch on merge están habilitados para mantener ramas de PR limpias.
+- Secret scanning, secret scanning push protection, Dependabot alerts y Dependabot security updates están habilitados.
+- La configuración local recomendada para contribuidores es `git config --global commit.gpgsign true` y `git config --global rebase.gpgsign true`.
+
 ### Decisiones de Diseño
 
 | Aspecto | Solución |
