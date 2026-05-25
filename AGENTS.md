@@ -81,20 +81,20 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Local development variables can be set in an ignored `.env.local` file pointing to the Staging database.
   * The database schema is fully replicated and version-controlled under `docs/database-schema.sql` to initialize new staging/dev instances easily.
 * **Release Flow via GitHub CLI (`gh`)**:
-  * This repository uses rebase-only releases. Merge commits and squash merges are disabled in GitHub repository settings.
+  * This repository prefers rebase merges for human-authored feature and release branches. Merge commits are allowed for automation cases where GitHub needs to create a verified merge commit. Squash merges are disabled.
   * Create a Pull Request from `staging` to `main`:
     `gh pr create --base main --head staging --title "release: merge staging to main" --body "Release staging features to production."`
   * Merge the Pull Request:
     `gh pr merge --rebase`
-    *(Note: Using `--rebase` is the highly recommended strategy for this project. It preserves a clean, linear git history on `main` and avoids creating redundant Merge Commits, keeping `main` and `staging` perfectly in sync).*
+    *(Note: Using `--rebase` is recommended for normal project work. It keeps history easy to scan and avoids redundant merge commits when no automation constraint requires one.)*
 * **Repository Protection & Signed Commits**:
-  * `main` is protected on GitHub: pull requests are required, linear history is required, force-pushes and branch deletion are blocked, and protections apply to admins.
-  * `staging` is also protected: signed commits and linear history are required, branch deletion is blocked, and force-push is allowed only to support signed rebases with `--force-with-lease`.
+  * `main` is protected on GitHub: pull requests are required, signed commits are required, force-pushes and branch deletion are blocked, and protections apply to admins.
+  * `staging` is also protected: signed commits are required, branch deletion is blocked, and force-push is allowed only to support signed rebases with `--force-with-lease`.
   * Signed commits are required on both `main` and `staging`. Local development must keep Git signing enabled, including commits recreated during rebase:
     `git config --global commit.gpgsign true`
     `git config --global rebase.gpgsign true`
   * Because `gh pr merge --rebase` can recreate commits, verify that release commits remain signed before merging. If GitHub rejects unsigned commits, rebase locally with signing enabled, push the signed branch, then merge.
-  * Merge commits and squash merges are disabled. Use rebase merges only. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
+  * Merge commits and rebase merges are enabled. Squash merges are disabled. Use rebase for normal work; use merge commits for GitHub automation when it needs to produce a verified commit. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
   * Secret scanning, secret scanning push protection, Dependabot alerts, and Dependabot security updates are enabled for the repository.
   * If a temporary backup branch is created before an exceptional history rewrite or force-push, delete it from both local and remote after verifying that `main` and `staging` point to the intended signed commit:
     `git branch -D <backup-branch>`
@@ -109,9 +109,9 @@ To prevent development/test sessions from polluting the global leaderboard, this
     `gh pr checkout <number>`
     `npm install`
     `npm run build`
-  * Merge Dependabot PRs with a rebase merge only. GitHub UI is acceptable if it shows "Rebase and merge"; CLI equivalent:
-    `gh pr merge <number> --rebase --delete-branch`
-  * After a Dependabot PR is merged into `main`, fast-forward `staging` to match `main` so both protected branches stay identical:
+  * Merge Dependabot PRs with a merge commit, not rebase. GitHub cannot automatically sign rebase-merge commits under `Require signed commits`, but it can create a verified merge commit. GitHub UI is acceptable if it shows "Create a merge commit"; CLI equivalent:
+    `gh pr merge <number> --merge --delete-branch`
+  * After a Dependabot PR is merged into `main`, fast-forward `staging` to match `main` so both protected branches stay equivalent:
     `git fetch origin`
     `git switch staging`
     `git merge --ff-only origin/main`

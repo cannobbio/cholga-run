@@ -99,12 +99,12 @@ Para garantizar que las pruebas de desarrollo no alteren las puntuaciones oficia
 
 El repositorio público mantiene protecciones activas en GitHub:
 
-- `main` requiere Pull Request, historial lineal y commits firmados; no permite force-push ni eliminación de la rama.
-- `staging` requiere commits firmados e historial lineal; no permite eliminación de la rama y mantiene force-push habilitado solo para rebases firmados con `--force-with-lease`.
-- Los merges por commit y squash están desactivados; el flujo aceptado es rebase.
+- `main` requiere Pull Request y commits firmados; no permite force-push ni eliminación de la rama.
+- `staging` requiere commits firmados; no permite eliminación de la rama y mantiene force-push habilitado solo para rebases firmados con `--force-with-lease`.
+- El flujo preferido es rebase para trabajo humano; los merge commits están habilitados para automatizaciones de GitHub que necesiten crear commits verificados. Squash está desactivado.
 - Auto-merge, update branch y delete branch on merge están habilitados para mantener ramas de PR limpias.
 - Secret scanning, secret scanning push protection, Dependabot alerts y Dependabot security updates están habilitados.
-- Los PRs de Dependabot se revisan como excepción directa sobre `main`, se fusionan solo con rebase y luego `staging` se avanza por fast-forward para mantener ambas ramas idénticas.
+- Los PRs de Dependabot se revisan como excepción directa sobre `main`, se fusionan con merge commit verificado de GitHub y luego `staging` se avanza por fast-forward para mantener ambas ramas equivalentes.
 - La configuración local recomendada para contribuidores es `git config --global commit.gpgsign true` y `git config --global rebase.gpgsign true`.
 
 ### Decisiones de Diseño
