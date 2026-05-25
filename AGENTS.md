@@ -71,8 +71,8 @@ Treat any change under `api/` as a production backend change even though the res
 To prevent development/test sessions from polluting the global leaderboard, this project enforces strict environment isolation:
 
 * **Git Branches**:
-  * `main` is production-ready. Direct commits are restricted. All feature branches merge into `staging` first.
-  * `staging` is the integration/QA branch. All preview deployments are built from here.
+  * `main` is production-ready. Direct commits are blocked by GitHub branch protection — a PR is always required. This is not an agent workflow choice; it is enforced by GitHub.
+  * `staging` is the integration/QA branch and the normal working branch. Commit directly here for all work — no feature branches are needed for this solo project. All preview deployments are built from here.
 * **Database Isolation (Supabase)**:
   * **Production Database**: Linked strictly to Vercel's **Production** environment. Contains official high scores.
   * **Staging Database**: Linked to Vercel's **Preview** and **Development** environments. Used for development, local execution (`npm run dev`), and branch previews.
@@ -81,20 +81,22 @@ To prevent development/test sessions from polluting the global leaderboard, this
   * Local development variables can be set in an ignored `.env.local` file pointing to the Staging database.
   * The database schema is fully replicated and version-controlled under `docs/database-schema.sql` to initialize new staging/dev instances easily.
 * **Release Flow via GitHub CLI (`gh`)**:
-  * This repository prefers rebase merges for human-authored feature and release branches. Merge commits are allowed for automation cases where GitHub needs to create a verified merge commit. Squash merges are disabled.
+  * After pushing to `staging`, fetch the Vercel preview deployment URL and provide it to the user before asking for approval to continue. Use:
+    `gh pr view <number> --json statusCheckRollup` (once the PR is open) or `vercel ls` to find the preview URL.
+  * After merging to `main` and the deploy completes, provide the production URL to the user: **https://cholga-run.vercel.app**
   * Create a Pull Request from `staging` to `main`:
-    `gh pr create --base main --head staging --title "release: merge staging to main" --body "Release staging features to production."`
-  * Merge the Pull Request:
-    `gh pr merge --rebase`
-    *(Note: Using `--rebase` is recommended for normal project work. It keeps history easy to scan and avoids redundant merge commits when no automation constraint requires one.)*
+    `gh pr create --base main --head staging --title "release: ..." --body "..."`
+  * Merge the Pull Request — **always use `--merge`**, never `--rebase`. GitHub cannot sign commits recreated by a rebase merge; `--rebase` will always be rejected on `main` because signed commits are required. Squash merges are disabled:
+    `gh pr merge <number> --merge --delete-branch`
+  * After merging, always fast-forward `staging` to stay in sync with `main`:
+    `git fetch origin && git switch staging && git merge --ff-only origin/main && git push origin staging`
 * **Repository Protection & Signed Commits**:
   * `main` is protected on GitHub: pull requests are required, signed commits are required, force-pushes and branch deletion are blocked, and protections apply to admins.
   * `staging` is also protected: signed commits are required, branch deletion is blocked, and force-push is allowed only to support signed rebases with `--force-with-lease`.
   * Signed commits are required on both `main` and `staging`. Local development must keep Git signing enabled, including commits recreated during rebase:
     `git config --global commit.gpgsign true`
     `git config --global rebase.gpgsign true`
-  * Because `gh pr merge --rebase` can recreate commits, verify that release commits remain signed before merging. If GitHub rejects unsigned commits, rebase locally with signing enabled, push the signed branch, then merge.
-  * Merge commits and rebase merges are enabled. Squash merges are disabled. Use rebase for normal work; use merge commits for GitHub automation when it needs to produce a verified commit. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
+  * Merge commits are enabled. Squash merges are disabled. `gh pr merge --merge` is the correct method for all staging→main PRs. Auto-merge, update-branch, and delete-branch-on-merge are enabled.
   * Secret scanning, secret scanning push protection, Dependabot alerts, and Dependabot security updates are enabled for the repository.
   * If a temporary backup branch is created before an exceptional history rewrite or force-push, delete it from both local and remote after verifying that `main` and `staging` point to the intended signed commit:
     `git branch -D <backup-branch>`

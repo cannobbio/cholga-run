@@ -2,6 +2,10 @@
 
 Todas las modificaciones notables de este proyecto serán documentadas en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2026-05-25
+### Added
+- **Bloqueo de Leaderboard en Modo Dios**: Si el jugador activa el Modo Dios en cualquier momento de la partida, no puede registrar su nombre en el leaderboard global al finalizar, aunque la puntuación califique para el Top 10. El bloqueo se reinicia con cada nueva partida.
+
 ## [1.22.1] - 2026-05-25
 ### Security
 - **Endurecimiento de GitHub**: Activamos `secret scanning`, `secret scanning push protection`, Dependabot alerts y Dependabot security updates para el repositorio público.
